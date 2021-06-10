@@ -1,11 +1,11 @@
-package com.epam.controller.exception;
+package com.epam.exception;
 
-public class CustomError {
+public class RestApplicationError {
 
     private String errorMessage;
     private int errorCode;
 
-    public CustomError(String errorMessage, int errorCode) {
+    public RestApplicationError(String errorMessage, int errorCode) {
         this.errorMessage = errorMessage;
         this.errorCode = errorCode;
     }
