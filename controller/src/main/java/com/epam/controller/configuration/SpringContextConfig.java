@@ -8,7 +8,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 public class SpringContextConfig implements WebApplicationInitializer {
@@ -27,10 +26,10 @@ public class SpringContextConfig implements WebApplicationInitializer {
     private static final String DEVELOP_PROFILE = "develop";
 
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(ServletContext servletContext) {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.register(SpringAppConfig.class);
-        servletContext.setInitParameter(SPRING_PROFILES_ACTIVE, DEVELOP_PROFILE);
+        servletContext.setInitParameter(SPRING_PROFILES_ACTIVE, PRODUCTION_PROFILE);
 
         DispatcherServlet servlet = new DispatcherServlet(context);
         ServletRegistration.Dynamic appServletRegistration = servletContext.addServlet(APP_SERVLET_NAME, servlet);

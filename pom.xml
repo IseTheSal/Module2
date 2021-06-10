@@ -25,6 +25,7 @@
         <module>model</module>
         <module>service</module>
         <module>controller</module>
+        <module>validator</module>
     </modules>
 
     <dependencyManagement>
@@ -37,6 +38,11 @@
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>service</artifactId>
+                <version>${module.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.epam</groupId>
+                <artifactId>validator</artifactId>
                 <version>${module.version}</version>
             </dependency>
             <dependency>
