@@ -1,11 +1,11 @@
 package com.epam.model.entity;
 
 public class Tag implements Entity {
-    private final long id;
+
+    private long id;
     private String name;
 
-    public Tag(long id) {
-        this.id = id;
+    public Tag() {
     }
 
     public Tag(long id, String name) {
@@ -15,6 +15,10 @@ public class Tag implements Entity {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -1,17 +1,17 @@
 package com.epam.controller;
 
-import com.epam.controller.exception.TagNotFoundException;
 import com.epam.model.entity.Tag;
 import com.epam.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/tag/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
     private final TagService tagService;
@@ -21,10 +21,23 @@ public class TagController {
         this.tagService = tagService;
     }
 
+    @GetMapping(value = "/find")
+    public ResponseEntity<Tag> findTagById(@RequestParam String id) {
+        return new ResponseEntity<>(tagService.findById(id), HttpStatus.OK);
+    }
 
-    @GetMapping(value = "/findTagById")
-    public Tag findTagById(@RequestParam long id) {
-        // TODO: 6/7/2021 localize message
-        return tagService.findById(id).orElseThrow(() -> new TagNotFoundException("test error message", 40405));
+    @GetMapping(value = "/all")
+    public ResponseEntity<List<Tag>> findAllTags() {
+        return new ResponseEntity<>(tagService.findAll(), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/delete")
+    public ResponseEntity<Long> deleteTagById(@RequestParam String id) {
+        return new ResponseEntity<>(tagService.delete(id), HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Tag> updateTagById(@RequestBody Tag tag) {
+        return new ResponseEntity<>(tagService.create(tag), HttpStatus.OK);
     }
 }
