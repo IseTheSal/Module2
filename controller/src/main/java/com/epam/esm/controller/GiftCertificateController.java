@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.model.entity.GiftCertificate;
-import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,10 +14,10 @@ import java.util.List;
 @RequestMapping(value = "/certificate/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiftCertificateController {
 
-    private final CertificateService certificateService;
+    private final GiftCertificateService certificateService;
 
     @Autowired
-    public GiftCertificateController(CertificateService certificateService) {
+    public GiftCertificateController(GiftCertificateService certificateService) {
         this.certificateService = certificateService;
     }
 

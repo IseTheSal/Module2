@@ -6,7 +6,7 @@ public class GiftCertificateValidator extends EntityValidator {
 
     //fixme backslash pass the regex
     private static final String NAME_REGEX = "^[A-z|А-я]{3,30}$";
-    private static final String DESCRIPTION_REGEX = "^(([A-z0-9.,?!;:]+\\s)*[A-z0-9.,?!;:]+){10,300}$";
+    private static final String DESCRIPTION_REGEX = "^(([A-zА-я0-9.,?!;:]+\\s)*[A-zА-я0-9.,?!;:]+){10,300}$";
     private static final String MAX_PRICE = "1000.0";
 
     public static boolean isNameValid(String name) {

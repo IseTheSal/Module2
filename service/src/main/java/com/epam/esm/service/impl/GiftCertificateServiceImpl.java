@@ -6,7 +6,7 @@ import com.epam.esm.exception.ValidationException;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
-import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class CertificateServiceImpl implements CertificateService {
+public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private static final String UPDATE_OPTION = "UPDATE";
     private static final String CREATE_OPTION = "CREATE";
@@ -28,7 +28,7 @@ public class CertificateServiceImpl implements CertificateService {
     private final GiftCertificateDao giftCertificateDao;
 
     @Autowired
-    public CertificateServiceImpl(GiftCertificateDao giftCertificateDao) {
+    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao) {
         this.giftCertificateDao = giftCertificateDao;
     }
 
@@ -58,23 +58,23 @@ public class CertificateServiceImpl implements CertificateService {
     private void checkCertificateValid(GiftCertificate giftCertificate, String option) {
         StringBuilder exceptionValidMessage = new StringBuilder();
         String name = giftCertificate.getName();
-        if ((name != null && !GiftCertificateValidator.isNameValid(name) && option.equals(UPDATE_OPTION))
+        if (((name != null) && !GiftCertificateValidator.isNameValid(name) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isNameValid(name) && option.equals(CREATE_OPTION))) {
             exceptionValidMessage.append("Name ").append(name).append(" is invalid. ");
         }
         String description = giftCertificate.getDescription();
-        if ((description != null
+        if (((description != null)
                 && !GiftCertificateValidator.isDescriptionValid(description) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isDescriptionValid(description) && option.equals(CREATE_OPTION))) {
             exceptionValidMessage.append("Description ").append(description).append(" is invalid. ");
         }
         BigDecimal price = giftCertificate.getPrice();
-        if ((price != null && !GiftCertificateValidator.isPriceValid(price) && option.equals(UPDATE_OPTION))
+        if (((price != null) && !GiftCertificateValidator.isPriceValid(price) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isPriceValid(price) && option.equals(CREATE_OPTION))) {
             exceptionValidMessage.append("Price ").append(price).append(" is invalid. ");
         }
         Integer duration = giftCertificate.getDuration();
-        if ((duration != null && !GiftCertificateValidator.isDurationValid(duration) && option.equals(UPDATE_OPTION))
+        if (((duration != null) && !GiftCertificateValidator.isDurationValid(duration) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isDurationValid(duration) && option.equals(CREATE_OPTION))) {
             exceptionValidMessage.append("Duration ").append(duration).append(" is invalid");
         }
@@ -126,30 +126,28 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findByParameters(String tagName, String certificateValue, String dateSort,
-                                                  String nameSort) {
+    public List<GiftCertificate> findByParameters(String tagName, String certificateValue,
+                                                  String dateSort, String nameSort) {
         List<GiftCertificate> resultList = new ArrayList<>();
         if (tagName != null) {
             resultList = giftCertificateDao.findByTag(tagName);
         }
         if (certificateValue != null) {
             List<GiftCertificate> certificateList = giftCertificateDao.findByNameOrDescription(certificateValue);
-            if (resultList.isEmpty()) {
-                resultList = certificateList;
-            } else {
-                resultList = resultList.stream().filter(certificateList::contains).collect(Collectors.toList());
-            }
+            resultList = (resultList.isEmpty()) ? certificateList
+                    : resultList.stream().filter(certificateList::contains).collect(Collectors.toList());
         }
-        sortGiftCertificateList(dateSort, resultList, Comparator.comparing(GiftCertificate::getCreateDate));
-        sortGiftCertificateList(nameSort, resultList, Comparator.comparing(GiftCertificate::getName));
+        sortGiftCertificateList(resultList, dateSort, Comparator.comparing(GiftCertificate::getCreateDate));
+        sortGiftCertificateList(resultList, nameSort, Comparator.comparing(GiftCertificate::getName));
         return resultList;
     }
 
-    private void sortGiftCertificateList(String dateSort, List<GiftCertificate> resultList, Comparator<GiftCertificate> comparing) {
-        if (dateSort != null) {
-            if (dateSort.equalsIgnoreCase(ASC_SORT)) {
+    private void sortGiftCertificateList(List<GiftCertificate> resultList, String sortType,
+                                         Comparator<GiftCertificate> comparing) {
+        if (sortType != null) {
+            if (sortType.equalsIgnoreCase(ASC_SORT)) {
                 resultList.sort(comparing);
-            } else if (dateSort.equalsIgnoreCase(DESC_SORT)) {
+            } else if (sortType.equalsIgnoreCase(DESC_SORT)) {
                 resultList.sort(comparing);
                 Collections.reverse(resultList);
             } else {
