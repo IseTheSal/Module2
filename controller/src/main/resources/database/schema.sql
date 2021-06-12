@@ -1,6 +1,6 @@
 create table gift_certificates
 (
-    id               bigint       not null
+    id               bigserial    not null
         constraint gift_certificate_pk
             primary key,
     name             varchar(30)  not null,
@@ -10,7 +10,6 @@ create table gift_certificates
     create_date      timestamp    not null,
     last_update_date timestamp    not null
 );
-
 
 create
     unique index gift_certificate_id_uindex
@@ -23,7 +22,6 @@ create table tags
             primary key,
     name varchar(30) not null
 );
-
 
 create table certificate_tag
 (
