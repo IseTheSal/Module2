@@ -14,15 +14,16 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class CertificateServiceImpl implements CertificateService {
 
     private static final String UPDATE_OPTION = "UPDATE";
     private static final String CREATE_OPTION = "CREATE";
+    private static final String ASC_SORT = "ASC";
+    private static final String DESC_SORT = "DESC";
 
     private final GiftCertificateDao giftCertificateDao;
 
@@ -103,7 +104,8 @@ public class CertificateServiceImpl implements CertificateService {
         if (optionalGiftCertificate.isPresent()) {
             return optionalGiftCertificate.get();
         } else {
-            throw new GiftCertificateNotFoundException("Certificate with id (" + id + ") does not exist", RestErrorStatusCode.ENTITY_NOT_FOUND);
+            throw new GiftCertificateNotFoundException("Certificate with id (" + id + ") does not exist",
+                    RestErrorStatusCode.ENTITY_NOT_FOUND);
         }
     }
 
@@ -118,7 +120,42 @@ public class CertificateServiceImpl implements CertificateService {
         if (giftCertificateDao.delete(idValue)) {
             return idValue;
         } else {
-            throw new GiftCertificateNotFoundException("Certificate with id (" + id + ") does not exist", RestErrorStatusCode.ENTITY_NOT_FOUND);
+            throw new GiftCertificateNotFoundException("Certificate with id (" + id + ") does not exist",
+                    RestErrorStatusCode.ENTITY_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public List<GiftCertificate> findByParameters(String tagName, String certificateValue, String dateSort,
+                                                  String nameSort) {
+        List<GiftCertificate> resultList = new ArrayList<>();
+        if (tagName != null) {
+            resultList = giftCertificateDao.findByTag(tagName);
+        }
+        if (certificateValue != null) {
+            List<GiftCertificate> certificateList = giftCertificateDao.findByNameOrDescription(certificateValue);
+            if (resultList.isEmpty()) {
+                resultList = certificateList;
+            } else {
+                resultList = resultList.stream().filter(certificateList::contains).collect(Collectors.toList());
+            }
+        }
+        sortGiftCertificateList(dateSort, resultList, Comparator.comparing(GiftCertificate::getCreateDate));
+        sortGiftCertificateList(nameSort, resultList, Comparator.comparing(GiftCertificate::getName));
+        return resultList;
+    }
+
+    private void sortGiftCertificateList(String dateSort, List<GiftCertificate> resultList, Comparator<GiftCertificate> comparing) {
+        if (dateSort != null) {
+            if (dateSort.equalsIgnoreCase(ASC_SORT)) {
+                resultList.sort(comparing);
+            } else if (dateSort.equalsIgnoreCase(DESC_SORT)) {
+                resultList.sort(comparing);
+                Collections.reverse(resultList);
+            } else {
+                throw new ValidationException("Incorrect sort value. Use DESC or ASC value",
+                        RestErrorStatusCode.VALIDATION_ERROR);
+            }
         }
     }
 }

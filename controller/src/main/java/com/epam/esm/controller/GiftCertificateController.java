@@ -46,4 +46,13 @@ public class GiftCertificateController {
         return new ResponseEntity<>(certificateService.update(giftCertificate), HttpStatus.OK);
     }
 
+    @GetMapping("/findByAttribute")
+    public ResponseEntity<List<GiftCertificate>> findCertificates(@RequestParam(required = false) String tagName,
+                                                                  @RequestParam(required = false) String giftValue,
+                                                                  @RequestParam(required = false) String dataSort,
+                                                                  @RequestParam(required = false) String nameSort) {
+        List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dataSort, nameSort);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
 }

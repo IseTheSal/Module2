@@ -9,4 +9,8 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
     GiftCertificate update(GiftCertificate giftCertificate);
 
     List<Tag> findTagsByCertificateId(long id);
+
+    List<GiftCertificate> findByNameOrDescription(String searchValue);
+
+    List<GiftCertificate> findByTag(String tagName);
 }
