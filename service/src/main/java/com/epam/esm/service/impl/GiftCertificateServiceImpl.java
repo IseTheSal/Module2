@@ -10,14 +10,15 @@ import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private static final String UPDATE_OPTION = "UPDATE";
@@ -26,10 +27,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private static final String DESC_SORT = "DESC";
 
     private final GiftCertificateDao giftCertificateDao;
+    //fixme ask if it`s correct
+    private MessageSource messageSource;
+    private final Locale locale = new Locale("ru", "RU");
 
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao) {
         this.giftCertificateDao = giftCertificateDao;
+    }
+
+    @Autowired
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -46,7 +55,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         StringBuilder exceptionValidMessage = new StringBuilder();
         for (Tag tag : tagSet) {
             if (!TagValidator.isNameValid(tag.getName())) {
-                exceptionValidMessage.append(tag.getName()).append(" is invalid\n");
+                exceptionValidMessage.append(messageSource.getMessage("error.validation.name",
+                        new Object[]{tag.getName()},
+                        locale));
             }
         }
         String message = exceptionValidMessage.toString();
@@ -60,23 +71,31 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         String name = giftCertificate.getName();
         if (((name != null) && !GiftCertificateValidator.isNameValid(name) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isNameValid(name) && option.equals(CREATE_OPTION))) {
-            exceptionValidMessage.append("Name ").append(name).append(" is invalid. ");
+            exceptionValidMessage.append(messageSource.getMessage("error.gift.validation.name",
+                    new Object[]{name},
+                    locale));
         }
         String description = giftCertificate.getDescription();
         if (((description != null)
                 && !GiftCertificateValidator.isDescriptionValid(description) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isDescriptionValid(description) && option.equals(CREATE_OPTION))) {
-            exceptionValidMessage.append("Description ").append(description).append(" is invalid. ");
+            exceptionValidMessage.append(messageSource.getMessage("error.gift.validation.description",
+                    new Object[]{description},
+                    locale));
         }
         BigDecimal price = giftCertificate.getPrice();
         if (((price != null) && !GiftCertificateValidator.isPriceValid(price) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isPriceValid(price) && option.equals(CREATE_OPTION))) {
-            exceptionValidMessage.append("Price ").append(price).append(" is invalid. ");
+            exceptionValidMessage.append(messageSource.getMessage("error.gift.validation.price",
+                    new Object[]{price},
+                    locale));
         }
         Integer duration = giftCertificate.getDuration();
         if (((duration != null) && !GiftCertificateValidator.isDurationValid(duration) && option.equals(UPDATE_OPTION))
                 || (!GiftCertificateValidator.isDurationValid(duration) && option.equals(CREATE_OPTION))) {
-            exceptionValidMessage.append("Duration ").append(duration).append(" is invalid");
+            exceptionValidMessage.append(messageSource.getMessage("error.gift.validation.duration",
+                    new Object[]{duration},
+                    locale));
         }
         String message = exceptionValidMessage.toString();
         if (!message.isEmpty()) {
@@ -88,7 +107,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificate update(GiftCertificate giftCertificate) {
         long id = giftCertificate.getId();
         if (!giftCertificateDao.findById(id).isPresent()) {
-            throw new GiftCertificateNotFoundException("Certificate with id " + id + " not found",
+            throw new GiftCertificateNotFoundException(messageSource.getMessage("error.gift.not.found",
+                    new Object[]{id},
+                    locale),
                     RestErrorStatusCode.ENTITY_NOT_FOUND);
         }
         checkCertificateValid(giftCertificate, UPDATE_OPTION);
@@ -104,7 +125,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (optionalGiftCertificate.isPresent()) {
             return optionalGiftCertificate.get();
         } else {
-            throw new GiftCertificateNotFoundException("Certificate with id (" + id + ") does not exist",
+            throw new GiftCertificateNotFoundException(messageSource.getMessage("error.gift.not.found",
+                    new Object[]{id},
+                    locale),
                     RestErrorStatusCode.ENTITY_NOT_FOUND);
         }
     }
@@ -120,7 +143,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (giftCertificateDao.delete(idValue)) {
             return idValue;
         } else {
-            throw new GiftCertificateNotFoundException("Certificate with id (" + id + ") does not exist",
+            throw new GiftCertificateNotFoundException(messageSource.getMessage("error.gift.not.found",
+                    new Object[]{id},
+                    locale),
                     RestErrorStatusCode.ENTITY_NOT_FOUND);
         }
     }
@@ -151,7 +176,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 resultList.sort(comparing);
                 Collections.reverse(resultList);
             } else {
-                throw new ValidationException("Incorrect sort value. Use DESC or ASC value",
+                throw new ValidationException(messageSource.getMessage("error.gift.sort.type",
+                        new Object[]{sortType},
+                        locale),
                         RestErrorStatusCode.VALIDATION_ERROR);
             }
         }

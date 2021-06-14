@@ -7,17 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
-//fixme repository
-@Component
+@Repository
 public class TagDaoImpl implements TagDao {
-
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -53,6 +51,7 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public List<Tag> findAll() {
+
         return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_TAGS, new TagMapper());
     }
 

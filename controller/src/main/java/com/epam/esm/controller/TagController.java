@@ -14,6 +14,9 @@ import java.util.List;
 @RequestMapping(value = "/tag/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
+    /**
+     * {@link Tag} service layer
+     */
     private final TagService tagService;
 
     @Autowired
@@ -21,21 +24,44 @@ public class TagController {
         this.tagService = tagService;
     }
 
+    /**
+     * Method used to find {@link Tag} by his id.
+     *
+     * @param id {@link Tag} <code>id</code>
+     * @return ResponseEntity with {@link Tag}
+     */
     @GetMapping(value = "/find")
-    public ResponseEntity<Tag> findTagById(@RequestParam int id) {
-        return new ResponseEntity<>(tagService.findById(String.valueOf(id)), HttpStatus.OK);
+    public ResponseEntity<Tag> findTagById(@RequestParam String id) {
+        return new ResponseEntity<>(tagService.findById(id), HttpStatus.OK);
     }
 
+    /**
+     * Method used to find all {@link Tag}.
+     *
+     * @return ResponseEntity with <code>List</code> of {@link Tag}
+     */
     @GetMapping(value = "/all")
     public ResponseEntity<List<Tag>> findAllTags() {
         return new ResponseEntity<>(tagService.findAll(), HttpStatus.OK);
     }
 
+    /**
+     * Method used to delete {@link Tag} by its id.
+     *
+     * @param id {@link Tag} <code>id</code>
+     * @return ResponseEntity with {@link Tag} id
+     */
     @DeleteMapping(value = "/delete")
     public ResponseEntity<Long> deleteTagById(@RequestParam String id) {
         return new ResponseEntity<>(tagService.delete(id), HttpStatus.OK);
     }
 
+    /**
+     * Method used to create {@link Tag}.
+     *
+     * @param tag {@link Tag}
+     * @return ResponseEntity with {@link Tag} object
+     */
     @PostMapping("/create")
     public ResponseEntity<Tag> updateTagById(@RequestBody Tag tag) {
         return new ResponseEntity<>(tagService.create(tag), HttpStatus.OK);

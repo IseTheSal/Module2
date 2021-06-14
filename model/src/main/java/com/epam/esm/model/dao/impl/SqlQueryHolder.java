@@ -37,6 +37,4 @@ public class SqlQueryHolder {
     static final String FIND_ALL_TAGS = "SELECT id, name FROM tags";
     static final String DELETE_TAG_BY_ID = "DELETE FROM tags where id = ?";
     static final String CREATE_TAG = "INSERT INTO tags(id, name) VALUES(default, ?)";
-
-
 }

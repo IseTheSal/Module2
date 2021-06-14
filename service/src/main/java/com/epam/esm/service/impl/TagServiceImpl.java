@@ -9,19 +9,29 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
 public class TagServiceImpl implements TagService {
 
     private final TagDao tagDao;
+    //fixme ask if it`s correct
+    private MessageSource messageSource;
+    private final Locale locale = new Locale("ru", "RU");
 
     @Autowired
     public TagServiceImpl(TagDao tagDao) {
         this.tagDao = tagDao;
+    }
+
+    @Autowired
+    private void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -31,10 +41,15 @@ public class TagServiceImpl implements TagService {
             if (!tagDao.findByName(name).isPresent()) {
                 return tagDao.create(tag);
             } else {
-                throw new TagExistException("Tag already" + name + "exists", RestErrorStatusCode.TAG_EXIST);
+                throw new TagExistException(messageSource.getMessage("error.tag.exist.name",
+                        new Object[]{name},
+                        locale), RestErrorStatusCode.TAG_EXIST);
             }
         } else {
-            throw new ValidationException("Tag name {" + name + "} is not valid", RestErrorStatusCode.VALIDATION_ERROR);
+            throw new ValidationException(messageSource.getMessage("error.validation.name",
+                    new Object[]{name},
+                    locale),
+                    RestErrorStatusCode.VALIDATION_ERROR);
         }
     }
 
@@ -45,7 +60,10 @@ public class TagServiceImpl implements TagService {
         if (optionalTag.isPresent()) {
             return optionalTag.get();
         } else {
-            throw new TagNotFoundException("tag with id (" + id + ") does not exist", RestErrorStatusCode.ENTITY_NOT_FOUND);
+            throw new TagNotFoundException(messageSource.getMessage("error.tag.not.found",
+                    new Object[]{id},
+                    locale),
+                    RestErrorStatusCode.ENTITY_NOT_FOUND);
         }
     }
 
@@ -60,7 +78,9 @@ public class TagServiceImpl implements TagService {
         if (tagDao.delete(idValue)) {
             return idValue;
         } else {
-            throw new TagNotFoundException("tag with id (" + id + ") does not exist", RestErrorStatusCode.ENTITY_NOT_FOUND);
+            throw new TagNotFoundException(messageSource.getMessage("error.tag.not.found",
+                    new Object[]{id},
+                    locale), RestErrorStatusCode.ENTITY_NOT_FOUND);
         }
     }
 }

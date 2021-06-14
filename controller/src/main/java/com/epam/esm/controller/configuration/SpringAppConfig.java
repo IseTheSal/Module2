@@ -2,7 +2,10 @@ package com.epam.esm.controller.configuration;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +31,11 @@ public class SpringAppConfig {
     private static final String UTF_ENCODING = "UTF-8";
     private static final String DATABASE_SQL = "database/schema.sql";
 
+
+    //fixme property sources
+//    private static final String RU_LANGUAGE = "ru";
+//    private static final String RU_COUNTRY = "RU";
+
     @Value("${db.className}")
     private String jdbcClassName;
     @Value("${db.url}")
@@ -37,9 +45,9 @@ public class SpringAppConfig {
     @Value("${db.password}")
     private String jdbcPassword;
     @Value("${db.maxTotal}")
-    private int jdbcMaxTotal;
+    private String jdbcMaxTotal;
     @Value("${db.initialSize}")
-    private int jdbcInitialSize;
+    private String jdbcInitialSize;
 
     @Bean(name = "DataSource")
     @Profile("production")
@@ -49,9 +57,17 @@ public class SpringAppConfig {
         ds.setUrl(jdbcUrl);
         ds.setUsername(jdbcUsername);
         ds.setPassword(jdbcPassword);
-        ds.setMaxTotal(jdbcMaxTotal);
-        ds.setInitialSize(jdbcInitialSize);
+        ds.setMaxTotal(Integer.parseInt(jdbcMaxTotal));
+        ds.setInitialSize(Integer.parseInt(jdbcInitialSize));
         return new JdbcTemplate(ds);
+    }
+
+    @Bean
+    @Profile("production")
+    public PlatformTransactionManager platformTransactionManagerProduction() {
+        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
+        dataSourceTransactionManager.setDataSource(productionJdbc().getDataSource());
+        return dataSourceTransactionManager;
     }
 
     @Bean(name = "DataSource")
@@ -68,10 +84,26 @@ public class SpringAppConfig {
     }
 
     @Bean
-    public PlatformTransactionManager platformTransactionManager() {
+    @Profile("develop")
+    public PlatformTransactionManager platformTransactionManagerDevelop() {
         DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
-        dataSourceTransactionManager.setDataSource(productionJdbc().getDataSource());
+        dataSourceTransactionManager.setDataSource(developJdbc().getDataSource());
         return dataSourceTransactionManager;
+    }
+
+    //fixme ask why this is dont work without it
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    //fixme
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:language/language");
+        messageSource.setDefaultEncoding(UTF_ENCODING);
+        return messageSource;
     }
 
     @Bean

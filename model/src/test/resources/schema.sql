@@ -34,3 +34,5 @@ create table certificate_tag
             references tags
             on update cascade on delete cascade
 );
+
+

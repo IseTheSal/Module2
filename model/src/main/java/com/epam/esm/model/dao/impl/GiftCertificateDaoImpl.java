@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@Component
+@Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final TagDao tagDao;
-    private TransactionTemplate transactionTemplate;
+    private final TransactionTemplate transactionTemplate;
 
     @Autowired
     public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao, PlatformTransactionManager manager) {
