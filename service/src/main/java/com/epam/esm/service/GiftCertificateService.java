@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author Illia Aheyeu
  */
-public interface GiftCertificateService extends CommonCRDService<GiftCertificate> {
+public interface GiftCertificateService extends CommonEntityService<GiftCertificate> {
 
     /**
      * Intermediate method used to check on existing, validate {@link GiftCertificate} fields and then call update method from dao layer.
@@ -21,7 +21,8 @@ public interface GiftCertificateService extends CommonCRDService<GiftCertificate
     GiftCertificate update(GiftCertificate giftCertificate);
 
     /**
-     * Search all {@link GiftCertificate GiftCertificates} with {@link Tag Tag`s} name, {@link GiftCertificate GiftCertificates} name or description. Then sort by date ASC or DESC and by name ASC or DESC.
+     * Search all {@link GiftCertificate GiftCertificates} with {@link Tag Tag`s} name, {@link GiftCertificate GiftCertificates} name or description.
+     * Then sort by date ASC or DESC and by name ASC or DESC.
      * <code><p>ALL VALUES COULD BE OPTIONAL</p></code>
      *
      * @param tagName          <code>Name</code> of {@link Tag}

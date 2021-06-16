@@ -27,19 +27,17 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      */
     List<Tag> findTagsByCertificateId(long id);
 
-    /**
-     * Search all {@link GiftCertificate GiftCertificates} which matches provided value.
-     *
-     * @param searchValue Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
-     * @return <code>List</code> of {@link GiftCertificate GiftCertificates} which matches provided <code>searchValue</code>
-     */
-    List<GiftCertificate> findByNameOrDescription(String searchValue);
 
     /**
-     * Search all {@link GiftCertificate GiftCertificates} with tagName.
+     * Find by {@link GiftCertificate} by attributes.
+     * All attributes could be optional.
      *
-     * @param tagName <code>Name</code> of {@link Tag}
-     * @return <code>List</code> of {@link GiftCertificate GiftCertificates} which have provided {@link Tag} name
+     * @param tagName       {@link Tag} name
+     * @param giftValue     Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
+     * @param dateOrderType Sort order by create_date
+     * @param nameOrderType Sort order by {@link GiftCertificate} name
+     * @return
      */
-    List<GiftCertificate> findByTag(String tagName);
+    List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
+                                           String nameOrderType);
 }

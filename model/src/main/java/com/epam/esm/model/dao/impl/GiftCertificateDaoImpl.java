@@ -16,7 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,9 +24,14 @@ import java.util.Set;
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
+    private static final String PERCENT_SYMBOL = "%";
+    private static final String ASC = " ASC ";
+    private static final String DESC = " DESC ";
+
     private final JdbcTemplate jdbcTemplate;
     private final TagDao tagDao;
     private final TransactionTemplate transactionTemplate;
+
 
     @Autowired
     public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao, PlatformTransactionManager manager) {
@@ -46,10 +51,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
                 preparedStatement.setString(2, certificate.getDescription());
                 preparedStatement.setBigDecimal(3, certificate.getPrice());
                 preparedStatement.setInt(4, certificate.getDuration());
-                preparedStatement.setTimestamp(5, Timestamp.from(certificate.getCreateDate()
-                        .toInstant()));
-                preparedStatement.setTimestamp(6, Timestamp.from(certificate.getLastUpdateDate()
-                        .toInstant()));
                 return preparedStatement;
             }, keyHolder);
             long id = (long) keyHolder.getKeys().get(SqlQueryHolder.ID_KEY_HOLDER);
@@ -119,36 +120,12 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
                 preparedStatement.setString(2, certificate.getDescription());
                 preparedStatement.setBigDecimal(3, certificate.getPrice());
                 preparedStatement.setObject(4, certificate.getDuration());
-                preparedStatement.setTimestamp(5, Timestamp.from(certificate.getLastUpdateDate()
-                        .toInstant()));
-                preparedStatement.setLong(6, certificate.getId());
-                preparedStatement.setString(7, certificate.getName());
-                preparedStatement.setString(8, certificate.getName());
-                preparedStatement.setString(9, certificate.getDescription());
-                preparedStatement.setString(10, certificate.getDescription());
-                preparedStatement.setBigDecimal(11, certificate.getPrice());
-                preparedStatement.setBigDecimal(12, certificate.getPrice());
-                preparedStatement.setObject(13, certificate.getDuration());
-                preparedStatement.setObject(14, certificate.getDuration());
+                preparedStatement.setLong(5, certificate.getId());
                 return preparedStatement;
             });
             attachTagToCertificate(certificate.getId(), certificate.getTags());
             return findById(certificate.getId()).get();
         });
-    }
-
-    @Override
-    public List<GiftCertificate> findByNameOrDescription(String searchValue) {
-        List<GiftCertificate> certificateList = jdbcTemplate.query(SqlQueryHolder.FIND_BY_PART_NAME_OR_DESCRIPTION,
-                new GiftCertificateMapper(), searchValue, searchValue);
-        return attachTagsToCertificate(certificateList);
-    }
-
-    @Override
-    public List<GiftCertificate> findByTag(String tagName) {
-        List<GiftCertificate> certificateList = jdbcTemplate.query(SqlQueryHolder.FIND_CERTIFICATES_BY_TAG_NAME,
-                new GiftCertificateMapper(), tagName);
-        return attachTagsToCertificate(certificateList);
     }
 
     private List<GiftCertificate> attachTagsToCertificate(List<GiftCertificate> certificateList) {
@@ -158,5 +135,43 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             tagList.forEach(giftCertificate::addTag);
         });
         return certificateList;
+    }
+
+    @Override
+    public List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
+                                                  String nameOrderType) {
+        String query = SqlQueryHolder.FIND_ALL_CERTIFICATES;
+        List<String> queryParamValues = new ArrayList<>();
+        if ((tagName != null) && (giftValue != null)) {
+            query += SqlQueryHolder.FIND_BY_TAG_NAME_CLAUSE + SqlQueryHolder.AND_DESCRIPTION_NAME_LIKE_CLAUSE;
+            queryParamValues.add(tagName);
+            queryParamValues.add(PERCENT_SYMBOL + giftValue + PERCENT_SYMBOL);
+            queryParamValues.add(PERCENT_SYMBOL + giftValue + PERCENT_SYMBOL);
+        } else if (giftValue != null) {
+            query += SqlQueryHolder.WHERE_DESCRIPTION_NAME_LIKE_CLAUSE;
+            queryParamValues.add(PERCENT_SYMBOL + giftValue + PERCENT_SYMBOL);
+            queryParamValues.add(PERCENT_SYMBOL + giftValue + PERCENT_SYMBOL);
+        } else if (tagName != null) {
+            query += SqlQueryHolder.FIND_BY_TAG_NAME_CLAUSE;
+            queryParamValues.add(tagName);
+        }
+        if ((dateOrderType != null) && (nameOrderType != null)) {
+            String dateOrderSortType = (dateOrderType.equalsIgnoreCase(DESC.trim()) ? DESC : ASC);
+            String dateSortOrder = SqlQueryHolder.CREATE_DATE + dateOrderSortType;
+            String nameOrderSortType = (nameOrderType.equalsIgnoreCase(DESC.trim()) ? DESC : ASC);
+            String nameSortOrder = SqlQueryHolder.GIFT_NAME + nameOrderSortType;
+            query += SqlQueryHolder.ORDER_BY_CLAUSE + dateSortOrder + SqlQueryHolder.COMMA + nameSortOrder;
+        } else if (dateOrderType != null) {
+            String dateOrderSortType = (dateOrderType.equalsIgnoreCase(DESC.trim()) ? DESC : ASC);
+            String dateSortOrder = SqlQueryHolder.CREATE_DATE + dateOrderSortType;
+            query += SqlQueryHolder.ORDER_BY_CLAUSE + dateSortOrder;
+        } else if (nameOrderType != null) {
+            String nameOrderSortType = (nameOrderType.equalsIgnoreCase(DESC.trim()) ? DESC : ASC);
+            String nameSortOrder = SqlQueryHolder.GIFT_NAME + nameOrderSortType;
+            query += SqlQueryHolder.ORDER_BY_CLAUSE + nameSortOrder;
+        }
+        Object[] paramValues = queryParamValues.toArray();
+        List<GiftCertificate> certificateList = jdbcTemplate.query(query, new GiftCertificateMapper(), paramValues);
+        return attachTagsToCertificate(certificateList);
     }
 }

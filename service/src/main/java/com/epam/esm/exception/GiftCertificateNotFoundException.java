@@ -2,7 +2,7 @@ package com.epam.esm.exception;
 
 public class GiftCertificateNotFoundException extends ApplicationRuntimeException {
 
-    public GiftCertificateNotFoundException(String message, int errorCode) {
-        super(message, errorCode);
+    public GiftCertificateNotFoundException(long id) {
+        super(String.valueOf(id), RestErrorStatusCode.ENTITY_NOT_FOUND);
     }
 }

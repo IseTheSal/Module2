@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -28,10 +29,8 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
         String description = rs.getString(CERTIFICATE_DESCRIPTION);
         BigDecimal price = rs.getBigDecimal(CERTIFICATE_PRICE);
         int duration = rs.getInt(CERTIFICATE_DURATION);
-        Instant createInstant = rs.getTimestamp(CERTIFICATE_CREATE_DATE).toInstant();
-        ZonedDateTime createDate = ZonedDateTime.ofInstant(createInstant, ZoneId.of(ZONE_ID));
-        Instant lastUpdateInstant = rs.getTimestamp(CERTIFICATE_LAST_UPDATE_DATE).toInstant();
-        ZonedDateTime lastUpdateDate = ZonedDateTime.ofInstant(lastUpdateInstant, ZoneId.of(ZONE_ID));
+        LocalDateTime createDate = rs.getTimestamp(CERTIFICATE_CREATE_DATE).toLocalDateTime();
+        LocalDateTime lastUpdateDate = rs.getTimestamp(CERTIFICATE_LAST_UPDATE_DATE).toLocalDateTime();
         return new GiftCertificate(id, name, description, price, duration, createDate, lastUpdateDate);
     }
 }
