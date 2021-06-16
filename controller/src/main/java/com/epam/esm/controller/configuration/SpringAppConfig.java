@@ -35,7 +35,7 @@ public class SpringAppConfig implements WebMvcConfigurer {
     private static final String RESOURCE_VIEWER_PREFIX = "/WEB-INF/views";
     private static final String RESOURCE_VIEWER_SUFFIX = ".jsp";
     private static final String UTF_ENCODING = "UTF-8";
-    private static final String DATABASE_SQL = "database/schema.sql";
+    private static final String DATABASE_SQL = "schema.sql";
 
     @Value("${db.className}")
     private String jdbcClassName;
