@@ -12,5 +12,4 @@ public abstract class ApplicationRuntimeException extends RuntimeException {
     public int getErrorCode() {
         return errorCode;
     }
-
 }

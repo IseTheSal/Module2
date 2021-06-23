@@ -8,17 +8,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
  * Used to interact with {@link GiftCertificate}.
- * URI <p>/certificate/</p>
+ * <p>URI: <code>/v1/certificates/</code></p>
  *
  * @author Illia Aheyeu
  */
 @RestController
-@RequestMapping(value = "/certificate/", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/certificates/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiftCertificateController {
 
     /**
@@ -37,7 +39,7 @@ public class GiftCertificateController {
      * @param giftCertificate {@link GiftCertificate}
      * @return ResponseEntity with {@link GiftCertificate} object
      */
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<GiftCertificate> create(@RequestBody GiftCertificate giftCertificate) {
         return new ResponseEntity<>(certificateService.create(giftCertificate), HttpStatus.OK);
     }
@@ -48,8 +50,8 @@ public class GiftCertificateController {
      * @param id {@link GiftCertificate} <code>id</code>
      * @return ResponseEntity with {@link GiftCertificate} id
      */
-    @DeleteMapping("/delete")
-    public ResponseEntity<Long> delete(@RequestParam String id) {
+    @DeleteMapping("/{id:^[1-9]\\d{0,18}$}")
+    public ResponseEntity<Long> delete(@PathVariable long id) {
         return new ResponseEntity<>(certificateService.delete(id), HttpStatus.OK);
     }
 
@@ -59,8 +61,8 @@ public class GiftCertificateController {
      * @param id {@link GiftCertificate} <code>id</code>
      * @return ResponseEntity with {@link GiftCertificate}
      */
-    @GetMapping("/find")
-    public ResponseEntity<GiftCertificate> findById(@RequestParam String id) {
+    @GetMapping("/{id:^[1-9]\\d{0,18}$}")
+    public ResponseEntity<GiftCertificate> findById(@PathVariable long id) {
         return new ResponseEntity<>(certificateService.findById(id), HttpStatus.OK);
     }
 
@@ -80,7 +82,7 @@ public class GiftCertificateController {
      * @param giftCertificate {@link GiftCertificate}
      * @return updated {@link GiftCertificate}
      */
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<GiftCertificate> update(@RequestBody GiftCertificate giftCertificate) {
         return new ResponseEntity<>(certificateService.update(giftCertificate), HttpStatus.OK);
     }
@@ -92,16 +94,16 @@ public class GiftCertificateController {
      *
      * @param tagName   <code>Name</code> of {@link com.epam.esm.model.entity.Tag Tag}
      * @param giftValue Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
-     * @param dateSort  <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by date of creation
-     * @param nameSort  <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
+     * @param dateOrder  <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by date of creation
+     * @param nameOrder  <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
      * @return <code>List</code> of {@link GiftCertificate}
      */
-    @GetMapping("/findByAttribute")
+    @GetMapping("/attributes")
     public ResponseEntity<List<GiftCertificate>> findCertificates(@RequestParam(required = false) String tagName,
                                                                   @RequestParam(required = false) String giftValue,
-                                                                  @RequestParam(required = false) String dateSort,
-                                                                  @RequestParam(required = false) String nameSort) {
-        List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateSort, nameSort);
+                                                                  @RequestParam(required = false) String dateOrder,
+                                                                  @RequestParam(required = false) String nameOrder) {
+        List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 

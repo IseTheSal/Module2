@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/tag/", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/tags/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
     /**
@@ -30,8 +30,8 @@ public class TagController {
      * @param id {@link Tag} <code>id</code>
      * @return ResponseEntity with {@link Tag}
      */
-    @GetMapping(value = "/find")
-    public ResponseEntity<Tag> findTagById(@RequestParam String id) {
+    @GetMapping(value = "/{id:^[1-9]\\d{0,18}$}")
+    public ResponseEntity<Tag> findTagById(@PathVariable long id) {
         return new ResponseEntity<>(tagService.findById(id), HttpStatus.OK);
     }
 
@@ -51,8 +51,8 @@ public class TagController {
      * @param id {@link Tag} <code>id</code>
      * @return ResponseEntity with {@link Tag} id
      */
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity<Long> deleteTagById(@RequestParam String id) {
+    @DeleteMapping(value = "/{id:^[1-9]\\d{0,18}$}")
+    public ResponseEntity<Long> deleteTagById(@PathVariable long id) {
         return new ResponseEntity<>(tagService.delete(id), HttpStatus.OK);
     }
 
@@ -62,8 +62,8 @@ public class TagController {
      * @param tag {@link Tag}
      * @return ResponseEntity with {@link Tag} object
      */
-    @PostMapping("/create")
-    public ResponseEntity<Tag> updateTagById(@RequestBody Tag tag) {
+    @PostMapping
+    public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
         return new ResponseEntity<>(tagService.create(tag), HttpStatus.OK);
     }
 }

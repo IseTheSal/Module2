@@ -4,6 +4,7 @@ import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class MockData {
         GIFT_CERTIFICATE.setDescription("Увлекательное катание на квадроцикле");
         GIFT_CERTIFICATE.setPrice(new BigDecimal("20.20"));
         GIFT_CERTIFICATE.setDuration(3);
-        ZonedDateTime dateTime = ZonedDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.now();
         GIFT_CERTIFICATE.setCreateDate(dateTime);
         GIFT_CERTIFICATE.setLastUpdateDate(dateTime);
         TAG_ONE = new Tag(1, "машина");
@@ -38,6 +39,6 @@ public class MockData {
         UPDATED_GIFT_CERTIFICATE.setPrice(GIFT_CERTIFICATE.getPrice());
         UPDATED_GIFT_CERTIFICATE.setDuration(GIFT_CERTIFICATE.getDuration());
         UPDATED_GIFT_CERTIFICATE.setCreateDate(GIFT_CERTIFICATE.getCreateDate());
-        UPDATED_GIFT_CERTIFICATE.setLastUpdateDate(ZonedDateTime.now());
+        UPDATED_GIFT_CERTIFICATE.setLastUpdateDate(LocalDateTime.now());
     }
 }
