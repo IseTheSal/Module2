@@ -7,5 +7,6 @@ import com.epam.esm.model.entity.Tag;
  *
  * @author Illia Aheyeu
  */
+
 public interface TagService extends CommonEntityService<Tag> {
 }

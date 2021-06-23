@@ -8,14 +8,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
  * Used to interact with {@link GiftCertificate}.
- * <p>URI: <code>/v1/certificates/</code></p>
+ * <p>URI: <code>/api/v1/certificates/</code></p>
  *
  * @author Illia Aheyeu
  */
@@ -71,7 +69,7 @@ public class GiftCertificateController {
      *
      * @return ResponseEntity with <code>List</code> of {@link GiftCertificate}
      */
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<List<GiftCertificate>> findAll() {
         return new ResponseEntity<>(certificateService.findAll(), HttpStatus.OK);
     }
@@ -94,8 +92,8 @@ public class GiftCertificateController {
      *
      * @param tagName   <code>Name</code> of {@link com.epam.esm.model.entity.Tag Tag}
      * @param giftValue Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
-     * @param dateOrder  <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by date of creation
-     * @param nameOrder  <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
+     * @param dateOrder <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by date of creation
+     * @param nameOrder <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
      * @return <code>List</code> of {@link GiftCertificate}
      */
     @GetMapping("/attributes")
@@ -106,5 +104,4 @@ public class GiftCertificateController {
         List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
-
 }

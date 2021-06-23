@@ -6,10 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
 
@@ -20,7 +17,6 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
     private static final String CERTIFICATE_DURATION = "duration";
     private static final String CERTIFICATE_CREATE_DATE = "create_date";
     private static final String CERTIFICATE_LAST_UPDATE_DATE = "last_update_date";
-    private static final String ZONE_ID = "UTC";
 
     @Override
     public GiftCertificate mapRow(ResultSet rs, int rowNum) throws SQLException {

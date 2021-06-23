@@ -17,7 +17,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
-
     private MessageSource messageSource;
 
     @Autowired
@@ -27,6 +26,14 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(ApplicationRuntimeException.class)
     public ResponseEntity<RestApplicationError> applicationErrorHandler(ApplicationRuntimeException exception) {
+        RestApplicationError error = new RestApplicationError(exception.getMessage(), exception.getErrorCode());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<RestApplicationError> validationErrorHandler(ValidationException exception) {
         RestApplicationError error = new RestApplicationError(exception.getMessage(), exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

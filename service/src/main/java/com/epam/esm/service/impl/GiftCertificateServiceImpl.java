@@ -14,7 +14,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,7 +35,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         this.messageSource = messageSource;
     }
 
-
     @Override
     public GiftCertificate create(GiftCertificate giftCertificate) {
         checkCertificateValid(giftCertificate, CREATE_OPTION);
@@ -49,8 +47,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         for (Tag tag : tagSet) {
             String name = tag.getName();
             if (!TagValidator.isNameValid(name)) {
-                exceptionValidMessage.append(messageSource.getMessage("error.tag.validation.name", new Object[]{name},
-                        LocaleContextHolder.getLocale()));
+                exceptionValidMessage.append(messageSource.getMessage("error.tag.validation.name",
+                        new Object[]{name}, LocaleContextHolder.getLocale()));
             }
         }
         String message = exceptionValidMessage.toString();

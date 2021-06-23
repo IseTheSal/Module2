@@ -40,9 +40,9 @@ class TagServiceImplTest {
     }
 
     @Test
-    void createThrowException(){
+    void createThrowException() {
         Mockito.when(dao.create(MockData.TAG_ONE)).thenThrow(new TagExistException("name"));
-        Assertions.assertThrows(TagExistException.class,() -> service.create(MockData.TAG_ONE));
+        Assertions.assertThrows(TagExistException.class, () -> service.create(MockData.TAG_ONE));
     }
 
     @Test
@@ -71,8 +71,8 @@ class TagServiceImplTest {
     }
 
     @Test
-    void deleteThrownException(){
+    void deleteThrownException() {
         Mockito.when(dao.delete(ArgumentMatchers.anyLong())).thenReturn(false);
-        Assertions.assertThrows(TagNotFoundException.class,() -> service.delete(8));
+        Assertions.assertThrows(TagNotFoundException.class, () -> service.delete(8));
     }
 }

@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Rest Controller which connected with service layer and provide data in JSON.
+ * Used to interact with {@link Tag}.
+ * <p>URI: <code>/api/v1/tags/</code></p>
+ *
+ * @author Illia Aheyeu
+ */
 @RestController
 @RequestMapping(value = "/api/v1/tags/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
@@ -25,7 +32,7 @@ public class TagController {
     }
 
     /**
-     * Method used to find {@link Tag} by his id.
+     * Method used to find {@link Tag} by its id.
      *
      * @param id {@link Tag} <code>id</code>
      * @return ResponseEntity with {@link Tag}
@@ -40,7 +47,7 @@ public class TagController {
      *
      * @return ResponseEntity with <code>List</code> of {@link Tag}
      */
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity<List<Tag>> findAllTags() {
         return new ResponseEntity<>(tagService.findAll(), HttpStatus.OK);
     }

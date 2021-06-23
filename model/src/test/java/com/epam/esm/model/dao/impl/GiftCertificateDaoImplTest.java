@@ -19,9 +19,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 class GiftCertificateDaoImplTest {
@@ -93,7 +91,6 @@ class GiftCertificateDaoImplTest {
     @Test
     void findAll() {
         List<GiftCertificate> actual = certificateDao.findAll();
-        System.out.println(actual);
         Assertions.assertEquals(actual.size(), 3);
     }
 
@@ -116,26 +113,6 @@ class GiftCertificateDaoImplTest {
         Assertions.assertEquals(actual, expected);
     }
 
-//    @Test
-//    void findByName() {
-//        List<GiftCertificate> actual = certificateDao.findByNameOrDescription("Вер");
-//        List<GiftCertificate> expected = new ArrayList<>(Collections.singleton(giftCertificate));
-//        Assertions.assertEquals(actual, expected);
-//    }
-//
-//    @Test
-//    void findByDescription() {
-//        List<GiftCertificate> actual = certificateDao.findByNameOrDescription("стри");
-//        List<GiftCertificate> expected = new ArrayList<>(Collections.singleton(giftCertificate));
-//        Assertions.assertEquals(expected, actual);
-//    }
-
-//    @Test
-//    void findByTag() {
-//        List<GiftCertificate> actual = certificateDao.findByTag("sky");
-//        List<GiftCertificate> expected = new ArrayList<>(Collections.singleton(giftCertificate));
-//        Assertions.assertEquals(expected, actual);
-//    }
 
     @Test
     void findByAttributes() {
@@ -144,7 +121,6 @@ class GiftCertificateDaoImplTest {
         String dateOrderType = null;
         String nameOrderType = "ASC";
         GiftCertificate actual = certificateDao.findByAttributes(tagName, giftValue, dateOrderType, nameOrderType).get(0);
-        System.out.println(actual);
         GiftCertificate expected = giftCertificate;
         Assertions.assertEquals(expected, actual);
     }

@@ -32,7 +32,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private final TagDao tagDao;
     private final TransactionTemplate transactionTemplate;
 
-
     @Autowired
     public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao, PlatformTransactionManager manager) {
         this.jdbcTemplate = jdbcTemplate;
@@ -140,7 +139,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
                                                   String nameOrderType) {
-        String query = SqlQueryHolder.FIND_ALL_CERTIFICATES;
+        String query = SqlQueryHolder.FIND_ALL_DISTINCT_CERTIFICATES;
         List<String> queryParamValues = new ArrayList<>();
         if ((tagName != null) && (giftValue != null)) {
             query += SqlQueryHolder.FIND_BY_TAG_NAME_CLAUSE + SqlQueryHolder.AND_DESCRIPTION_NAME_LIKE_CLAUSE;
