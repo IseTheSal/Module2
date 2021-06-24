@@ -1,8 +1,8 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.TagExistException;
-import com.epam.esm.exception.TagNotFoundException;
-import com.epam.esm.exception.ValidationException;
+import com.epam.esm.error.exception.TagExistException;
+import com.epam.esm.error.exception.TagNotFoundException;
+import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.TagService;
@@ -13,7 +13,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -43,8 +42,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag findById(long id) {
-        Optional<Tag> optionalTag = tagDao.findById(id);
-        return optionalTag.orElseThrow(() -> new TagNotFoundException(id));
+        return tagDao.findById(id).orElseThrow(() -> new TagNotFoundException(id));
     }
 
     @Override
@@ -59,5 +57,10 @@ public class TagServiceImpl implements TagService {
         } else {
             throw new TagNotFoundException(id);
         }
+    }
+
+    @Override
+    public Tag findMostWidelyUsedTag() {
+        return tagDao.findMostWidelyUsedTag().orElseThrow(TagNotFoundException::new);
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.model.entity.GiftCertificate;
+import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
@@ -18,7 +20,7 @@ import java.util.List;
  * @author Illia Aheyeu
  */
 @RestController
-@RequestMapping(value = "/api/v1/certificates/", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiftCertificateController {
 
     /**
@@ -39,7 +41,7 @@ public class GiftCertificateController {
      */
     @PostMapping
     public ResponseEntity<GiftCertificate> create(@RequestBody GiftCertificate giftCertificate) {
-        return new ResponseEntity<>(certificateService.create(giftCertificate), HttpStatus.OK);
+        return new ResponseEntity<>(certificateService.create(giftCertificate), HttpStatus.CREATED);
     }
 
     /**
@@ -69,7 +71,7 @@ public class GiftCertificateController {
      *
      * @return ResponseEntity with <code>List</code> of {@link GiftCertificate}
      */
-    @GetMapping("/")
+    @GetMapping("/all")
     public ResponseEntity<List<GiftCertificate>> findAll() {
         return new ResponseEntity<>(certificateService.findAll(), HttpStatus.OK);
     }
@@ -96,12 +98,23 @@ public class GiftCertificateController {
      * @param nameOrder <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
      * @return <code>List</code> of {@link GiftCertificate}
      */
-    @GetMapping("/attributes")
+    @GetMapping
     public ResponseEntity<List<GiftCertificate>> findCertificates(@RequestParam(required = false) String tagName,
                                                                   @RequestParam(required = false) String giftValue,
                                                                   @RequestParam(required = false) String dateOrder,
                                                                   @RequestParam(required = false) String nameOrder) {
         List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder);
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    /**
+     * Search for gift certificates by several tags with 'and' condition.
+     *
+     * @param tagSet <code>Set</code> of {@link Tag}
+     * @return <code>List</code> of {@link GiftCertificate}
+     */
+    @GetMapping("/tags")
+    public ResponseEntity<List<GiftCertificate>> findBySeveralTags(@RequestBody Set<Tag> tagSet) {
+        return new ResponseEntity<>(certificateService.findBySeveralTags(tagSet), HttpStatus.OK);
     }
 }

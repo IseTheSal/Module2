@@ -1,6 +1,6 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.GiftCertificateNotFoundException;
+import com.epam.esm.error.exception.GiftCertificateNotFoundException;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.impl.GiftCertificateDaoImpl;
 import com.epam.esm.model.entity.GiftCertificate;

@@ -1,6 +1,8 @@
 package com.epam.esm.controller.handler;
 
-import com.epam.esm.exception.*;
+import com.epam.esm.error.RestApplicationError;
+import com.epam.esm.error.RestErrorStatusCode;
+import com.epam.esm.error.exception.*;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.util.Locale;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -54,8 +58,13 @@ public class RestExceptionHandler {
     @ExceptionHandler(TagNotFoundException.class)
     public ResponseEntity<RestApplicationError> tagNotFoundHandler(TagNotFoundException exception) {
         String id = exception.getMessage();
-        String exceptionMessage = messageSource.getMessage("error.tag.not.found", new Object[]{id},
-                LocaleContextHolder.getLocale());
+        Locale locale = LocaleContextHolder.getLocale();
+        String exceptionMessage;
+        if (id != null) {
+            exceptionMessage = messageSource.getMessage("error.tag.not.found", new Object[]{id}, locale);
+        } else {
+            exceptionMessage = messageSource.getMessage("error.tag.not.found.message", null, locale);
+        }
         RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -66,6 +75,28 @@ public class RestExceptionHandler {
     public ResponseEntity<RestApplicationError> giftNotFoundHandler(GiftCertificateNotFoundException exception) {
         String id = exception.getMessage();
         String exceptionMessage = messageSource.getMessage("error.gift.not.found", new Object[]{id},
+                LocaleContextHolder.getLocale());
+        RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<RestApplicationError> userNotFoundHandler(UserNotFoundException exception) {
+        String id = exception.getMessage();
+        String exceptionMessage = messageSource.getMessage("error.user.not.found", new Object[]{id},
+                LocaleContextHolder.getLocale());
+        RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<RestApplicationError> userNotFoundHandler(OrderNotFoundException exception) {
+        String id = exception.getMessage();
+        String exceptionMessage = messageSource.getMessage("error.order.not.found", new Object[]{id},
                 LocaleContextHolder.getLocale());
         RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();

@@ -24,10 +24,18 @@ VALUES (1, 1);
 INSERT INTO public.certificate_tag (certificate_id, tag_id)
 VALUES (1, 2);
 INSERT INTO public.certificate_tag (certificate_id, tag_id)
-VALUES (2, 3);
+VALUES (1, 3);
 INSERT INTO public.certificate_tag (certificate_id, tag_id)
 VALUES (2, 2);
+INSERT INTO public.certificate_tag (certificate_id, tag_id)
+VALUES (2, 3);
+
 INSERT INTO public.certificate_tag (certificate_id, tag_id)
 VALUES (3, 4);
 INSERT INTO public.certificate_tag (certificate_id, tag_id)
 VALUES (3, 5);
+
+INSERT INTO public.users(id, login)
+VALUES (1, 'isethesal');
+INSERT INTO public.users(id, login)
+VALUES (2, 'ileathehunter');

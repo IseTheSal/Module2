@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
-
     private static final String CERTIFICATE_ID = "id";
     private static final String CERTIFICATE_NAME = "name";
     private static final String CERTIFICATE_DESCRIPTION = "description";

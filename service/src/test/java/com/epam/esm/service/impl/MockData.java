@@ -39,5 +39,8 @@ public class MockData {
         UPDATED_GIFT_CERTIFICATE.setDuration(GIFT_CERTIFICATE.getDuration());
         UPDATED_GIFT_CERTIFICATE.setCreateDate(GIFT_CERTIFICATE.getCreateDate());
         UPDATED_GIFT_CERTIFICATE.setLastUpdateDate(LocalDateTime.now());
+
+
+
     }
 }

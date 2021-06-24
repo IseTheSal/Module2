@@ -13,14 +13,6 @@ import java.util.Optional;
  */
 public interface CommonDao<T extends Entity> {
     /**
-     * Create new {{@link Entity Entity}} in database.
-     *
-     * @param entity Any Object that implements {{@link Entity Entity}} interface
-     * @return That created entity
-     */
-    T create(T entity);
-
-    /**
      * Search {{@link Entity Entity}} by provided <code>id</code> in database.
      *
      * @param id <code>id</code> of object that implements {{@link Entity Entity}}
@@ -34,12 +26,4 @@ public interface CommonDao<T extends Entity> {
      * @return <code>List</code> of {{@link Entity Entity}}
      */
     List<T> findAll();
-
-    /**
-     * Delete {{@link Entity Entity}} from database by provided <code>id</code>.
-     *
-     * @param id <code>id</code> of object that implements {{@link Entity Entity}}
-     * @return <code>True</code> if {{@link Entity Entity}} was deleted, otherwise <code>false</code>
-     */
-    boolean delete(long id);
 }

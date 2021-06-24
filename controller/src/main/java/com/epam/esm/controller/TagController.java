@@ -18,7 +18,7 @@ import java.util.List;
  * @author Illia Aheyeu
  */
 @RestController
-@RequestMapping(value = "/api/v1/tags/", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
     /**
@@ -47,7 +47,7 @@ public class TagController {
      *
      * @return ResponseEntity with <code>List</code> of {@link Tag}
      */
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Tag>> findAllTags() {
         return new ResponseEntity<>(tagService.findAll(), HttpStatus.OK);
     }
@@ -72,5 +72,13 @@ public class TagController {
     @PostMapping
     public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
         return new ResponseEntity<>(tagService.create(tag), HttpStatus.OK);
+    }
+
+    /**
+     * @return The most widely used {@link Tag} of a user with the highest cost of all orders.
+     */
+    @GetMapping("/popular")
+    public ResponseEntity<Tag> findMostWidelyUsedTagByMaxUserPrice() {
+        return new ResponseEntity<>(tagService.findMostWidelyUsedTag(), HttpStatus.OK);
     }
 }

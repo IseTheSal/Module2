@@ -1,9 +1,11 @@
 package com.epam.esm.service;
 
+import com.epam.esm.model.entity.Entity;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface extends {@link GiftCertificate} service functionality
@@ -33,4 +35,24 @@ public interface GiftCertificateService extends CommonEntityService<GiftCertific
      */
     List<GiftCertificate> findByParameters(String tagName, String certificateValue,
                                            String dateSort, String nameSort);
+
+
+    /**
+     * Intermediate method used to validate {@link Entity Entity} and then call create method from dao layer.
+     *
+     * @param entity Any Object that implements {@link Entity Entity} interface
+     * @return That created entity
+     */
+    GiftCertificate create(GiftCertificate entity);
+
+
+    /**
+     * Intermediate method used to validate <code>id</code> of {@link Entity Entity} and then call delete method from dao layer.
+     *
+     * @param id <code>id</code> of object that implements {{@link Entity Entity}}
+     * @return <code>id</code> if object was successfully deleted
+     */
+    long delete(long id);
+
+    List<GiftCertificate> findBySeveralTags(Set<Tag> tags);
 }

@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class GiftCertificateDaoImplTest {
 
@@ -41,11 +42,9 @@ class GiftCertificateDaoImplTest {
                 .ignoreFailedDrops(true)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        DataSourceTransactionManager manager = new DataSourceTransactionManager();
-        manager.setDataSource(jdbcTemplate.getDataSource());
         tagDao = new TagDaoImpl(jdbcTemplate);
 
-        certificateDao = new GiftCertificateDaoImpl(jdbcTemplate, tagDao, manager);
+        certificateDao = new GiftCertificateDaoImpl(jdbcTemplate, tagDao);
         giftCertificate = new GiftCertificate();
         giftCertificate.setId(3);
         giftCertificate.setName("Вертолет");
@@ -123,5 +122,16 @@ class GiftCertificateDaoImplTest {
         GiftCertificate actual = certificateDao.findByAttributes(tagName, giftValue, dateOrderType, nameOrderType).get(0);
         GiftCertificate expected = giftCertificate;
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void findBySeveralTags() {
+        String[] tags = new String[]{"desert", "beach"};
+        List<String> tagList = new ArrayList<>();
+        tagList.add("desert");
+        tagList.add("beach");
+
+        List<GiftCertificate> bySeveralTags = certificateDao.findBySeveralTags(tags);
+        System.out.println(bySeveralTags);
     }
 }
