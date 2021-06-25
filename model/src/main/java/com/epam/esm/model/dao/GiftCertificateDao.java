@@ -1,11 +1,9 @@
 package com.epam.esm.model.dao;
 
-import com.epam.esm.model.entity.Entity;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Interface extends {@link GiftCertificate} database functionality
@@ -41,7 +39,7 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * @return List of GiftCertificates
      */
     List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
-                                           String nameOrderType);
+                                           String nameOrderType, int amount, int page);
 
     /**
      * Create new {@link GiftCertificate} in database.
@@ -65,5 +63,5 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * @param tagNames <code>String[]</code> of {@link Tag} names
      * @return <code>List</code> of {@link GiftCertificate}
      */
-    List<GiftCertificate> findBySeveralTags(String[] tagNames);
+    List<GiftCertificate> findBySeveralTags(String[] tagNames, int amount, int page);
 }

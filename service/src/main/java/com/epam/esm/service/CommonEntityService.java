@@ -27,5 +27,5 @@ public interface CommonEntityService<T extends Entity> {
      *
      * @return <code>List</code> of {{@link Entity Entity}}
      */
-    List<T> findAll();
+    List<T> findAll(int amount, int page);
 }

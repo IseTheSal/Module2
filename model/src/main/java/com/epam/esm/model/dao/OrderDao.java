@@ -23,7 +23,9 @@ public interface OrderDao extends CommonDao<Order> {
      * Find {@link com.epam.esm.model.entity.User User`s} {@link Order Orders} by his id
      *
      * @param userId {@link com.epam.esm.model.entity.User User`s} id
+     * @param amount Amount of values in page
+     * @param page   Page number
      * @return <code>List</code> of {@link Order Orders}
      */
-    List<Order> findUserOrders(long userId);
+    List<Order> findUserOrders(long userId, int amount, int page);
 }

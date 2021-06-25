@@ -56,8 +56,8 @@ class TagServiceImplTest {
 
     @Test
     void findAll() {
-        Mockito.when(dao.findAll()).thenReturn(Collections.singletonList(MockData.TAG_ONE));
-        List<Tag> actual = service.findAll();
+        Mockito.when(dao.findAll(100, 0)).thenReturn(Collections.singletonList(MockData.TAG_ONE));
+        List<Tag> actual = service.findAll(100, 1);
         List<Tag> expected = Collections.singletonList(MockData.TAG_ONE);
         Assertions.assertEquals(expected, actual);
     }

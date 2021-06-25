@@ -38,8 +38,10 @@ public class OrderController {
      * @return <code>List</code> of {@link Order Orders}
      */
     @GetMapping("/users/{id:^[1-9]\\d{0,18}$}")
-    public ResponseEntity<List<Order>> findUserOrders(@PathVariable long id) {
-        return new ResponseEntity<>(orderService.findUserOrders(id), HttpStatus.OK);
+    public ResponseEntity<List<Order>> findUserOrders(@PathVariable long id,
+                                                      @RequestParam(required = false, defaultValue = "1") int page,
+                                                      @RequestParam(required = false, defaultValue = "10") int amount) {
+        return new ResponseEntity<>(orderService.findUserOrders(id, amount, page), HttpStatus.OK);
     }
 
     /**
@@ -70,7 +72,8 @@ public class OrderController {
      * @return <code>List</code> of {@link Order orders}
      */
     @GetMapping("/all")
-    public ResponseEntity<List<Order>> findAll() {
-        return new ResponseEntity<>(orderService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<Order>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
+                                               @RequestParam(required = false, defaultValue = "10") int amount) {
+        return new ResponseEntity<>(orderService.findAll(amount, page), HttpStatus.OK);
     }
 }

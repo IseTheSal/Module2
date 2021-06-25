@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
@@ -64,8 +63,8 @@ class OrderServiceImplTest {
 
     @Test
     void findAll() {
-        Mockito.when(orderDao.findAll()).thenReturn(orderList);
-        List<Order> actual = service.findAll();
+        Mockito.when(orderDao.findAll(100, 0)).thenReturn(orderList);
+        List<Order> actual = service.findAll(100, 1);
         List<Order> expected = orderList;
         Assertions.assertEquals(actual, expected);
     }
@@ -82,8 +81,8 @@ class OrderServiceImplTest {
 
     @Test
     void findUserOrders() {
-        Mockito.when(orderDao.findUserOrders(1)).thenReturn(orderList);
-        List<Order> actual = service.findUserOrders(1);
+        Mockito.when(orderDao.findUserOrders(1, 100, 0)).thenReturn(orderList);
+        List<Order> actual = service.findUserOrders(1, 100, 1);
         List<Order> expected = orderList;
         Assertions.assertEquals(expected, actual);
     }

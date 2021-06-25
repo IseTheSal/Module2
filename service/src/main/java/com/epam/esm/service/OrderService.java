@@ -8,5 +8,5 @@ public interface OrderService extends CommonEntityService<Order> {
 
     Order create(Order order);
 
-    List<Order> findUserOrders(long id);
+    List<Order> findUserOrders(long id, int amount, int page);
 }

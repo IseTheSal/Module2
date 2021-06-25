@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -51,13 +50,13 @@ class UserServiceImplTest {
     @Test
     void findByIdThrownException() {
         Mockito.when(dao.findById(1)).thenReturn(Optional.empty());
-        Assertions.assertThrows(UserNotFoundException.class,() -> service.findById(1));
+        Assertions.assertThrows(UserNotFoundException.class, () -> service.findById(1));
     }
 
     @Test
     void findAll() {
-        Mockito.when(dao.findAll()).thenReturn(userList);
-        List<User> actual = service.findAll();
+        Mockito.when(dao.findAll(100, 0)).thenReturn(userList);
+        List<User> actual = service.findAll(1000, 0);
         List<User> expected = userList;
         Assertions.assertEquals(expected, actual);
     }

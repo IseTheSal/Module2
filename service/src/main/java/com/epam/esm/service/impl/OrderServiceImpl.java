@@ -35,8 +35,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findAll() {
-        return orderDao.findAll();
+    public List<Order> findAll(int amount, int page) {
+        return orderDao.findAll(amount, page - 1);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findUserOrders(long id) {
-        return orderDao.findUserOrders(id);
+    public List<Order> findUserOrders(long id, int amount, int page) {
+        return orderDao.findUserOrders(id, amount, page - 1);
     }
 }

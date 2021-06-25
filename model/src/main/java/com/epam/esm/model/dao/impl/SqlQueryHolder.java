@@ -60,4 +60,5 @@ public class SqlQueryHolder {
     static final String FIND_USER_ORDERS = FIND_ALL_ORDERS + " WHERE user_id = ?";
     static final String FIND_ORDER = FIND_ALL_ORDERS + " WHERE id = ?";
     static final String CREATE_ORDER = "INSERT INTO orders(id, user_id, certificate_id, price, purchase_date) VALUES(default, ?, ?, ?, now())";
+    static final String PAGE_LIMIT_OFFSET = " LIMIT ? OFFSET ?";
 }

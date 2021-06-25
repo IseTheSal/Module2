@@ -30,8 +30,9 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public List<Order> findAll() {
-        return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_ORDERS, new OrderMapper());
+    public List<Order> findAll(int amount, int page) {
+        return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_ORDERS + SqlQueryHolder.PAGE_LIMIT_OFFSET,
+                new OrderMapper(), amount, page);
     }
 
     @Override
@@ -49,7 +50,8 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public List<Order> findUserOrders(long userId) {
-        return jdbcTemplate.query(SqlQueryHolder.FIND_USER_ORDERS, new OrderMapper(), userId);
+    public List<Order> findUserOrders(long userId, int amount, int page) {
+        return jdbcTemplate.query(SqlQueryHolder.FIND_USER_ORDERS + SqlQueryHolder.PAGE_LIMIT_OFFSET,
+                new OrderMapper(), userId, amount, page);
     }
 }

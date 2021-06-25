@@ -3,7 +3,6 @@ package com.epam.esm.model.entity.mapper;
 import com.epam.esm.model.entity.User;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

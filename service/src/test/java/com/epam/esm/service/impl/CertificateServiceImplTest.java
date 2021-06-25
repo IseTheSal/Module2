@@ -70,17 +70,19 @@ class CertificateServiceImplTest {
 
     @Test
     public void findAll() {
-        Mockito.when(dao.findAll()).thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
-        List<GiftCertificate> actual = service.findAll();
+        Mockito.when(dao.findAll(100, 0)).thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
+        List<GiftCertificate> actual = service.findAll(100, 1);
         List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     public void findByParameters() {
-        Mockito.when(dao.findByAttributes(MockData.TAG_TWO.getName(), "катание", "DESC", "ASC"))
+        Mockito.when(dao.findByAttributes(MockData.TAG_TWO.getName(), "катание", "DESC",
+                "ASC", 100, 0))
                 .thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
-        List<GiftCertificate> actual = service.findByParameters(MockData.TAG_TWO.getName(), "катание", "DESC", "ASC");
+        List<GiftCertificate> actual = service.findByParameters(MockData.TAG_TWO.getName(), "катание",
+                "DESC", "ASC", 100, 1);
         List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
         Assertions.assertEquals(actual, expected);
     }

@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,7 +41,8 @@ public class UserController {
      * @return <code>List</code> of {@link User User`s}
      */
     @GetMapping("/all")
-    public ResponseEntity<List<User>> findAll() {
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<User>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
+                                              @RequestParam(required = false, defaultValue = "10") int amount) {
+        return new ResponseEntity<>(userService.findAll(amount, page), HttpStatus.OK);
     }
 }

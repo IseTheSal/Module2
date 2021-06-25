@@ -41,6 +41,5 @@ public class MockData {
         UPDATED_GIFT_CERTIFICATE.setLastUpdateDate(LocalDateTime.now());
 
 
-
     }
 }

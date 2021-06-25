@@ -72,8 +72,9 @@ public class GiftCertificateController {
      * @return ResponseEntity with <code>List</code> of {@link GiftCertificate}
      */
     @GetMapping("/all")
-    public ResponseEntity<List<GiftCertificate>> findAll() {
-        return new ResponseEntity<>(certificateService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<GiftCertificate>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
+                                                         @RequestParam(required = false, defaultValue = "10") int amount) {
+        return new ResponseEntity<>(certificateService.findAll(amount, page), HttpStatus.OK);
     }
 
     /**
@@ -102,8 +103,10 @@ public class GiftCertificateController {
     public ResponseEntity<List<GiftCertificate>> findCertificates(@RequestParam(required = false) String tagName,
                                                                   @RequestParam(required = false) String giftValue,
                                                                   @RequestParam(required = false) String dateOrder,
-                                                                  @RequestParam(required = false) String nameOrder) {
-        List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder);
+                                                                  @RequestParam(required = false) String nameOrder,
+                                                                  @RequestParam(required = false, defaultValue = "1") int page,
+                                                                  @RequestParam(required = false, defaultValue = "10") int amount) {
+        List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder, amount, page);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -114,7 +117,9 @@ public class GiftCertificateController {
      * @return <code>List</code> of {@link GiftCertificate}
      */
     @GetMapping("/tags")
-    public ResponseEntity<List<GiftCertificate>> findBySeveralTags(@RequestBody Set<Tag> tagSet) {
-        return new ResponseEntity<>(certificateService.findBySeveralTags(tagSet), HttpStatus.OK);
+    public ResponseEntity<List<GiftCertificate>> findBySeveralTags(@RequestBody Set<Tag> tagSet,
+                                                                   @RequestParam(required = false, defaultValue = "1") int page,
+                                                                   @RequestParam(required = false, defaultValue = "10") int amount) {
+        return new ResponseEntity<>(certificateService.findBySeveralTags(tagSet, amount, page), HttpStatus.OK);
     }
 }

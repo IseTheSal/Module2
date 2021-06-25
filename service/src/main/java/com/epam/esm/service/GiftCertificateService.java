@@ -33,8 +33,8 @@ public interface GiftCertificateService extends CommonEntityService<GiftCertific
      * @param nameSort         <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
      * @return <code>List</code> of {@link GiftCertificate GiftCertificates}
      */
-    List<GiftCertificate> findByParameters(String tagName, String certificateValue,
-                                           String dateSort, String nameSort);
+    List<GiftCertificate> findByParameters(String tagName, String certificateValue, String dateSort, String nameSort,
+                                           int amount, int page);
 
 
     /**
@@ -54,5 +54,5 @@ public interface GiftCertificateService extends CommonEntityService<GiftCertific
      */
     long delete(long id);
 
-    List<GiftCertificate> findBySeveralTags(Set<Tag> tags);
+    List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page);
 }

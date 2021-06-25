@@ -3,8 +3,6 @@ package com.epam.esm.service;
 import com.epam.esm.model.entity.Entity;
 import com.epam.esm.model.entity.Tag;
 
-import java.util.List;
-
 /**
  * Interface extends {@link Tag} service functionality
  *

@@ -48,8 +48,9 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public List<Tag> findAll() {
-        return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_TAGS, new TagMapper());
+    public List<Tag> findAll(int amount, int page) {
+        return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_TAGS + SqlQueryHolder.PAGE_LIMIT_OFFSET, new TagMapper(),
+                amount, page);
     }
 
     @Override

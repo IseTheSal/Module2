@@ -114,8 +114,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findAll() {
-        return giftCertificateDao.findAll();
+    public List<GiftCertificate> findAll(int amount, int page) {
+        return giftCertificateDao.findAll(amount, page - 1);
     }
 
     @Override
@@ -128,10 +128,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findByParameters(String tagName, String giftValue, String dateSort, String nameSort) {
+    public List<GiftCertificate> findByParameters(String tagName, String giftValue, String dateSort, String nameSort,
+                                                  int amount, int page) {
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
-        return giftCertificateDao.findByAttributes(tagName, giftValue, dateSort, nameSort);
+        return giftCertificateDao.findByAttributes(tagName, giftValue, dateSort, nameSort, amount, page - 1);
     }
 
     private void checkSortTypeValid(String sortType) {
@@ -143,12 +144,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findBySeveralTags(Set<Tag> tags) {
+    public List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page) {
         String[] tagNames = new String[tags.size()];
         int i = 0;
         for (Tag tag : tags) {
             tagNames[i++] = tag.getName();
         }
-        return giftCertificateDao.findBySeveralTags(tagNames);
+        return giftCertificateDao.findBySeveralTags(tagNames, amount, page - 1);
     }
 }
