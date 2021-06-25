@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Locale;
 
@@ -123,21 +124,21 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<RestApplicationError> defaultErrorHandler() {
-//        RestApplicationError error = new RestApplicationError(messageSource.getMessage(
-//                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40403);
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-//        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(NoHandlerFoundException.class)
-//    public ResponseEntity<RestApplicationError> unknownErrorHandler() {
-//        RestApplicationError error = new RestApplicationError(messageSource.getMessage(
-//                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40403);
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-//        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RestApplicationError> defaultErrorHandler() {
+        RestApplicationError error = new RestApplicationError(messageSource.getMessage(
+                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40403);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<RestApplicationError> unknownErrorHandler() {
+        RestApplicationError error = new RestApplicationError(messageSource.getMessage(
+                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40403);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
+    }
 }

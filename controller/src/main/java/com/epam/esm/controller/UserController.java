@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.controller.hateaos.Hateoas;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.epam.esm.controller.hateaos.Hateoas.createUserHateoas;
+
 @RestController
 @RequestMapping(value = "/api/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
-
     /**
      * {@link User} service layer
      */
@@ -32,7 +34,8 @@ public class UserController {
      */
     @GetMapping("/{id:^[1-9]\\d{0,18}$}")
     public ResponseEntity<User> findById(@PathVariable long id) {
-        return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
+        User user = userService.findById(id);
+        return new ResponseEntity<>(createUserHateoas(user), HttpStatus.OK);
     }
 
     /**
@@ -43,6 +46,8 @@ public class UserController {
     @GetMapping("/all")
     public ResponseEntity<List<User>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
                                               @RequestParam(required = false, defaultValue = "10") int amount) {
-        return new ResponseEntity<>(userService.findAll(amount, page), HttpStatus.OK);
+        List<User> userList = userService.findAll(amount, page);
+        userList.forEach(Hateoas::createUserHateoas);
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 }

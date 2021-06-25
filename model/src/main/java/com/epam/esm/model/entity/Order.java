@@ -1,9 +1,11 @@
 package com.epam.esm.model.entity;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class Order implements Entity {
+public class Order extends RepresentationModel<Order> implements Entity {
 
     private long id;
     private long userId;

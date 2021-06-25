@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.controller.hateaos.Hateoas;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
+import static com.epam.esm.controller.hateaos.Hateoas.createCertificateHateoas;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
  * Used to interact with {@link GiftCertificate}.
@@ -22,7 +26,6 @@ import java.util.Set;
 @RestController
 @RequestMapping(value = "/api/v1/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiftCertificateController {
-
     /**
      * {@link GiftCertificate} service layer
      */
@@ -41,7 +44,8 @@ public class GiftCertificateController {
      */
     @PostMapping
     public ResponseEntity<GiftCertificate> create(@RequestBody GiftCertificate giftCertificate) {
-        return new ResponseEntity<>(certificateService.create(giftCertificate), HttpStatus.CREATED);
+        GiftCertificate certificate = certificateService.create(giftCertificate);
+        return new ResponseEntity<>(createCertificateHateoas(certificate), HttpStatus.CREATED);
     }
 
     /**
@@ -63,7 +67,8 @@ public class GiftCertificateController {
      */
     @GetMapping("/{id:^[1-9]\\d{0,18}$}")
     public ResponseEntity<GiftCertificate> findById(@PathVariable long id) {
-        return new ResponseEntity<>(certificateService.findById(id), HttpStatus.OK);
+        GiftCertificate certificate = certificateService.findById(id);
+        return new ResponseEntity<>(createCertificateHateoas(certificate), HttpStatus.OK);
     }
 
     /**
@@ -74,7 +79,9 @@ public class GiftCertificateController {
     @GetMapping("/all")
     public ResponseEntity<List<GiftCertificate>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
                                                          @RequestParam(required = false, defaultValue = "10") int amount) {
-        return new ResponseEntity<>(certificateService.findAll(amount, page), HttpStatus.OK);
+        List<GiftCertificate> certificateList = certificateService.findAll(amount, page);
+        certificateList.forEach(Hateoas::createCertificateHateoas);
+        return new ResponseEntity<>(certificateList, HttpStatus.OK);
     }
 
     /**
@@ -85,7 +92,8 @@ public class GiftCertificateController {
      */
     @PutMapping
     public ResponseEntity<GiftCertificate> update(@RequestBody GiftCertificate giftCertificate) {
-        return new ResponseEntity<>(certificateService.update(giftCertificate), HttpStatus.OK);
+        GiftCertificate certificate = certificateService.update(giftCertificate);
+        return new ResponseEntity<>(createCertificateHateoas(certificate), HttpStatus.OK);
     }
 
     /**
@@ -107,6 +115,7 @@ public class GiftCertificateController {
                                                                   @RequestParam(required = false, defaultValue = "1") int page,
                                                                   @RequestParam(required = false, defaultValue = "10") int amount) {
         List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder, amount, page);
+        list.forEach(Hateoas::createCertificateHateoas);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -120,6 +129,8 @@ public class GiftCertificateController {
     public ResponseEntity<List<GiftCertificate>> findBySeveralTags(@RequestBody Set<Tag> tagSet,
                                                                    @RequestParam(required = false, defaultValue = "1") int page,
                                                                    @RequestParam(required = false, defaultValue = "10") int amount) {
-        return new ResponseEntity<>(certificateService.findBySeveralTags(tagSet, amount, page), HttpStatus.OK);
+        List<GiftCertificate> certificateList = certificateService.findBySeveralTags(tagSet, amount, page);
+        certificateList.forEach(Hateoas::createCertificateHateoas);
+        return new ResponseEntity<>(certificateList, HttpStatus.OK);
     }
 }

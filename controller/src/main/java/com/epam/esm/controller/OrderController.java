@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.controller.hateaos.Hateoas;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.epam.esm.controller.hateaos.Hateoas.createOrderHateoas;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
@@ -20,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/v1/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
-
     /**
      * {@link Order} service layer
      */
@@ -41,7 +43,9 @@ public class OrderController {
     public ResponseEntity<List<Order>> findUserOrders(@PathVariable long id,
                                                       @RequestParam(required = false, defaultValue = "1") int page,
                                                       @RequestParam(required = false, defaultValue = "10") int amount) {
-        return new ResponseEntity<>(orderService.findUserOrders(id, amount, page), HttpStatus.OK);
+        List<Order> orderList = orderService.findUserOrders(id, amount, page);
+        orderList.forEach(Hateoas::createOrderHateoas);
+        return new ResponseEntity<>(orderList, HttpStatus.OK);
     }
 
     /**
@@ -52,7 +56,8 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<Order> create(@RequestBody Order order) {
-        return new ResponseEntity<>(orderService.create(order), HttpStatus.CREATED);
+        Order createdOrder = orderService.create(order);
+        return new ResponseEntity<>(createOrderHateoas(createdOrder), HttpStatus.CREATED);
     }
 
     /**
@@ -63,7 +68,8 @@ public class OrderController {
      */
     @GetMapping("/{id:^[1-9]\\d{0,18}$}")
     public ResponseEntity<Order> findById(@PathVariable long id) {
-        return new ResponseEntity<>(orderService.findById(id), HttpStatus.OK);
+        Order order = orderService.findById(id);
+        return new ResponseEntity<>(createOrderHateoas(order), HttpStatus.OK);
     }
 
     /**
@@ -74,6 +80,8 @@ public class OrderController {
     @GetMapping("/all")
     public ResponseEntity<List<Order>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
                                                @RequestParam(required = false, defaultValue = "10") int amount) {
-        return new ResponseEntity<>(orderService.findAll(amount, page), HttpStatus.OK);
+        List<Order> orderList = orderService.findAll(amount, page);
+        orderList.forEach(Hateoas::createOrderHateoas);
+        return new ResponseEntity<>(orderList, HttpStatus.OK);
     }
 }

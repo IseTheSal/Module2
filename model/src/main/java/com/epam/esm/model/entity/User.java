@@ -1,8 +1,10 @@
 package com.epam.esm.model.entity;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.util.List;
 
-public class User implements Entity {
+public class User extends RepresentationModel<User> implements Entity {
 
     private long id;
     private String login;

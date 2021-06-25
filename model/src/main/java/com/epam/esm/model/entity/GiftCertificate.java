@@ -1,6 +1,7 @@
 package com.epam.esm.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class GiftCertificate implements Entity {
+public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Entity {
 
     private long id;
     private String name;

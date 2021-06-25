@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.controller.hateaos.Hateoas;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.epam.esm.controller.hateaos.Hateoas.createTagHateoas;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
@@ -20,7 +24,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/v1/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
-
     /**
      * {@link Tag} service layer
      */
@@ -39,7 +42,8 @@ public class TagController {
      */
     @GetMapping(value = "/{id:^[1-9]\\d{0,18}$}")
     public ResponseEntity<Tag> findTagById(@PathVariable long id) {
-        return new ResponseEntity<>(tagService.findById(id), HttpStatus.OK);
+        Tag tag = tagService.findById(id);
+        return new ResponseEntity<>(createTagHateoas(tag), HttpStatus.OK);
     }
 
     /**
@@ -50,7 +54,9 @@ public class TagController {
     @GetMapping("/all")
     public ResponseEntity<List<Tag>> findAllTags(@RequestParam(required = false, defaultValue = "1") int page,
                                                  @RequestParam(required = false, defaultValue = "10") int amount) {
-        return new ResponseEntity<>(tagService.findAll(amount, page), HttpStatus.OK);
+        List<Tag> tagList = tagService.findAll(amount, page);
+        tagList.forEach(Hateoas::createTagHateoas);
+        return new ResponseEntity<>(tagList, HttpStatus.OK);
     }
 
     /**
@@ -72,7 +78,8 @@ public class TagController {
      */
     @PostMapping
     public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
-        return new ResponseEntity<>(tagService.create(tag), HttpStatus.OK);
+        Tag createdTag = tagService.create(tag);
+        return new ResponseEntity<>(createTagHateoas(createdTag), HttpStatus.OK);
     }
 
     /**
@@ -80,6 +87,7 @@ public class TagController {
      */
     @GetMapping("/popular")
     public ResponseEntity<Tag> findMostWidelyUsedTagByMaxUserPrice() {
-        return new ResponseEntity<>(tagService.findMostWidelyUsedTag(), HttpStatus.OK);
+        Tag tag = tagService.findMostWidelyUsedTag();
+        return new ResponseEntity<>(createTagHateoas(tag), HttpStatus.OK);
     }
 }

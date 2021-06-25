@@ -1,6 +1,8 @@
 package com.epam.esm.model.entity;
 
-public class Tag implements Entity {
+import org.springframework.hateoas.RepresentationModel;
+
+public class Tag extends RepresentationModel<Tag> implements Entity {
 
     private long id;
     private String name;
