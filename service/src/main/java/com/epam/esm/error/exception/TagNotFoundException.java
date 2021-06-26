@@ -4,8 +4,8 @@ import com.epam.esm.error.RestErrorStatusCode;
 
 public class TagNotFoundException extends ApplicationRuntimeException {
 
-    public TagNotFoundException(long id) {
-        super(String.valueOf(id), RestErrorStatusCode.ENTITY_NOT_FOUND);
+    public TagNotFoundException(String tagValue) {
+        super(tagValue, RestErrorStatusCode.ENTITY_NOT_FOUND);
     }
 
     public TagNotFoundException() {

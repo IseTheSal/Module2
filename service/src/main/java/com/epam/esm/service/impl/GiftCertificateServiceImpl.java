@@ -1,8 +1,10 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.error.exception.GiftCertificateNotFoundException;
+import com.epam.esm.error.exception.TagNotFoundException;
 import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.GiftCertificateDao;
+import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
@@ -29,10 +31,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDao giftCertificateDao;
     private final MessageSource messageSource;
+    private final TagDao tagDao;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, MessageSource messageSource) {
+    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagDao tagDao, MessageSource messageSource) {
         this.giftCertificateDao = giftCertificateDao;
+        this.tagDao = tagDao;
         this.messageSource = messageSource;
     }
 
@@ -115,6 +119,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> findAll(int amount, int page) {
+        checkPagination(amount, page);
         return giftCertificateDao.findAll(amount, page - 1);
     }
 
@@ -130,6 +135,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> findByParameters(String tagName, String giftValue, String dateSort, String nameSort,
                                                   int amount, int page) {
+        checkPagination(amount, page);
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
         return giftCertificateDao.findByAttributes(tagName, giftValue, dateSort, nameSort, amount, page - 1);
@@ -145,10 +151,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page) {
+        checkPagination(amount, page);
         String[] tagNames = new String[tags.size()];
         int i = 0;
         for (Tag tag : tags) {
-            tagNames[i++] = tag.getName();
+            String name = tag.getName();
+            tagDao.findByName(tag.getName()).orElseThrow(() -> new TagNotFoundException("name=" + name));
+            tagNames[i++] = name;
         }
         return giftCertificateDao.findBySeveralTags(tagNames, amount, page - 1);
     }

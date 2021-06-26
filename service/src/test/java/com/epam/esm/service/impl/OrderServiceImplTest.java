@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.MessageSource;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ class OrderServiceImplTest {
     GiftCertificateDao giftDao;
     OrderDao orderDao;
     UserDao userDao;
+    MessageSource messageSource;
 
     @BeforeAll
     public static void setUpData() {
@@ -50,7 +52,8 @@ class OrderServiceImplTest {
         orderDao = Mockito.mock(OrderDaoImpl.class);
         giftDao = Mockito.mock(GiftCertificateDaoImpl.class);
         userDao = Mockito.mock(UserDao.class);
-        service = new OrderServiceImpl(orderDao, giftDao, userDao);
+        messageSource = Mockito.mock(MessageSource.class);
+        service = new OrderServiceImpl(orderDao, giftDao, userDao, messageSource);
     }
 
     @Test

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.epam.esm.controller.hateaos.Hateoas.createCertificateHateoas;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.

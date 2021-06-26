@@ -1,7 +1,9 @@
 package com.epam.esm.service;
 
 
+import com.epam.esm.error.exception.IncorrectPageException;
 import com.epam.esm.model.entity.Entity;
+import com.epam.esm.validator.PageValidator;
 
 import java.util.List;
 
@@ -28,4 +30,10 @@ public interface CommonEntityService<T extends Entity> {
      * @return <code>List</code> of {{@link Entity Entity}}
      */
     List<T> findAll(int amount, int page);
+
+    default void checkPagination(int amount, int page) {
+        if (!PageValidator.isPaginationValid(amount, page)) {
+            throw new IncorrectPageException(amount, page);
+        }
+    }
 }

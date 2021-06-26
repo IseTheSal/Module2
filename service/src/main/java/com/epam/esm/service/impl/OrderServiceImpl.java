@@ -9,6 +9,7 @@ import com.epam.esm.model.dao.UserDao;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +22,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final GiftCertificateDao giftCertificateDao;
     private final UserDao userDao;
+    private final MessageSource messageSource;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, GiftCertificateDao giftCertificateDao, UserDao userDao) {
+    public OrderServiceImpl(OrderDao orderDao, GiftCertificateDao giftCertificateDao, UserDao userDao, MessageSource messageSource) {
         this.orderDao = orderDao;
         this.giftCertificateDao = giftCertificateDao;
         this.userDao = userDao;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -36,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findAll(int amount, int page) {
+        checkPagination(amount, page);
         return orderDao.findAll(amount, page - 1);
     }
 
@@ -53,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findUserOrders(long id, int amount, int page) {
+        checkPagination(amount, page);
         return orderDao.findUserOrders(id, amount, page - 1);
     }
 }

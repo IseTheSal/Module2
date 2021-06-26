@@ -2,7 +2,9 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.error.exception.GiftCertificateNotFoundException;
 import com.epam.esm.model.dao.GiftCertificateDao;
+import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.impl.GiftCertificateDaoImpl;
+import com.epam.esm.model.dao.impl.TagDaoImpl;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 import org.junit.jupiter.api.Assertions;
@@ -21,12 +23,14 @@ class CertificateServiceImplTest {
     GiftCertificateService service;
     GiftCertificateDao dao;
     MessageSource messageSource;
+    TagDao tagDao;
 
     @BeforeEach
     public void setUp() {
         dao = Mockito.mock(GiftCertificateDaoImpl.class);
         messageSource = Mockito.mock(MessageSource.class);
-        service = new GiftCertificateServiceImpl(dao, messageSource);
+        tagDao = Mockito.mock(TagDaoImpl.class);
+        service = new GiftCertificateServiceImpl(dao, tagDao, messageSource);
     }
 
     @Test

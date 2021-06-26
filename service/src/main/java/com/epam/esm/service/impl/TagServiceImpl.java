@@ -42,7 +42,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag findById(long id) {
-        return tagDao.findById(id).orElseThrow(() -> new TagNotFoundException(id));
+        return tagDao.findById(id).orElseThrow(() -> new TagNotFoundException("id=" + id));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TagServiceImpl implements TagService {
         if (tagDao.delete(id)) {
             return id;
         } else {
-            throw new TagNotFoundException(id);
+            throw new TagNotFoundException("id=" + id);
         }
     }
 

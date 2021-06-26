@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.epam.esm.controller.hateaos.Hateoas.createTagHateoas;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
