@@ -2,9 +2,16 @@ package com.epam.esm.model.entity;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.*;
+
+@javax.persistence.Entity
+@Table(name = "tags")
 public class Tag extends RepresentationModel<Tag> implements Entity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+    @Column(name = "name")
     private String name;
 
     public Tag() {

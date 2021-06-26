@@ -54,7 +54,7 @@ public class Hateoas {
     public static Order createOrderHateoas(Order order) {
         return order
                 .add(linkTo(methodOn(OrderController.class)
-                        .findUserOrders(order.getUserId(), PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
+                        .findUserOrders(order.getUser().getId(), PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
                         .withName(FIND_BY_USER_ID_ORDERS))
                 .add(linkTo(methodOn(OrderController.class).findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
                         .withName(FIND_ALL))

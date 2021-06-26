@@ -46,9 +46,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order create(Order order) {
-        long userId = order.getUserId();
+        long userId = order.getUser().getId();
         userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        long certificateId = order.getCertificateId();
+        long certificateId = order.getUser().getId();
         BigDecimal price = giftCertificateDao.findById(certificateId)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(certificateId)).getPrice();
         order.setPrice(price);
