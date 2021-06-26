@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Profile("jpa")
 public class JpaTagImpl implements TagDao {
 
     private final EntityManagerFactory entityFactory;
