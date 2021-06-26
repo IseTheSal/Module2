@@ -1,25 +1,24 @@
 package com.epam.esm.model.entity;
 
-import javafx.fxml.FXML;
-import org.springframework.data.repository.cdi.Eager;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.List;
 
 @javax.persistence.Entity
-@Table(name ="users")
+@Table(name = "users")
 public class User extends RepresentationModel<User> implements Entity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "login")
     private String login;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Order> orderList;
 
-    protected User(){}
+    protected User() {
+    }
 
     public User(long id, String login) {
         this.id = id;

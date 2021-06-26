@@ -62,7 +62,9 @@ public class JpaTagImpl implements TagDao {
     @Override
     public Tag create(Tag tag) {
         EntityManager entityManager = entityFactory.createEntityManager();
+        entityManager.getTransaction().begin();
         entityManager.persist(tag);
+        entityManager.getTransaction().commit();
         entityManager.close();
         return tag;
     }

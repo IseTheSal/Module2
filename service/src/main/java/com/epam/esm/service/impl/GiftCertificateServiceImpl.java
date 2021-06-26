@@ -40,7 +40,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         this.messageSource = messageSource;
     }
 
-
     @Override
     @Transactional
     public GiftCertificate create(GiftCertificate giftCertificate) {

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "orders")
 public class Order extends RepresentationModel<Order> implements Entity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

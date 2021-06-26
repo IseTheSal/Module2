@@ -17,6 +17,7 @@
         <fasterxml.version>2.12.3</fasterxml.version>
         <servletapi.version>4.0.1</servletapi.version>
         <mockito.version>3.3.3</mockito.version>
+        <lombok.version>1.18.12</lombok.version>
     </properties>
 
     <groupId>com.epam</groupId>
@@ -40,6 +41,11 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-hateoas</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
                 <version>${spring.boot.version}</version>
             </dependency>
             <dependency>
@@ -119,6 +125,11 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${fasterxml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
