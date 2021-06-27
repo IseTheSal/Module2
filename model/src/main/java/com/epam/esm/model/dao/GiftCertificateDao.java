@@ -20,15 +20,6 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
     GiftCertificate update(GiftCertificate giftCertificate);
 
     /**
-     * Search all tags of {@link GiftCertificate}.
-     *
-     * @param id {@link GiftCertificate} <code>id</code> value
-     * @return <code>List</code> of {@link Tag} connected to {@link GiftCertificate} with provided <code>id</code>
-     */
-    List<Tag> findTagsByCertificateId(long id);
-
-
-    /**
      * Find by {@link GiftCertificate} by attributes.
      * All attributes could be optional.
      *

@@ -116,6 +116,10 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
         return this.tags.add(tag);
     }
 
+    public boolean removeTag(Tag tag) {
+        return ((tags != null) && (this.tags.remove(tag)));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

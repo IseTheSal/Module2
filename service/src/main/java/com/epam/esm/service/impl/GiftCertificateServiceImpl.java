@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,7 +46,33 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificate create(GiftCertificate giftCertificate) {
         checkCertificateValid(giftCertificate, CREATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
-        return giftCertificateDao.create(giftCertificate);
+        Set<Tag> oldTags = detachExistingTags(giftCertificate);
+        GiftCertificate createdGift = giftCertificateDao.create(giftCertificate);
+        attachExistingTags(createdGift, oldTags);
+        return createdGift;
+    }
+
+    private Set<Tag> detachExistingTags(GiftCertificate giftCertificate) {
+        Set<Tag> tags = giftCertificate.getTags();
+        HashSet<Tag> oldTags = new HashSet<>();
+        List<Tag> existingTags = tagDao.findAll(Integer.MAX_VALUE, 0);
+        for (Tag existingTag : existingTags) {
+            for (Tag tag : tags) {
+                if (existingTag.getName().equals(tag.getName())) {
+                    giftCertificate.removeTag(tag);
+                    oldTags.add(tag);
+                }
+            }
+        }
+        return oldTags;
+    }
+
+    private void attachExistingTags(GiftCertificate giftCertificate, Set<Tag> tagSet) {
+        for (Tag oldTag : tagSet) {
+            Optional<Tag> optionalTag = tagDao.findByName(oldTag.getName());
+            optionalTag.ifPresent(giftCertificate::addTag);
+        }
+        giftCertificateDao.update(giftCertificate);
     }
 
     private void checkTagsValid(Set<Tag> tagSet) {
@@ -104,10 +131,41 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public GiftCertificate update(GiftCertificate giftCertificate) {
         long id = giftCertificate.getId();
-        giftCertificateDao.findById(id).orElseThrow(() -> new GiftCertificateNotFoundException(id));
+        GiftCertificate oldCertificate = giftCertificateDao.findById(id)
+                .orElseThrow(() -> new GiftCertificateNotFoundException(id));
         checkCertificateValid(giftCertificate, UPDATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
+        findUpdatedValues(oldCertificate, giftCertificate);
+        oldCertificate.getTags().forEach(giftCertificate::addTag);
+        createNewTags(giftCertificate.getTags());
         return giftCertificateDao.update(giftCertificate);
+    }
+
+    private void createNewTags(Set<Tag> tagSet) {
+        for (Tag tag : tagSet) {
+            Optional<Tag> tagOptional = tagDao.findByName(tag.getName());
+            if (tagOptional.isPresent()) {
+                tag.setId(tagOptional.get().getId());
+            } else {
+                tagDao.create(tag);
+            }
+        }
+    }
+
+    private void findUpdatedValues(GiftCertificate oldCertificate, GiftCertificate newCertificate) {
+        newCertificate.setCreateDate(oldCertificate.getCreateDate());
+        if (newCertificate.getName() == null) {
+            newCertificate.setName(oldCertificate.getName());
+        }
+        if (newCertificate.getDescription() == null) {
+            newCertificate.setDescription(oldCertificate.getDescription());
+        }
+        if (newCertificate.getPrice() == null) {
+            newCertificate.setPrice(oldCertificate.getPrice());
+        }
+        if (newCertificate.getDuration() == null) {
+            newCertificate.setDuration(oldCertificate.getDuration());
+        }
     }
 
     @Override

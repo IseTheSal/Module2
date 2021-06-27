@@ -13,7 +13,7 @@ INSERT INTO public.gift_certificates (id, name, description, price, duration, cr
 VALUES (1, 'Квадроцикл', 'Увлекательно весело и здорово', 20.04, 3, '2021-06-14 00:05:01.717000',
         '2021-06-14 00:05:01.717000');
 INSERT INTO public.gift_certificates (id, name, description, price, duration, create_date, last_update_date)
-VALUES (2, 'Мотокицл', 'Скучно невесело и вредно', 20.99, 6, '2021-06-14 00:05:38.389000',
+VALUES (2, 'Мотоцикл', 'Скучно невесело и вредно', 20.99, 6, '2021-06-14 00:05:38.389000',
         '2021-06-14 00:05:38.389000');
 INSERT INTO public.gift_certificates (id, name, description, price, duration, create_date, last_update_date)
 VALUES (3, 'Вертолет', 'Экстримально и страшно', 120.99, 30, '2021-06-14 00:06:20.111000',
@@ -67,7 +67,7 @@ INSERT INTO public.gift_certificates (id, name, description, price, duration, cr
 VALUES (4, 'ТЕСТОВЫЙ', 'Экстримально и страшно', 1200000.99, 30, '2021-06-14 00:06:20.111000',
         '2021-06-14 00:06:20.111000');
 INSERT INTO public.gift_certificates (id, name, description, price, duration, create_date, last_update_date)
-VALUES (5, 'ТЕСТОВЫЙ', 'Экстримально и страшно', 120.99, 30, '2021-06-14 00:06:20.111000',
+VALUES (5, 'ТЕСТОВЫЙ2', 'Экстримально и страшно', 120.99, 30, '2021-06-14 00:06:20.111000',
         '2021-06-14 00:06:20.111000');
 INSERT INTO public.certificate_tag (certificate_id, tag_id)
 VALUES (4, 6);
