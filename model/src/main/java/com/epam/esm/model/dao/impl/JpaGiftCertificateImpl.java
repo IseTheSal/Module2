@@ -12,6 +12,7 @@ import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class JpaGiftCertificateImpl implements GiftCertificateDao {
@@ -129,7 +130,15 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> findBySeveralTags(String[] tagNames, int amount, int page) {
-        //fixme
-        return null;
+        EntityManager entityManager = entityFactory.createEntityManager();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> query = criteriaBuilder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> certificateRoot = query.from(GiftCertificate.class);
+        Join<Object, Object> tags = certificateRoot.join("tags");
+        query.select(certificateRoot).where(tags.get("name").in(tagNames));
+        List<GiftCertificate> resultList = entityManager.createQuery(query).setMaxResults(amount)
+                .setFirstResult(page * amount).getResultList();
+        entityManager.close();
+        return resultList;
     }
 }

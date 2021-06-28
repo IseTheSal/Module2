@@ -53,10 +53,12 @@ create table orders
 (
     user_id        bigint    not null
         constraint user_id_fk
-            references users,
+            references users
+            on update cascade on delete cascade,
     certificate_id bigint    not null
         constraint certificate_id_fk
-            references gift_certificates,
+            references gift_certificates
+            on update cascade on delete cascade,
     price          numeric   not null,
     purchase_date  timestamp not null,
     id             bigserial not null
@@ -64,5 +66,7 @@ create table orders
             primary key
 );
 
+
 create unique index orders_order_id_uindex
     on orders (id);
+
