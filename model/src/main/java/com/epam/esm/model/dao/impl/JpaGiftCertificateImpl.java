@@ -2,7 +2,6 @@ package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.entity.GiftCertificate;
-import com.epam.esm.model.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,10 +11,12 @@ import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public class JpaGiftCertificateImpl implements GiftCertificateDao {
+
+    private static final String DESC = "DESC";
+    private static final String PERCENT = "%";
 
     private final EntityManagerFactory entityFactory;
 
@@ -67,31 +68,33 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
         Root<GiftCertificate> certificateRoot = query.from(GiftCertificate.class);
         query.select(certificateRoot);
         if (tagName != null) {
-            Join<Object, Object> tags = certificateRoot.join("tags");
-            query.where(criteriaBuilder.equal(tags.get("name"), tagName));
+            Join<Object, Object> tags = certificateRoot.join(EntityName.TAGS);
+            query.where(criteriaBuilder.equal(tags.get(EntityName.NAME), tagName));
         }
         if (giftValue != null) {
-            Predicate name = criteriaBuilder.like(certificateRoot.get("name"), "%" + giftValue + "%");
-            Predicate description = criteriaBuilder.like(certificateRoot.get("description"), "%" + giftValue + "%");
+            Predicate name = criteriaBuilder.like(certificateRoot
+                    .get(EntityName.NAME), PERCENT + giftValue + PERCENT);
+            Predicate description = criteriaBuilder.like(certificateRoot
+                    .get(EntityName.DESCRIPTION), PERCENT + giftValue + PERCENT);
             query.where(criteriaBuilder.or(name, description));
         }
         if (dateOrderType != null && nameOrderType != null) {
-            Order createDate = dateOrderType.equalsIgnoreCase("DESC".trim())
-                    ? criteriaBuilder.desc(certificateRoot.get("createDate"))
-                    : criteriaBuilder.asc(certificateRoot.get("createDate"));
-            Order name = nameOrderType.equalsIgnoreCase("DESC".trim())
-                    ? criteriaBuilder.desc(certificateRoot.get("name"))
-                    : criteriaBuilder.asc(certificateRoot.get("name"));
+            Order createDate = dateOrderType.equalsIgnoreCase(DESC.trim())
+                    ? criteriaBuilder.desc(certificateRoot.get(EntityName.CREATE_DATE))
+                    : criteriaBuilder.asc(certificateRoot.get(EntityName.CREATE_DATE));
+            Order name = nameOrderType.equalsIgnoreCase(DESC.trim())
+                    ? criteriaBuilder.desc(certificateRoot.get(EntityName.NAME))
+                    : criteriaBuilder.asc(certificateRoot.get(EntityName.NAME));
             query.orderBy(createDate, name);
         } else if (dateOrderType != null) {
-            Order createDate = dateOrderType.equalsIgnoreCase("DESC".trim())
-                    ? criteriaBuilder.desc(certificateRoot.get("createDate"))
-                    : criteriaBuilder.asc(certificateRoot.get("createDate"));
+            Order createDate = dateOrderType.equalsIgnoreCase(DESC.trim())
+                    ? criteriaBuilder.desc(certificateRoot.get(EntityName.CREATE_DATE))
+                    : criteriaBuilder.asc(certificateRoot.get(EntityName.CREATE_DATE));
             query.orderBy(createDate);
         } else if (nameOrderType != null) {
-            Order name = nameOrderType.equalsIgnoreCase("DESC".trim())
-                    ? criteriaBuilder.desc(certificateRoot.get("name"))
-                    : criteriaBuilder.asc(certificateRoot.get("name"));
+            Order name = nameOrderType.equalsIgnoreCase(DESC.trim())
+                    ? criteriaBuilder.desc(certificateRoot.get(EntityName.NAME))
+                    : criteriaBuilder.asc(certificateRoot.get(EntityName.NAME));
             query.orderBy(name);
         }
         List<GiftCertificate> resultList = entityManager.createQuery(query).setMaxResults(amount)
@@ -115,12 +118,11 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
 
     @Override
     public boolean delete(long id) {
-        //fixme
         EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaDelete<GiftCertificate> criteriaDelete = criteriaBuilder.createCriteriaDelete(GiftCertificate.class);
         Root<GiftCertificate> certificateRoot = criteriaDelete.from(GiftCertificate.class);
-        criteriaDelete.where(criteriaBuilder.equal(certificateRoot.get("id"), id));
+        criteriaDelete.where(criteriaBuilder.equal(certificateRoot.get(EntityName.ID), id));
         entityManager.getTransaction().begin();
         boolean isDeleted = (entityManager.createQuery(criteriaDelete).executeUpdate() > 0);
         entityManager.getTransaction().commit();
@@ -134,8 +136,8 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> query = criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> certificateRoot = query.from(GiftCertificate.class);
-        Join<Object, Object> tags = certificateRoot.join("tags");
-        query.select(certificateRoot).where(tags.get("name").in(tagNames));
+        Join<Object, Object> tags = certificateRoot.join(EntityName.TAGS);
+        query.select(certificateRoot).where(tags.get(EntityName.NAME).in(tagNames));
         List<GiftCertificate> resultList = entityManager.createQuery(query).setMaxResults(amount)
                 .setFirstResult(page * amount).getResultList();
         entityManager.close();

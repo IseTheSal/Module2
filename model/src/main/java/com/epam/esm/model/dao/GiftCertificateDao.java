@@ -4,7 +4,6 @@ import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Interface extends {@link GiftCertificate} database functionality

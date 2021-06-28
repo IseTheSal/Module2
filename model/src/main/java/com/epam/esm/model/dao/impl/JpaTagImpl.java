@@ -4,7 +4,6 @@ import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -52,7 +51,7 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> query = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> tagRoot = query.from(Tag.class);
-        query.select(tagRoot).where(criteriaBuilder.equal(tagRoot.get("name"), name));
+        query.select(tagRoot).where(criteriaBuilder.equal(tagRoot.get(EntityName.NAME), name));
         Optional<Tag> tag = entityManager.createQuery(query).getResultStream().findAny();
         entityManager.close();
         return tag;
@@ -74,7 +73,7 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaDelete<Tag> criteriaDelete = criteriaBuilder.createCriteriaDelete(Tag.class);
         Root<Tag> tagRoot = criteriaDelete.from(Tag.class);
-        criteriaDelete.where(criteriaBuilder.equal(tagRoot.get("id"), id));
+        criteriaDelete.where(criteriaBuilder.equal(tagRoot.get(EntityName.ID), id));
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         boolean isDeleted = (entityManager.createQuery(query).executeUpdate() == 1);
         entityManager.close();
@@ -87,14 +86,14 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         Root<Order> orderRoot = query.from(Order.class);
-        Join<Object, Object> certificateJoin = orderRoot.join("certificate").join("tags");
-        query.groupBy(orderRoot.get("user"), certificateJoin.get("id"));
-        query.having(criteriaBuilder.gt(criteriaBuilder.count(certificateJoin.get("name")), 1));
+        Join<Object, Object> certificateJoin = orderRoot.join(EntityName.CERTIFICATE).join(EntityName.TAGS);
+        query.groupBy(orderRoot.get(EntityName.USER), certificateJoin.get(EntityName.ID));
+        query.having(criteriaBuilder.gt(criteriaBuilder.count(certificateJoin.get(EntityName.NAME)), 1));
         List<javax.persistence.criteria.Order> orderList = new ArrayList<>();
-        orderList.add(criteriaBuilder.asc(criteriaBuilder.count(certificateJoin.get("name"))));
-        orderList.add(criteriaBuilder.asc(criteriaBuilder.count(orderRoot.get("price"))));
+        orderList.add(criteriaBuilder.asc(criteriaBuilder.count(certificateJoin.get(EntityName.NAME))));
+        orderList.add(criteriaBuilder.asc(criteriaBuilder.count(orderRoot.get(EntityName.PRICE))));
         query.orderBy(orderList);
-        query.multiselect(certificateJoin.get("name"));
+        query.multiselect(certificateJoin.get(EntityName.NAME));
         TypedQuery<Object> typedQuery = entityManager.createQuery(query);
         Optional<Object> name = typedQuery.getResultList().stream().limit(1).findFirst();
         entityManager.close();
