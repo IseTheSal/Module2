@@ -43,7 +43,7 @@ public class RestExceptionHandler {
         RestApplicationError error = new RestApplicationError(exception.getMessage(), exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(TagExistException.class)

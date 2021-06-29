@@ -1,10 +1,12 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditListener;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.List;
 
+@EntityListeners(AuditListener.class)
 @javax.persistence.Entity
 @Table(name = "users")
 public class User extends RepresentationModel<User> implements Entity {

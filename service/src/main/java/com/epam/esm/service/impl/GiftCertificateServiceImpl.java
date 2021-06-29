@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -42,7 +43,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public GiftCertificate create(GiftCertificate giftCertificate) {
         checkCertificateValid(giftCertificate, CREATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
@@ -128,7 +129,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public GiftCertificate update(GiftCertificate giftCertificate) {
         long id = giftCertificate.getId();
         GiftCertificate oldCertificate = giftCertificateDao.findById(id)
@@ -181,12 +182,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public long delete(long id) {
         if (giftCertificateDao.delete(id)) {
             return id;
         } else {
             throw new GiftCertificateNotFoundException(id);
         }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long removeFromSale(long id) {
+        GiftCertificate giftCertificate = giftCertificateDao.findById(id)
+                .orElseThrow(() -> new GiftCertificateNotFoundException(id));
+        giftCertificate.setForSale(false);
+        GiftCertificate updatedCertificate = giftCertificateDao.update(giftCertificate);
+        return updatedCertificate.getId();
     }
 
     @Override
@@ -202,7 +214,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (sortType != null && !sortType.equalsIgnoreCase(ASC_SORT) && !sortType.equalsIgnoreCase(DESC_SORT)) {
             throw new ValidationException(messageSource.getMessage("error.gift.sort.type", new Object[]{sortType},
                     LocaleContextHolder.getLocale()));
-
         }
     }
 

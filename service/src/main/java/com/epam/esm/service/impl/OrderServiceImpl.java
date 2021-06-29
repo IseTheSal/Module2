@@ -11,11 +11,12 @@ import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -23,14 +24,12 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final GiftCertificateDao giftCertificateDao;
     private final UserDao userDao;
-    private final MessageSource messageSource;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, GiftCertificateDao giftCertificateDao, UserDao userDao, MessageSource messageSource) {
+    public OrderServiceImpl(OrderDao orderDao, GiftCertificateDao giftCertificateDao, UserDao userDao) {
         this.orderDao = orderDao;
         this.giftCertificateDao = giftCertificateDao;
         this.userDao = userDao;
-        this.messageSource = messageSource;
     }
 
     @Override
@@ -45,17 +44,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public Order create(Order order) {
         Order newOrder = new Order();
         long userId = order.getUser().getId();
         User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         newOrder.setUser(user);
         long certificateId = order.getCertificate().getId();
-        GiftCertificate giftCertificate = giftCertificateDao.findById(certificateId)
-                .orElseThrow(() -> new GiftCertificateNotFoundException(certificateId));
-        newOrder.setCertificate(giftCertificate);
-        newOrder.setPrice(giftCertificate.getPrice());
+        Optional<GiftCertificate> giftCertificate = giftCertificateDao.findById(certificateId);
+        if ((!giftCertificate.isPresent())
+                || (!giftCertificate.get().isForSale())) {
+            throw new GiftCertificateNotFoundException(certificateId);
+        }
+        GiftCertificate certificate = giftCertificate.get();
+        newOrder.setCertificate(certificate);
+        newOrder.setPrice(certificate.getPrice());
         return orderDao.create(newOrder);
     }
 

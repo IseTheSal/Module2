@@ -1,14 +1,15 @@
 create table gift_certificates
 (
-    id               bigserial    not null
+    id               bigserial            not null
         constraint gift_certificate_pk
             primary key,
-    name             varchar(30)  not null,
-    description      varchar(100) not null,
-    price            numeric      not null,
-    duration         integer      not null,
-    create_date      timestamp    not null,
-    last_update_date timestamp    not null
+    name             varchar(30)          not null,
+    description      varchar(100)         not null,
+    price            numeric              not null,
+    duration         integer              not null,
+    create_date      timestamp            not null,
+    last_update_date timestamp            not null,
+    for_sale         boolean default true not null
 );
 
 create

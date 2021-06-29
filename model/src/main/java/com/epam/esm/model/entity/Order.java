@@ -1,11 +1,13 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditListener;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@EntityListeners(AuditListener.class)
 @javax.persistence.Entity
 @Table(name = "orders")
 public class Order extends RepresentationModel<Order> implements Entity {

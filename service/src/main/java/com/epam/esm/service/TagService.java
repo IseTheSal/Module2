@@ -8,7 +8,6 @@ import com.epam.esm.model.entity.Tag;
  *
  * @author Illia Aheyeu
  */
-
 public interface TagService extends CommonEntityService<Tag> {
 
     /**
@@ -27,5 +26,10 @@ public interface TagService extends CommonEntityService<Tag> {
      */
     long delete(long id);
 
+    /**
+     * Find the most widely used tag
+     *
+     * @return {@link Tag}
+     */
     Tag findMostWidelyUsedTag();
 }

@@ -1,6 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.entity.Entity;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 
@@ -38,21 +37,37 @@ public interface GiftCertificateService extends CommonEntityService<GiftCertific
 
 
     /**
-     * Intermediate method used to validate {@link Entity Entity} and then call create method from dao layer.
+     * Intermediate method used to validate {@link GiftCertificate} and then call create method from dao layer.
      *
-     * @param entity Any Object that implements {@link Entity Entity} interface
+     * @param entity {@link GiftCertificate}
      * @return That created entity
      */
     GiftCertificate create(GiftCertificate entity);
 
 
     /**
-     * Intermediate method used to validate <code>id</code> of {@link Entity Entity} and then call delete method from dao layer.
+     * Remove certificate from sales option
      *
-     * @param id <code>id</code> of object that implements {{@link Entity Entity}}
+     * @param id <code>id</code> of {@link GiftCertificate}
+     * @return <code>id</code> of {@link GiftCertificate}
+     */
+    long removeFromSale(long id);
+
+    /**
+     * Intermediate method used to validate <code>id</code> of {@link GiftCertificate} and then call delete method from dao layer.
+     *
+     * @param id <code>id</code> of {@link GiftCertificate}
      * @return <code>id</code> if object was successfully deleted
      */
     long delete(long id);
 
+    /**
+     * Find certificates with 'and' condition
+     *
+     * @param tags   <code>Set</code> of {@link Tag}
+     * @param amount amount
+     * @param page   page
+     * @return <code>List</code> of {@link GiftCertificate}
+     */
     List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page);
 }

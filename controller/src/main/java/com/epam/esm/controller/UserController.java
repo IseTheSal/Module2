@@ -43,7 +43,7 @@ public class UserController {
      *
      * @return <code>List</code> of {@link User User`s}
      */
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<User>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
                                               @RequestParam(required = false, defaultValue = "10") int amount) {
         List<User> userList = userService.findAll(amount, page);

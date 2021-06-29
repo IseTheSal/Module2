@@ -71,19 +71,6 @@ public class GiftCertificateController {
     }
 
     /**
-     * Method used to find all {@link GiftCertificate}.
-     *
-     * @return ResponseEntity with <code>List</code> of {@link GiftCertificate}
-     */
-    @GetMapping("/all")
-    public ResponseEntity<List<GiftCertificate>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
-                                                         @RequestParam(required = false, defaultValue = "10") int amount) {
-        List<GiftCertificate> certificateList = certificateService.findAll(amount, page);
-        certificateList.forEach(Hateoas::createCertificateHateoas);
-        return new ResponseEntity<>(certificateList, HttpStatus.OK);
-    }
-
-    /**
      * Method used to update existing {@link GiftCertificate}.
      *
      * @param giftCertificate {@link GiftCertificate}
@@ -93,6 +80,18 @@ public class GiftCertificateController {
     public ResponseEntity<GiftCertificate> update(@RequestBody GiftCertificate giftCertificate) {
         GiftCertificate certificate = certificateService.update(giftCertificate);
         return new ResponseEntity<>(createCertificateHateoas(certificate), HttpStatus.OK);
+    }
+
+
+    /**
+     * Remove giftCertificate from sale
+     *
+     * @param id {@link GiftCertificate} <code>id</code>
+     * @return ResponseEntity with {@link GiftCertificate} id
+     */
+    @PutMapping("/{id:^[1-9]\\d{0,18}$}")
+    public ResponseEntity<Long> removeFromSales(@PathVariable long id) {
+        return new ResponseEntity<>(certificateService.removeFromSale(id), HttpStatus.OK);
     }
 
     /**
@@ -113,7 +112,8 @@ public class GiftCertificateController {
                                                                   @RequestParam(required = false) String nameOrder,
                                                                   @RequestParam(required = false, defaultValue = "1") int page,
                                                                   @RequestParam(required = false, defaultValue = "10") int amount) {
-        List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder, amount, page);
+        List<GiftCertificate> list = certificateService.findByParameters(tagName, giftValue, dateOrder, nameOrder,
+                amount, page);
         list.forEach(Hateoas::createCertificateHateoas);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }

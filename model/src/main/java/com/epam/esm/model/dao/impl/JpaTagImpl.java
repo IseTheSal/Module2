@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
@@ -17,72 +16,54 @@ import java.util.Optional;
 @Repository
 public class JpaTagImpl implements TagDao {
 
-    private final EntityManagerFactory entityFactory;
+    private final EntityManager entityManager;
 
     @Autowired
-    public JpaTagImpl(EntityManagerFactory entityManagerFactory) {
-        this.entityFactory = entityManagerFactory;
+    public JpaTagImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public Tag create(Tag tag) {
+        entityManager.persist(tag);
+        return tag;
     }
 
     @Override
     public Optional<Tag> findById(long id) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         Tag tag = entityManager.find(Tag.class, id);
-        entityManager.close();
         return Optional.ofNullable(tag);
     }
 
     @Override
     public List<Tag> findAll(int amount, int page) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> query = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> tagRoot = query.from(Tag.class);
         query.select(tagRoot);
-        List<Tag> resultList = entityManager.createQuery(query).setMaxResults(amount).setFirstResult(amount * page)
-                .getResultList();
-        entityManager.close();
-        return resultList;
+        return entityManager.createQuery(query).setMaxResults(amount).setFirstResult(amount * page).getResultList();
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> query = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> tagRoot = query.from(Tag.class);
         query.select(tagRoot).where(criteriaBuilder.equal(tagRoot.get(EntityName.NAME), name));
-        Optional<Tag> tag = entityManager.createQuery(query).getResultStream().findAny();
-        entityManager.close();
-        return tag;
-    }
-
-    @Override
-    public Tag create(Tag tag) {
-        EntityManager entityManager = entityFactory.createEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.persist(tag);
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        return tag;
+        return entityManager.createQuery(query).getResultStream().findAny();
     }
 
     @Override
     public boolean delete(long id) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaDelete<Tag> criteriaDelete = criteriaBuilder.createCriteriaDelete(Tag.class);
         Root<Tag> tagRoot = criteriaDelete.from(Tag.class);
         criteriaDelete.where(criteriaBuilder.equal(tagRoot.get(EntityName.ID), id));
-        CriteriaQuery<Object> query = criteriaBuilder.createQuery();
-        boolean isDeleted = (entityManager.createQuery(query).executeUpdate() == 1);
-        entityManager.close();
-        return isDeleted;
+        return (entityManager.createQuery(criteriaDelete).executeUpdate() == 1);
     }
 
     @Override
     public Optional<Tag> findMostWidelyUsedTag() {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         Root<Order> orderRoot = query.from(Order.class);
@@ -96,7 +77,6 @@ public class JpaTagImpl implements TagDao {
         query.multiselect(certificateJoin.get(EntityName.NAME));
         TypedQuery<Object> typedQuery = entityManager.createQuery(query);
         Optional<Object> name = typedQuery.getResultList().stream().limit(1).findFirst();
-        entityManager.close();
         return name.isPresent() ? findByName(((String) name.get())) : Optional.empty();
     }
 }

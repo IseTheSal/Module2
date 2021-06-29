@@ -1,5 +1,6 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditListener;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@EntityListeners(AuditListener.class)
 @javax.persistence.Entity
 @Table(name = "gift_certificates")
 public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Entity {
@@ -30,6 +32,8 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     @Column(name = "last_update_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdateDate;
+    @Column(name = "for_sale")
+    private boolean forSale = true;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(name = "certificate_tag", joinColumns = {@JoinColumn(name = "certificate_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")}
@@ -39,7 +43,8 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     public GiftCertificate() {
     }
 
-    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration,
+                           LocalDateTime createDate, LocalDateTime lastUpdateDate, boolean forSale) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -47,6 +52,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
+        this.forSale = forSale;
     }
 
     public long getId() {
@@ -103,6 +109,14 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
 
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public boolean isForSale() {
+        return forSale;
+    }
+
+    public void setForSale(boolean forSale) {
+        this.forSale = forSale;
     }
 
     public Set<Tag> getTags() {

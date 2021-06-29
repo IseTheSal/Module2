@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,51 +17,40 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
     private static final String DESC = "DESC";
     private static final String PERCENT = "%";
 
-    private final EntityManagerFactory entityFactory;
+    private final EntityManager entityManager;
 
     @Autowired
-    public JpaGiftCertificateImpl(EntityManagerFactory entityFactory) {
-        this.entityFactory = entityFactory;
+    public JpaGiftCertificateImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
     public Optional<GiftCertificate> findById(long id) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         GiftCertificate giftCertificate = entityManager.find(GiftCertificate.class, id);
-        entityManager.close();
         return Optional.ofNullable(giftCertificate);
     }
 
     @Override
     public List<GiftCertificate> findAll(int amount, int page) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> query = criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> certificateRoot = query.from(GiftCertificate.class);
         query.select(certificateRoot);
-        List<GiftCertificate> resultList = entityManager.createQuery(query).setMaxResults(amount)
-                .setFirstResult(page * amount).getResultList();
-        entityManager.close();
-        return resultList;
+        return entityManager.createQuery(query).setMaxResults(amount).setFirstResult(page * amount).getResultList();
     }
 
     @Override
     public GiftCertificate update(GiftCertificate giftCertificate) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         if (giftCertificate.getLastUpdateDate() == null) {
             giftCertificate.setLastUpdateDate(LocalDateTime.now());
         }
-        entityManager.getTransaction().begin();
         entityManager.merge(giftCertificate);
-        entityManager.getTransaction().commit();
-        entityManager.close();
         return giftCertificate;
     }
 
     @Override
     public List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
                                                   String nameOrderType, int amount, int page) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> query = criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> certificateRoot = query.from(GiftCertificate.class);
@@ -97,50 +85,36 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
                     : criteriaBuilder.asc(certificateRoot.get(EntityName.NAME));
             query.orderBy(name);
         }
-        List<GiftCertificate> resultList = entityManager.createQuery(query).setMaxResults(amount)
-                .setFirstResult(page * amount).getResultList();
-        entityManager.close();
-        return resultList;
+        return entityManager.createQuery(query).setMaxResults(amount).setFirstResult(page * amount).getResultList();
     }
 
     @Override
     public GiftCertificate create(GiftCertificate giftCertificate) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         LocalDateTime now = LocalDateTime.now();
         giftCertificate.setCreateDate(now);
         giftCertificate.setLastUpdateDate(now);
-        entityManager.getTransaction().begin();
         entityManager.persist(giftCertificate);
-        entityManager.getTransaction().commit();
-        entityManager.close();
         return giftCertificate;
     }
 
     @Override
     public boolean delete(long id) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaDelete<GiftCertificate> criteriaDelete = criteriaBuilder.createCriteriaDelete(GiftCertificate.class);
         Root<GiftCertificate> certificateRoot = criteriaDelete.from(GiftCertificate.class);
         criteriaDelete.where(criteriaBuilder.equal(certificateRoot.get(EntityName.ID), id));
-        entityManager.getTransaction().begin();
-        boolean isDeleted = (entityManager.createQuery(criteriaDelete).executeUpdate() > 0);
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        return isDeleted;
+        return (entityManager.createQuery(criteriaDelete).executeUpdate() > 0);
     }
 
     @Override
     public List<GiftCertificate> findBySeveralTags(String[] tagNames, int amount, int page) {
-        EntityManager entityManager = entityFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> query = criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> certificateRoot = query.from(GiftCertificate.class);
         Join<Object, Object> tags = certificateRoot.join(EntityName.TAGS);
-        query.select(certificateRoot).where(tags.get(EntityName.NAME).in(tagNames));
-        List<GiftCertificate> resultList = entityManager.createQuery(query).setMaxResults(amount)
-                .setFirstResult(page * amount).getResultList();
-        entityManager.close();
-        return resultList;
+        query.select(certificateRoot).where(tags.get(EntityName.NAME).in(tagNames))
+                .groupBy(certificateRoot.get(EntityName.ID))
+                .having(criteriaBuilder.equal(criteriaBuilder.countDistinct(tags.get(EntityName.NAME)), tagNames.length));
+        return entityManager.createQuery(query).setMaxResults(amount).setFirstResult(page * amount).getResultList();
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +29,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Tag create(Tag tag) {
         String name = tag.getName();
         if (TagValidator.isNameValid(name)) {
@@ -51,6 +54,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public long delete(long id) {
         if (tagDao.delete(id)) {
             return id;
