@@ -114,8 +114,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             preparedStatement.setString(2, certificate.getDescription());
             preparedStatement.setBigDecimal(3, certificate.getPrice());
             preparedStatement.setObject(4, certificate.getDuration());
-            preparedStatement.setLong(5, certificate.getId());
-            preparedStatement.setBoolean(6, certificate.isForSales());
+            preparedStatement.setBoolean(5, certificate.isForSales());
+            preparedStatement.setLong(6, certificate.getId());
             return preparedStatement;
         });
         attachTagToCertificate(certificate.getId(), certificate.getTags());

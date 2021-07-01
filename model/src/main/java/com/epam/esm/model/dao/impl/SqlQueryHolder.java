@@ -46,7 +46,7 @@ public class SqlQueryHolder {
             " description = COALESCE(?, description)," +
             " price = COALESCE(?, price)," +
             " duration = COALESCE(?, duration)," +
-            " last_update_date = now()" +
+            " last_update_date = now()," +
             " for_sale = ?" +
             " WHERE id = ?";
     static final String FIND_TAG_BY_ID = "SELECT id, name FROM tags WHERE id = ?";

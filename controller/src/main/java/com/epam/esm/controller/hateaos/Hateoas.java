@@ -31,7 +31,6 @@ public class Hateoas {
     private static final String FIND_MOST_WIDELY_USED_TAG = "Find most widely used";
 
     public static GiftCertificate createCertificateHateoas(GiftCertificate certificate) {
-        certificate.getTags().forEach(Hateoas::createTagHateoas);
         return certificate
                 .add(linkTo(methodOn(GiftCertificateController.class).findById(certificate.getId())).withSelfRel()
                         .withName(FIND_BY_ID))

@@ -162,9 +162,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificateDao.findBySeveralTags(tagNames, amount, page - 1);
     }
 
-    public long removeFromSales(long id){
+    @Override
+    public long removeFromSales(long id) {
         GiftCertificate giftCertificate = findById(id);
-        giftCertificate.setForSales(true);
+        giftCertificate.setForSales(false);
         GiftCertificate updated = update(giftCertificate);
         return updated.getId();
     }

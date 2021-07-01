@@ -119,4 +119,15 @@ public class GiftCertificateController {
         certificateList.forEach(Hateoas::createCertificateHateoas);
         return new ResponseEntity<>(certificateList, HttpStatus.OK);
     }
+
+    /**
+     * Remove giftCertificate from sale
+     *
+     * @param id {@link GiftCertificate} <code>id</code>
+     * @return ResponseEntity with {@link GiftCertificate} id
+     */
+    @PutMapping("/{id:^[1-9]\\d{0,18}$}")
+    public ResponseEntity<Long> removeFromSales(@PathVariable long id) {
+        return new ResponseEntity<>(certificateService.removeFromSales(id), HttpStatus.OK);
+    }
 }

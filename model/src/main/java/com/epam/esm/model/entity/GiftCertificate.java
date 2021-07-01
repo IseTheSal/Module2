@@ -20,7 +20,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     private LocalDateTime createDate;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdateDate;
-    private boolean forSales;
+    private boolean forSales = true;
     private Set<Tag> tags;
 
     public GiftCertificate() {
