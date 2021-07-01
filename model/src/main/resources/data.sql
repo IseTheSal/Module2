@@ -64,7 +64,7 @@ VALUES (1, 1, 200000, '2021-06-24 21:18:50.000000', 10);
 INSERT INTO public.tags (id, name)
 VALUES (6, 'работает');
 INSERT INTO public.gift_certificates (id, name, description, price, duration, create_date, last_update_date)
-VALUES (4, 'ТЕСТОВЫЙ', 'Экстримально и страшно', 1200000.99, 30, '2021-06-14 00:06:20.111000',
+VALUES (4, 'ТЕСТОВЫЙ', 'Экстримально и страшно', 12000.99, 30, '2021-06-14 00:06:20.111000',
         '2021-06-14 00:06:20.111000');
 INSERT INTO public.gift_certificates (id, name, description, price, duration, create_date, last_update_date)
 VALUES (5, 'ТЕСТОВЫЙ2', 'Экстримально и страшно', 120.99, 30, '2021-06-14 00:06:20.111000',
@@ -74,8 +74,8 @@ VALUES (4, 6);
 INSERT INTO public.certificate_tag (certificate_id, tag_id)
 VALUES (5, 6);
 INSERT INTO public.orders (user_id, certificate_id, price, purchase_date, id)
-VALUES (1, 4, 5000000.05, '2021-06-24 20:48:10.000000', 11);
+VALUES (1, 4, 500.05, '2021-06-24 20:48:10.000000', 11);
 INSERT INTO public.orders (user_id, certificate_id, price, purchase_date, id)
-VALUES (1, 5, 5000000.05, '2021-06-24 20:49:10.000000', 12);
+VALUES (1, 5, 500.05, '2021-06-24 20:49:10.000000', 12);
 INSERT INTO public.orders (user_id, certificate_id, price, purchase_date, id)
-VALUES (1, 5, 54000000.05, '2021-06-24 20:49:10.000000', 13);
+VALUES (1, 5, 5400.05, '2021-06-24 20:49:10.000000', 13);

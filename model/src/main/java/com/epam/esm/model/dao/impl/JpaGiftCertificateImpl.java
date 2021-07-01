@@ -2,10 +2,10 @@ package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.entity.GiftCertificate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,12 +17,8 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
     private static final String DESC = "DESC";
     private static final String PERCENT = "%";
 
-    private final EntityManager entityManager;
-
-    @Autowired
-    public JpaGiftCertificateImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Optional<GiftCertificate> findById(long id) {

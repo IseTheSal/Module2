@@ -229,4 +229,5 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         return giftCertificateDao.findBySeveralTags(tagNames, amount, page - 1);
     }
+
 }

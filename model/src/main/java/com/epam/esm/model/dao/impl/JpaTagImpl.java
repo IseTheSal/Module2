@@ -3,25 +3,19 @@ package com.epam.esm.model.dao.impl;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class JpaTagImpl implements TagDao {
 
-    private final EntityManager entityManager;
-
-    @Autowired
-    public JpaTagImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Tag create(Tag tag) {
@@ -62,21 +56,33 @@ public class JpaTagImpl implements TagDao {
         return (entityManager.createQuery(criteriaDelete).executeUpdate() == 1);
     }
 
+
     @Override
     public Optional<Tag> findMostWidelyUsedTag() {
+        long userId = findUserIdWithMostMoneySpent();
+        String tagName = findPopularTagOfUser(userId);
+        return findByName(tagName);
+    }
+
+    private long findUserIdWithMostMoneySpent() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         Root<Order> orderRoot = query.from(Order.class);
-        Join<Object, Object> certificateJoin = orderRoot.join(EntityName.CERTIFICATE).join(EntityName.TAGS);
-        query.groupBy(orderRoot.get(EntityName.USER), certificateJoin.get(EntityName.ID));
-        query.having(criteriaBuilder.gt(criteriaBuilder.count(certificateJoin.get(EntityName.NAME)), 1));
-        List<javax.persistence.criteria.Order> orderList = new ArrayList<>();
-        orderList.add(criteriaBuilder.asc(criteriaBuilder.count(certificateJoin.get(EntityName.NAME))));
-        orderList.add(criteriaBuilder.asc(criteriaBuilder.count(orderRoot.get(EntityName.PRICE))));
-        query.orderBy(orderList);
-        query.multiselect(certificateJoin.get(EntityName.NAME));
-        TypedQuery<Object> typedQuery = entityManager.createQuery(query);
-        Optional<Object> name = typedQuery.getResultList().stream().limit(1).findFirst();
-        return name.isPresent() ? findByName(((String) name.get())) : Optional.empty();
+        Path<Object> orderUser = orderRoot.get(EntityName.USER).get(EntityName.ID);
+        query.select(orderUser).groupBy(orderUser).orderBy(criteriaBuilder
+                .desc(criteriaBuilder.sum(orderRoot.get(EntityName.PRICE))));
+        Optional<Object> userOptional = entityManager.createQuery(query).getResultList().stream().findFirst();
+        return ((Long) userOptional.get());
+    }
+
+    private String findPopularTagOfUser(long userId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object> query = criteriaBuilder.createQuery();
+        Root<Order> orderRoot = query.from(Order.class);
+        query.where(criteriaBuilder.equal(orderRoot.get(EntityName.USER).get(EntityName.ID), userId));
+        Path<Object> joinOrderTag = orderRoot.join(EntityName.CERTIFICATE).join(EntityName.TAGS).get(EntityName.NAME);
+        query.select(joinOrderTag).groupBy(joinOrderTag).orderBy(criteriaBuilder.desc(criteriaBuilder.count(joinOrderTag)));
+        Optional<Object> tagName = entityManager.createQuery(query).setMaxResults(1).getResultList().stream().findFirst();
+        return (String) tagName.get();
     }
 }

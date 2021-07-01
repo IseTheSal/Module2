@@ -18,6 +18,7 @@
         <servletapi.version>4.0.1</servletapi.version>
         <mockito.version>3.3.3</mockito.version>
         <lombok.version>1.18.12</lombok.version>
+        <persistence.vertion>2.2</persistence.vertion>
     </properties>
 
     <groupId>com.epam</groupId>
@@ -97,9 +98,29 @@
                 <version>${dbcp2.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${fasterxml.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-test</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <version>${persistence.vertion}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

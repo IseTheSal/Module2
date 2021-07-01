@@ -35,7 +35,6 @@ public class Hateoas {
     private static final String DELETE = "DELETE";
 
     public static GiftCertificate createCertificateHateoas(GiftCertificate certificate) {
-        certificate.getTags().forEach(Hateoas::createTagHateoas);
         return certificate
                 .add(linkTo(methodOn(GiftCertificateController.class).findById(certificate.getId())).withSelfRel()
                         .withName(FIND_BY_ID).withType(GET))

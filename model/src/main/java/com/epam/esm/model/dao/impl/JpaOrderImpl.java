@@ -2,10 +2,10 @@ package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.OrderDao;
 import com.epam.esm.model.entity.Order;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -16,12 +16,8 @@ import java.util.Optional;
 @Repository
 public class JpaOrderImpl implements OrderDao {
 
-    private final EntityManager entityManager;
-
-    @Autowired
-    public JpaOrderImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Optional<Order> findById(long id) {
@@ -40,10 +36,8 @@ public class JpaOrderImpl implements OrderDao {
 
     @Override
     public Order create(Order order) {
-        entityManager.getTransaction().begin();
         order.setPurchaseDate(LocalDateTime.now());
         entityManager.persist(order);
-        entityManager.getTransaction().commit();
         return order;
     }
 
