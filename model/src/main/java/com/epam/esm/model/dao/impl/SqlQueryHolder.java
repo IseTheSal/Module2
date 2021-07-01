@@ -9,18 +9,18 @@ public class SqlQueryHolder {
     static final String CLOSE_BRACKET = ")";
 
     static final String CREATE_CERTIFICATE = "INSERT INTO gift_certificates" +
-            " (id, name, description, price, duration, create_date, last_update_date)" +
-            " VALUES(default, ?, ?, ?, ?, now(), now())";
+            " (id, name, description, price, duration, create_date, last_update_date, for_sale)" +
+            " VALUES(default, ?, ?, ?, ?, now(), now(), ?)";
     static final String ATTACH_ID_VALUES = "INSERT INTO certificate_tag(certificate_id, tag_id) VALUES(?,?)";
     static final String DELETE_CERTIFICATE = "DELETE FROM gift_certificates WHERE id = ?";
     static final String FIND_ALL_CERTIFICATE_TAGS = "SELECT id, name FROM tags" +
             " INNER JOIN certificate_tag ct on tags.id = ct.tag_id WHERE ct.certificate_id = ?";
     static final String FIND_ALL_CERTIFICATES = "SELECT gift_certificates.id, gift_certificates.name," +
             " description, price, duration, create_date," +
-            " last_update_date FROM gift_certificates";
+            " last_update_date, for_sale FROM gift_certificates";
     static final String FIND_ALL_DISTINCT_CERTIFICATES = "SELECT DISTINCT gift_certificates.id, gift_certificates.name," +
             " description, price, duration, create_date," +
-            " last_update_date FROM gift_certificates";
+            " last_update_date, for_sale FROM gift_certificates";
     static final String INNER_JOIN_CERTIFICATE_TAG = " INNER JOIN certificate_tag ct on gift_certificates.id = ct.certificate_id" +
             " INNER JOIN tags t on t.id = ct.tag_id";
     static final String FIND_BY_TAG_NAME_CLAUSE = INNER_JOIN_CERTIFICATE_TAG + " WHERE t.name = ?";
@@ -31,7 +31,6 @@ public class SqlQueryHolder {
             " INNER JOIN certificate_tag ct on gc.id = ct.certificate_id" +
             " INNER JOIN tags t on t.id = ct.tag_id" +
             " GROUP BY orders.user_id, t.id" +
-            " HAVING count(t.name) > 1" +
             " ORDER BY SUM(orders.price) DESC, COUNT(t.name) DESC" +
             " LIMIT 1";
     static final String FIND_CERTIFICATES_WITH_TAGS_END = " GROUP BY gift_certificates.id" +
@@ -48,6 +47,7 @@ public class SqlQueryHolder {
             " price = COALESCE(?, price)," +
             " duration = COALESCE(?, duration)," +
             " last_update_date = now()" +
+            " for_sale = ?" +
             " WHERE id = ?";
     static final String FIND_TAG_BY_ID = "SELECT id, name FROM tags WHERE id = ?";
     static final String FIND_TAG_BY_NAME = "SELECT id, name FROM tags WHERE name = ?";

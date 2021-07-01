@@ -71,19 +71,6 @@ public class GiftCertificateController {
     }
 
     /**
-     * Method used to find all {@link GiftCertificate}.
-     *
-     * @return ResponseEntity with <code>List</code> of {@link GiftCertificate}
-     */
-    @GetMapping("/all")
-    public ResponseEntity<List<GiftCertificate>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
-                                                         @RequestParam(required = false, defaultValue = "10") int amount) {
-        List<GiftCertificate> certificateList = certificateService.findAll(amount, page);
-        certificateList.forEach(Hateoas::createCertificateHateoas);
-        return new ResponseEntity<>(certificateList, HttpStatus.OK);
-    }
-
-    /**
      * Method used to update existing {@link GiftCertificate}.
      *
      * @param giftCertificate {@link GiftCertificate}

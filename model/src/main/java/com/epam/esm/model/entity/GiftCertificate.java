@@ -20,12 +20,13 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     private LocalDateTime createDate;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdateDate;
+    private boolean forSales;
     private Set<Tag> tags;
 
     public GiftCertificate() {
     }
 
-    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, boolean forSales) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -33,6 +34,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
+        this.forSales = forSales;
     }
 
     public long getId() {
@@ -89,6 +91,14 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
 
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public boolean isForSales() {
+        return forSales;
+    }
+
+    public void setForSales(boolean forSales) {
+        this.forSales = forSales;
     }
 
     public Set<Tag> getTags() {

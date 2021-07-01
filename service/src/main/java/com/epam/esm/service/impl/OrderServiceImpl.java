@@ -6,6 +6,7 @@ import com.epam.esm.error.exception.UserNotFoundException;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.OrderDao;
 import com.epam.esm.model.dao.UserDao;
+import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -49,8 +51,11 @@ public class OrderServiceImpl implements OrderService {
         long userId = order.getUserId();
         userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         long certificateId = order.getCertificateId();
-        BigDecimal price = giftCertificateDao.findById(certificateId)
-                .orElseThrow(() -> new GiftCertificateNotFoundException(certificateId)).getPrice();
+        Optional<GiftCertificate> giftCertificate = giftCertificateDao.findById(certificateId);
+        if (!giftCertificate.isPresent() || !giftCertificate.get().isForSales()) {
+            throw new GiftCertificateNotFoundException(certificateId);
+        }
+        BigDecimal price = giftCertificate.get().getPrice();
         order.setPrice(price);
         return orderDao.create(order);
     }

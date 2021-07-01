@@ -28,6 +28,6 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> findAll(int amount, int page) {
         return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_USERS + SqlQueryHolder.PAGE_LIMIT_OFFSET,
-                new UserMapper(), amount, page);
+                new UserMapper(), amount, page * amount);
     }
 }

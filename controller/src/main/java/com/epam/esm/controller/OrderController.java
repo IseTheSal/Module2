@@ -77,7 +77,7 @@ public class OrderController {
      *
      * @return <code>List</code> of {@link Order orders}
      */
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Order>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
                                                @RequestParam(required = false, defaultValue = "10") int amount) {
         List<Order> orderList = orderService.findAll(amount, page);

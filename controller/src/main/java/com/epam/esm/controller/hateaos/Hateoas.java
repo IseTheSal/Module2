@@ -35,8 +35,6 @@ public class Hateoas {
         return certificate
                 .add(linkTo(methodOn(GiftCertificateController.class).findById(certificate.getId())).withSelfRel()
                         .withName(FIND_BY_ID))
-                .add(linkTo(methodOn(GiftCertificateController.class).findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
-                        .withName(FIND_ALL))
                 .add(linkTo(methodOn(GiftCertificateController.class).delete(certificate.getId())).withSelfRel()
                         .withName(DELETE))
                 .add(linkTo(methodOn(GiftCertificateController.class).create(certificate)).withSelfRel()

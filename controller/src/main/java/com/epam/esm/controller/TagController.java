@@ -50,7 +50,7 @@ public class TagController {
      *
      * @return ResponseEntity with <code>List</code> of {@link Tag}
      */
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Tag>> findAllTags(@RequestParam(required = false, defaultValue = "1") int page,
                                                  @RequestParam(required = false, defaultValue = "10") int amount) {
         List<Tag> tagList = tagService.findAll(amount, page);
