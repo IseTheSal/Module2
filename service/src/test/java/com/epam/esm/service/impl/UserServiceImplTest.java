@@ -56,7 +56,7 @@ class UserServiceImplTest {
     @Test
     void findAll() {
         Mockito.when(dao.findAll(100, 0)).thenReturn(userList);
-        List<User> actual = service.findAll(1000, 0);
+        List<User> actual = service.findAll(100, 1);
         List<User> expected = userList;
         Assertions.assertEquals(expected, actual);
     }
