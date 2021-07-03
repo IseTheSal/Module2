@@ -7,15 +7,17 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <spring.version>5.3.7</spring.version>
+        <spring.boot.version>2.5.1</spring.boot.version>
         <module.version>1.0</module.version>
         <jupiter.version>5.7.1</jupiter.version>
-        <spring.version>5.3.7</spring.version>
         <h2.version>1.4.200</h2.version>
         <postgres.version>42.2.20</postgres.version>
         <dbcp2.version>2.7.0</dbcp2.version>
         <fasterxml.version>2.12.3</fasterxml.version>
         <servletapi.version>4.0.1</servletapi.version>
         <mockito.version>3.3.3</mockito.version>
+        <lombok.version>1.18.12</lombok.version>
     </properties>
 
     <groupId>com.epam</groupId>
@@ -31,6 +33,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-hateoas</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>model</artifactId>
@@ -119,6 +131,21 @@
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${servletapi.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

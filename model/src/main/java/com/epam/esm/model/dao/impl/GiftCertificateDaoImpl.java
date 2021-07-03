@@ -11,8 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -30,34 +28,30 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final TagDao tagDao;
-    private final TransactionTemplate transactionTemplate;
-
 
     @Autowired
-    public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao, PlatformTransactionManager manager) {
+    public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDao tagDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.tagDao = tagDao;
-        this.transactionTemplate = new TransactionTemplate(manager);
     }
 
     @Override
     public GiftCertificate create(GiftCertificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        return transactionTemplate.execute(status -> {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(SqlQueryHolder.CREATE_CERTIFICATE,
-                        Statement.RETURN_GENERATED_KEYS);
-                preparedStatement.setString(1, certificate.getName());
-                preparedStatement.setString(2, certificate.getDescription());
-                preparedStatement.setBigDecimal(3, certificate.getPrice());
-                preparedStatement.setInt(4, certificate.getDuration());
-                return preparedStatement;
-            }, keyHolder);
-            long id = (long) keyHolder.getKeys().get(SqlQueryHolder.ID_KEY_HOLDER);
-            attachTagToCertificate(id, certificate.getTags());
-            certificate.setId(id);
-            return findById(id).get();
-        });
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQueryHolder.CREATE_CERTIFICATE,
+                    Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, certificate.getName());
+            preparedStatement.setString(2, certificate.getDescription());
+            preparedStatement.setBigDecimal(3, certificate.getPrice());
+            preparedStatement.setInt(4, certificate.getDuration());
+            preparedStatement.setBoolean(5, certificate.isForSales());
+            return preparedStatement;
+        }, keyHolder);
+        long id = (long) keyHolder.getKeys().get(SqlQueryHolder.ID_KEY_HOLDER);
+        attachTagToCertificate(id, certificate.getTags());
+        certificate.setId(id);
+        return findById(id).get();
     }
 
     private void attachTagToCertificate(long certificateId, Set<Tag> tagSet) {
@@ -99,9 +93,10 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> findAll() {
-        List<GiftCertificate> giftList = jdbcTemplate.query(SqlQueryHolder.FIND_ALL_CERTIFICATES,
-                new GiftCertificateMapper());
+    public List<GiftCertificate> findAll(int amount, int page) {
+        List<GiftCertificate> giftList = jdbcTemplate.query(SqlQueryHolder.FIND_ALL_CERTIFICATES
+                        + SqlQueryHolder.PAGE_LIMIT_OFFSET,
+                new GiftCertificateMapper(), amount, page * amount);
         return attachTagsToCertificate(giftList);
     }
 
@@ -112,20 +107,19 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public GiftCertificate update(GiftCertificate certificate) {
-        return transactionTemplate.execute(status -> {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(SqlQueryHolder.UPDATE_CERTIFICATE,
-                        Statement.RETURN_GENERATED_KEYS);
-                preparedStatement.setString(1, certificate.getName());
-                preparedStatement.setString(2, certificate.getDescription());
-                preparedStatement.setBigDecimal(3, certificate.getPrice());
-                preparedStatement.setObject(4, certificate.getDuration());
-                preparedStatement.setLong(5, certificate.getId());
-                return preparedStatement;
-            });
-            attachTagToCertificate(certificate.getId(), certificate.getTags());
-            return findById(certificate.getId()).get();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQueryHolder.UPDATE_CERTIFICATE,
+                    Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, certificate.getName());
+            preparedStatement.setString(2, certificate.getDescription());
+            preparedStatement.setBigDecimal(3, certificate.getPrice());
+            preparedStatement.setObject(4, certificate.getDuration());
+            preparedStatement.setBoolean(5, certificate.isForSales());
+            preparedStatement.setLong(6, certificate.getId());
+            return preparedStatement;
         });
+        attachTagToCertificate(certificate.getId(), certificate.getTags());
+        return findById(certificate.getId()).get();
     }
 
     private List<GiftCertificate> attachTagsToCertificate(List<GiftCertificate> certificateList) {
@@ -139,9 +133,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
-                                                  String nameOrderType) {
+                                                  String nameOrderType, int amount, int page) {
         String query = SqlQueryHolder.FIND_ALL_CERTIFICATES;
-        List<String> queryParamValues = new ArrayList<>();
+        List<Object> queryParamValues = new ArrayList<>();
         if ((tagName != null) && (giftValue != null)) {
             query += SqlQueryHolder.FIND_BY_TAG_NAME_CLAUSE + SqlQueryHolder.AND_DESCRIPTION_NAME_LIKE_CLAUSE;
             queryParamValues.add(tagName);
@@ -170,8 +164,29 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             String nameSortOrder = SqlQueryHolder.GIFT_NAME + nameOrderSortType;
             query += SqlQueryHolder.ORDER_BY_CLAUSE + nameSortOrder;
         }
+        query += SqlQueryHolder.PAGE_LIMIT_OFFSET;
+        queryParamValues.add(amount);
+        queryParamValues.add(page * amount);
         Object[] paramValues = queryParamValues.toArray();
         List<GiftCertificate> certificateList = jdbcTemplate.query(query, new GiftCertificateMapper(), paramValues);
         return attachTagsToCertificate(certificateList);
     }
+
+    @Override
+    public List<GiftCertificate> findBySeveralTags(String[] tagNames, int amount, int page) {
+        StringBuilder tag = new StringBuilder(SqlQueryHolder.OPEN_BRACKET);
+        for (int i = 0; i < tagNames.length; i++) {
+            tag.append(SqlQueryHolder.APOSTROPHE).append(tagNames[i]).append(SqlQueryHolder.APOSTROPHE);
+            if (i != tagNames.length - 1) {
+                tag.append(SqlQueryHolder.COMMA);
+            }
+        }
+        tag.append(SqlQueryHolder.CLOSE_BRACKET);
+        String query = SqlQueryHolder.FIND_CERTIFICATES_WITH_TAGS_START + tag
+                + SqlQueryHolder.FIND_CERTIFICATES_WITH_TAGS_END + SqlQueryHolder.PAGE_LIMIT_OFFSET;
+        List<GiftCertificate> certificateList = jdbcTemplate.query(query, new GiftCertificateMapper(), tagNames.length, amount, page * amount);
+        attachTagsToCertificate(certificateList);
+        return certificateList;
+    }
+
 }

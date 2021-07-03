@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -19,9 +18,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 class GiftCertificateDaoImplTest {
@@ -43,11 +40,9 @@ class GiftCertificateDaoImplTest {
                 .ignoreFailedDrops(true)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        DataSourceTransactionManager manager = new DataSourceTransactionManager();
-        manager.setDataSource(jdbcTemplate.getDataSource());
         tagDao = new TagDaoImpl(jdbcTemplate);
 
-        certificateDao = new GiftCertificateDaoImpl(jdbcTemplate, tagDao, manager);
+        certificateDao = new GiftCertificateDaoImpl(jdbcTemplate, tagDao);
         giftCertificate = new GiftCertificate();
         giftCertificate.setId(3);
         giftCertificate.setName("Вертолет");
@@ -92,8 +87,7 @@ class GiftCertificateDaoImplTest {
 
     @Test
     void findAll() {
-        List<GiftCertificate> actual = certificateDao.findAll();
-        System.out.println(actual);
+        List<GiftCertificate> actual = certificateDao.findAll(0, 100);
         Assertions.assertEquals(actual.size(), 3);
     }
 
@@ -116,26 +110,6 @@ class GiftCertificateDaoImplTest {
         Assertions.assertEquals(actual, expected);
     }
 
-//    @Test
-//    void findByName() {
-//        List<GiftCertificate> actual = certificateDao.findByNameOrDescription("Вер");
-//        List<GiftCertificate> expected = new ArrayList<>(Collections.singleton(giftCertificate));
-//        Assertions.assertEquals(actual, expected);
-//    }
-//
-//    @Test
-//    void findByDescription() {
-//        List<GiftCertificate> actual = certificateDao.findByNameOrDescription("стри");
-//        List<GiftCertificate> expected = new ArrayList<>(Collections.singleton(giftCertificate));
-//        Assertions.assertEquals(expected, actual);
-//    }
-
-//    @Test
-//    void findByTag() {
-//        List<GiftCertificate> actual = certificateDao.findByTag("sky");
-//        List<GiftCertificate> expected = new ArrayList<>(Collections.singleton(giftCertificate));
-//        Assertions.assertEquals(expected, actual);
-//    }
 
     @Test
     void findByAttributes() {
@@ -143,9 +117,20 @@ class GiftCertificateDaoImplTest {
         String giftValue = "имал";
         String dateOrderType = null;
         String nameOrderType = "ASC";
-        GiftCertificate actual = certificateDao.findByAttributes(tagName, giftValue, dateOrderType, nameOrderType).get(0);
-        System.out.println(actual);
+        int amount = 100;
+        int page = 0;
+        GiftCertificate actual = certificateDao.findByAttributes(tagName, giftValue, dateOrderType, nameOrderType, amount, page).get(0);
         GiftCertificate expected = giftCertificate;
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void findBySeveralTags() {
+        String[] tags = new String[]{"desert", "beach"};
+        int amount = 100;
+        int page = 0;
+
+        List<GiftCertificate> bySeveralTags = certificateDao.findBySeveralTags(tags, amount, page);
+        System.out.println(bySeveralTags);
     }
 }

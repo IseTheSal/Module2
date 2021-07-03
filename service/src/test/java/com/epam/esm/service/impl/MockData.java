@@ -5,7 +5,6 @@ import com.epam.esm.model.entity.Tag;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,5 +39,7 @@ public class MockData {
         UPDATED_GIFT_CERTIFICATE.setDuration(GIFT_CERTIFICATE.getDuration());
         UPDATED_GIFT_CERTIFICATE.setCreateDate(GIFT_CERTIFICATE.getCreateDate());
         UPDATED_GIFT_CERTIFICATE.setLastUpdateDate(LocalDateTime.now());
+
+
     }
 }

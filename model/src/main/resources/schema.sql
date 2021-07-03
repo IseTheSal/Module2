@@ -35,4 +35,34 @@ create table certificate_tag
             on update cascade on delete cascade
 );
 
+create table users
+(
+    id    bigserial   not null
+        constraint users_pk
+            primary key,
+    login varchar(20) not null
+);
 
+create unique index users_id_uindex
+    on users (id);
+
+create unique index users_login_uindex
+    on users (login);
+
+create table orders
+(
+    user_id        bigint    not null
+        constraint user_id_fk
+            references users,
+    certificate_id bigint    not null
+        constraint certificate_id_fk
+            references gift_certificates,
+    price          numeric   not null,
+    purchase_date  timestamp not null,
+    id             bigserial not null
+        constraint orders_pk
+            primary key
+);
+
+create unique index orders_order_id_uindex
+    on orders (id);

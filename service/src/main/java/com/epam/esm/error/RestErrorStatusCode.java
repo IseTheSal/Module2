@@ -1,4 +1,4 @@
-package com.epam.esm.exception;
+package com.epam.esm.error;
 
 public class RestErrorStatusCode {
 

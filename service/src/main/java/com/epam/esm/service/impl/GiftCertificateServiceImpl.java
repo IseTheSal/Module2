@@ -1,8 +1,10 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.GiftCertificateNotFoundException;
-import com.epam.esm.exception.ValidationException;
+import com.epam.esm.error.exception.GiftCertificateNotFoundException;
+import com.epam.esm.error.exception.TagNotFoundException;
+import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.GiftCertificateDao;
+import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
@@ -12,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,15 +31,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDao giftCertificateDao;
     private final MessageSource messageSource;
+    private final TagDao tagDao;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, MessageSource messageSource) {
+    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagDao tagDao, MessageSource messageSource) {
         this.giftCertificateDao = giftCertificateDao;
+        this.tagDao = tagDao;
         this.messageSource = messageSource;
     }
 
 
     @Override
+    @Transactional
     public GiftCertificate create(GiftCertificate giftCertificate) {
         checkCertificateValid(giftCertificate, CREATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
@@ -49,8 +54,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         for (Tag tag : tagSet) {
             String name = tag.getName();
             if (!TagValidator.isNameValid(name)) {
-                exceptionValidMessage.append(messageSource.getMessage("error.tag.validation.name", new Object[]{name},
-                        LocaleContextHolder.getLocale()));
+                exceptionValidMessage.append(messageSource.getMessage("error.tag.validation.name",
+                        new Object[]{name}, LocaleContextHolder.getLocale()));
             }
         }
         String message = exceptionValidMessage.toString();
@@ -97,6 +102,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public GiftCertificate update(GiftCertificate giftCertificate) {
         long id = giftCertificate.getId();
         giftCertificateDao.findById(id).orElseThrow(() -> new GiftCertificateNotFoundException(id));
@@ -112,8 +118,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findAll() {
-        return giftCertificateDao.findAll();
+    public List<GiftCertificate> findAll(int amount, int page) {
+        checkPagination(amount, page);
+        return giftCertificateDao.findAll(amount, page - 1);
     }
 
     @Override
@@ -126,10 +133,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findByParameters(String tagName, String giftValue, String dateSort, String nameSort) {
+    public List<GiftCertificate> findByParameters(String tagName, String giftValue, String dateSort, String nameSort,
+                                                  int amount, int page) {
+        checkPagination(amount, page);
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
-        return giftCertificateDao.findByAttributes(tagName, giftValue, dateSort, nameSort);
+        return giftCertificateDao.findByAttributes(tagName, giftValue, dateSort, nameSort, amount, page - 1);
     }
 
     private void checkSortTypeValid(String sortType) {
@@ -138,5 +147,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     LocaleContextHolder.getLocale()));
 
         }
+    }
+
+    @Override
+    public List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page) {
+        checkPagination(amount, page);
+        String[] tagNames = new String[tags.size()];
+        int i = 0;
+        for (Tag tag : tags) {
+            String name = tag.getName();
+            tagDao.findByName(tag.getName()).orElseThrow(() -> new TagNotFoundException("name=" + name));
+            tagNames[i++] = name;
+        }
+        return giftCertificateDao.findBySeveralTags(tagNames, amount, page - 1);
+    }
+
+    @Override
+    public long removeFromSales(long id) {
+        GiftCertificate giftCertificate = findById(id);
+        giftCertificate.setForSales(false);
+        GiftCertificate updated = update(giftCertificate);
+        return updated.getId();
     }
 }

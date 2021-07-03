@@ -1,30 +1,32 @@
 package com.epam.esm.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class GiftCertificate implements Entity {
+public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Entity {
+
     private long id;
     private String name;
     private String description;
     private BigDecimal price;
     private Integer duration;
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createDate;
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdateDate;
+    private boolean forSales = true;
     private Set<Tag> tags;
 
     public GiftCertificate() {
     }
 
-    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, boolean forSales) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -32,6 +34,7 @@ public class GiftCertificate implements Entity {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
+        this.forSales = forSales;
     }
 
     public long getId() {
@@ -90,6 +93,14 @@ public class GiftCertificate implements Entity {
         this.lastUpdateDate = lastUpdateDate;
     }
 
+    public boolean isForSales() {
+        return forSales;
+    }
+
+    public void setForSales(boolean forSales) {
+        this.forSales = forSales;
+    }
+
     public Set<Tag> getTags() {
         return (tags == null) ? new HashSet<>() : new HashSet<>(tags);
     }
@@ -109,7 +120,7 @@ public class GiftCertificate implements Entity {
         GiftCertificate that = (GiftCertificate) o;
 
         if (id != that.id) return false;
-        if (duration != that.duration) return false;
+        if (!duration.equals(that.duration)) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;

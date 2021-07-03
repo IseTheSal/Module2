@@ -1,9 +1,11 @@
 package com.epam.esm.service;
 
+import com.epam.esm.model.entity.Entity;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface extends {@link GiftCertificate} service functionality
@@ -31,6 +33,42 @@ public interface GiftCertificateService extends CommonEntityService<GiftCertific
      * @param nameSort         <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
      * @return <code>List</code> of {@link GiftCertificate GiftCertificates}
      */
-    List<GiftCertificate> findByParameters(String tagName, String certificateValue,
-                                           String dateSort, String nameSort);
+    List<GiftCertificate> findByParameters(String tagName, String certificateValue, String dateSort, String nameSort,
+                                           int amount, int page);
+
+
+    /**
+     * Intermediate method used to validate {@link GiftCertificate} and then call create method from dao layer.
+     *
+     * @param entity {@link GiftCertificate}
+     * @return That created entity
+     */
+    GiftCertificate create(GiftCertificate entity);
+
+
+    /**
+     * Intermediate method used to validate <code>id</code> of {@link GiftCertificate} and then call delete method from dao layer.
+     *
+     * @param id <code>id</code> of  {@link GiftCertificate}
+     * @return <code>id</code> if object was successfully deleted
+     */
+    long delete(long id);
+
+    /**
+     * Find <code>List</code> of {@link GiftCertificate} with special tags
+     *
+     * @param tags <code>Set</code>
+     * @param amount amount
+     * @param page page
+     * @return <code>List</code> of {@link GiftCertificate}
+     */
+    List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page);
+
+    /**
+     * Set forSale false
+     *
+     * @param id id <code>id</code> of object that implements {@link GiftCertificate}
+     * @return id <code>id</code> of object that implements {@link GiftCertificate}
+     */
+    long removeFromSales(long id);
 }

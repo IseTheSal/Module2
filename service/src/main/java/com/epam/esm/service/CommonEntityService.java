@@ -1,10 +1,9 @@
 package com.epam.esm.service;
 
 
-import com.epam.esm.exception.RestErrorStatusCode;
-import com.epam.esm.exception.ValidationException;
+import com.epam.esm.error.exception.IncorrectPageException;
 import com.epam.esm.model.entity.Entity;
-import com.epam.esm.validator.EntityValidator;
+import com.epam.esm.validator.PageValidator;
 
 import java.util.List;
 
@@ -12,18 +11,10 @@ import java.util.List;
  * <p>Layer service interface between Controller and DAO.</p>
  * <p>Generic interface which providing interaction with your service.</p>
  *
- * @param <T> Any Object that implements {@link Entity Entity} interface
+ * @param <T> Any Object that implements {@link Entity}  interface
  * @author Illia Aheyeu
  */
 public interface CommonEntityService<T extends Entity> {
-
-    /**
-     * Intermediate method used to validate {@link Entity Entity} and then call create method from dao layer.
-     *
-     * @param entity Any Object that implements {@link Entity Entity} interface
-     * @return That created entity
-     */
-    T create(T entity);
 
     /**
      * Intermediate method used to validate <code>id</code> of {@link Entity Entity} and then call find method from dao layer.
@@ -38,13 +29,11 @@ public interface CommonEntityService<T extends Entity> {
      *
      * @return <code>List</code> of {{@link Entity Entity}}
      */
-    List<T> findAll();
+    List<T> findAll(int amount, int page);
 
-    /**
-     * Intermediate method used to validate <code>id</code> of {@link Entity Entity} and then call delete method from dao layer.
-     *
-     * @param id <code>id</code> of object that implements {{@link Entity Entity}}
-     * @return <code>id</code> if object was successfully deleted
-     */
-    long delete(long id);
+    default void checkPagination(int amount, int page) {
+        if (!PageValidator.isPaginationValid(amount, page)) {
+            throw new IncorrectPageException(amount, page);
+        }
+    }
 }

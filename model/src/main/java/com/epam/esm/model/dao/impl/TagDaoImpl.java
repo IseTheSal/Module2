@@ -39,24 +39,27 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public Optional<Tag> findById(long id) {
-        List<Tag> tags = jdbcTemplate.query(SqlQueryHolder.FIND_TAG_BY_ID, new TagMapper(), id);
-        return (tags.isEmpty()) ? Optional.empty() : Optional.of(tags.get(0));
+        return jdbcTemplate.query(SqlQueryHolder.FIND_TAG_BY_ID, new TagMapper(), id).stream().findFirst();
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
-        List<Tag> tags = jdbcTemplate.query(SqlQueryHolder.FIND_TAG_BY_NAME, new TagMapper(), name);
-        return (tags.isEmpty()) ? Optional.empty() : Optional.of(tags.get(0));
+        return jdbcTemplate.query(SqlQueryHolder.FIND_TAG_BY_NAME, new TagMapper(), name).stream().findFirst();
     }
 
     @Override
-    public List<Tag> findAll() {
-
-        return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_TAGS, new TagMapper());
+    public List<Tag> findAll(int amount, int page) {
+        return jdbcTemplate.query(SqlQueryHolder.FIND_ALL_TAGS + SqlQueryHolder.PAGE_LIMIT_OFFSET, new TagMapper(),
+                amount, page * amount);
     }
 
     @Override
     public boolean delete(long id) {
         return (jdbcTemplate.update(SqlQueryHolder.DELETE_TAG_BY_ID, id) > 0);
+    }
+
+    @Override
+    public Optional<Tag> findMostWidelyUsedTag() {
+        return jdbcTemplate.query(SqlQueryHolder.FIND_MOST_POPULAR_TAG, new TagMapper()).stream().findFirst();
     }
 }

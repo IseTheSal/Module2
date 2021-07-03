@@ -1,7 +1,7 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.TagExistException;
-import com.epam.esm.exception.TagNotFoundException;
+import com.epam.esm.error.exception.TagExistException;
+import com.epam.esm.error.exception.TagNotFoundException;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.impl.TagDaoImpl;
 import com.epam.esm.model.entity.Tag;
@@ -40,9 +40,9 @@ class TagServiceImplTest {
     }
 
     @Test
-    void createThrowException(){
+    void createThrowException() {
         Mockito.when(dao.create(MockData.TAG_ONE)).thenThrow(new TagExistException("name"));
-        Assertions.assertThrows(TagExistException.class,() -> service.create(MockData.TAG_ONE));
+        Assertions.assertThrows(TagExistException.class, () -> service.create(MockData.TAG_ONE));
     }
 
     @Test
@@ -56,8 +56,8 @@ class TagServiceImplTest {
 
     @Test
     void findAll() {
-        Mockito.when(dao.findAll()).thenReturn(Collections.singletonList(MockData.TAG_ONE));
-        List<Tag> actual = service.findAll();
+        Mockito.when(dao.findAll(100, 0)).thenReturn(Collections.singletonList(MockData.TAG_ONE));
+        List<Tag> actual = service.findAll(100, 1);
         List<Tag> expected = Collections.singletonList(MockData.TAG_ONE);
         Assertions.assertEquals(expected, actual);
     }
@@ -71,8 +71,8 @@ class TagServiceImplTest {
     }
 
     @Test
-    void deleteThrownException(){
+    void deleteThrownException() {
         Mockito.when(dao.delete(ArgumentMatchers.anyLong())).thenReturn(false);
-        Assertions.assertThrows(TagNotFoundException.class,() -> service.delete(8));
+        Assertions.assertThrows(TagNotFoundException.class, () -> service.delete(8));
     }
 }

@@ -36,8 +36,32 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * @param giftValue     Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
      * @param dateOrderType Sort order by create_date
      * @param nameOrderType Sort order by {@link GiftCertificate} name
-     * @return
+     * @return List of GiftCertificates
      */
     List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
-                                           String nameOrderType);
+                                           String nameOrderType, int amount, int page);
+
+    /**
+     * Create new {@link GiftCertificate} in database.
+     *
+     * @param giftCertificate Any Object that implements {@link GiftCertificate} interface
+     * @return That created tag
+     */
+    GiftCertificate create(GiftCertificate giftCertificate);
+
+    /**
+     * Delete {@link GiftCertificate} from database by provided <code>id</code>.
+     *
+     * @param id <code>id</code> of object that implements {@link GiftCertificate}
+     * @return <code>True</code> if {@link GiftCertificate} was deleted, otherwise <code>false</code>
+     */
+    boolean delete(long id);
+
+    /**
+     * Search for gift certificates by several tags with 'and' condition.
+     *
+     * @param tagNames <code>String[]</code> of {@link Tag} names
+     * @return <code>List</code> of {@link GiftCertificate}
+     */
+    List<GiftCertificate> findBySeveralTags(String[] tagNames, int amount, int page);
 }
