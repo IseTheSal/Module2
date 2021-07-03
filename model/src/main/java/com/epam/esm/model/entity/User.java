@@ -4,7 +4,6 @@ import com.epam.esm.model.entity.audit.AuditListener;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
-import java.util.List;
 
 @EntityListeners(AuditListener.class)
 @javax.persistence.Entity
@@ -16,8 +15,6 @@ public class User extends RepresentationModel<User> implements Entity {
     private long id;
     @Column(name = "login")
     private String login;
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Order> orderList;
 
     protected User() {
     }
@@ -43,31 +40,23 @@ public class User extends RepresentationModel<User> implements Entity {
         this.login = login;
     }
 
-    public List<Order> getOrderList() {
-        return orderList;
-    }
-
-    public void setOrderList(List<Order> orderList) {
-        this.orderList = orderList;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         User user = (User) o;
 
         if (id != user.id) return false;
-        if (login != null ? !login.equals(user.login) : user.login != null) return false;
-        return orderList != null ? orderList.equals(user.orderList) : user.orderList == null;
+        return login != null ? login.equals(user.login) : user.login == null;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
+        int result = super.hashCode();
+        result = 31 * result + (int) (id ^ (id >>> 32));
         result = 31 * result + (login != null ? login.hashCode() : 0);
-        result = 31 * result + (orderList != null ? orderList.hashCode() : 0);
         return result;
     }
 
@@ -76,7 +65,6 @@ public class User extends RepresentationModel<User> implements Entity {
         final StringBuilder sb = new StringBuilder("User{");
         sb.append("id=").append(id);
         sb.append(", login='").append(login).append('\'');
-        sb.append(", orderList=").append(orderList);
         sb.append('}');
         return sb.toString();
     }

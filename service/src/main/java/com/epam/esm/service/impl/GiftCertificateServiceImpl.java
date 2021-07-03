@@ -202,12 +202,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findByParameters(String tagName, String giftValue, String dateSort, String nameSort,
+    public List<GiftCertificate> findByParameters(List<String> tagNames, String giftValue, String dateSort, String nameSort,
                                                   int amount, int page) {
         checkPagination(amount, page);
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
-        return giftCertificateDao.findByAttributes(tagName, giftValue, dateSort, nameSort, amount, page - 1);
+        String[] tags = convertTags(tagNames);
+        return giftCertificateDao.findByAttributes(tags, giftValue, dateSort, nameSort, amount, page - 1);
     }
 
     private void checkSortTypeValid(String sortType) {
@@ -217,17 +218,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    @Override
-    public List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page) {
-        checkPagination(amount, page);
-        String[] tagNames = new String[tags.size()];
-        int i = 0;
-        for (Tag tag : tags) {
-            String name = tag.getName();
-            tagDao.findByName(tag.getName()).orElseThrow(() -> new TagNotFoundException("name=" + name));
-            tagNames[i++] = name;
+    private String[] convertTags(List<String> tagNames) {
+        String[] tags;
+        if (tagNames == null) {
+            tags = new String[0];
+        } else {
+            tags = new String[tagNames.size()];
+            int i = 0;
+            for (String name : tagNames) {
+                tagDao.findByName(name).orElseThrow(() -> new TagNotFoundException("name=" + name));
+                tags[i++] = name;
+            }
         }
-        return giftCertificateDao.findBySeveralTags(tagNames, amount, page - 1);
+        return tags;
     }
-
 }

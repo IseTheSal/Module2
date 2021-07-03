@@ -23,13 +23,13 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * Find by {@link GiftCertificate} by attributes.
      * All attributes could be optional.
      *
-     * @param tagName       {@link Tag} name
+     * @param tagNames       {@link Tag} name
      * @param giftValue     Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
      * @param dateOrderType Sort order by create_date
      * @param nameOrderType Sort order by {@link GiftCertificate} name
      * @return List of GiftCertificates
      */
-    List<GiftCertificate> findByAttributes(String tagName, String giftValue, String dateOrderType,
+    List<GiftCertificate> findByAttributes(String[] tagNames, String giftValue, String dateOrderType,
                                            String nameOrderType, int amount, int page);
 
     /**

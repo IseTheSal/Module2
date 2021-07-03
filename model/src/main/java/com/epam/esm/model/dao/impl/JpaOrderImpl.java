@@ -46,7 +46,7 @@ public class JpaOrderImpl implements OrderDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> query = criteriaBuilder.createQuery(Order.class);
         Root<Order> orderRoot = query.from(Order.class);
-        query.where(criteriaBuilder.equal(orderRoot.get(EntityName.USER), userId));
+        query.where(criteriaBuilder.equal(orderRoot.get(EntityField.USER), userId));
         return entityManager.createQuery(query).setMaxResults(amount).setFirstResult(amount * page).getResultList();
     }
 }

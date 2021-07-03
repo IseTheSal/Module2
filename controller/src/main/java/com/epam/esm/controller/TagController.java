@@ -82,6 +82,8 @@ public class TagController {
     }
 
     /**
+     * Method used to find most popular {@link Tag}.
+     *
      * @return The most widely used {@link Tag} of a user with the highest cost of all orders.
      */
     @GetMapping("/popular")

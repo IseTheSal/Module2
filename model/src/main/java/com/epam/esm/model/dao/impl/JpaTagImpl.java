@@ -43,7 +43,7 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> query = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> tagRoot = query.from(Tag.class);
-        query.select(tagRoot).where(criteriaBuilder.equal(tagRoot.get(EntityName.NAME), name));
+        query.select(tagRoot).where(criteriaBuilder.equal(tagRoot.get(EntityField.NAME), name));
         return entityManager.createQuery(query).getResultStream().findAny();
     }
 
@@ -52,7 +52,7 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaDelete<Tag> criteriaDelete = criteriaBuilder.createCriteriaDelete(Tag.class);
         Root<Tag> tagRoot = criteriaDelete.from(Tag.class);
-        criteriaDelete.where(criteriaBuilder.equal(tagRoot.get(EntityName.ID), id));
+        criteriaDelete.where(criteriaBuilder.equal(tagRoot.get(EntityField.ID), id));
         return (entityManager.createQuery(criteriaDelete).executeUpdate() == 1);
     }
 
@@ -68,9 +68,9 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         Root<Order> orderRoot = query.from(Order.class);
-        Path<Object> orderUser = orderRoot.get(EntityName.USER).get(EntityName.ID);
+        Path<Object> orderUser = orderRoot.get(EntityField.USER).get(EntityField.ID);
         query.select(orderUser).groupBy(orderUser).orderBy(criteriaBuilder
-                .desc(criteriaBuilder.sum(orderRoot.get(EntityName.PRICE))));
+                .desc(criteriaBuilder.sum(orderRoot.get(EntityField.PRICE))));
         Optional<Object> userOptional = entityManager.createQuery(query).getResultList().stream().findFirst();
         return ((Long) userOptional.get());
     }
@@ -79,8 +79,8 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         Root<Order> orderRoot = query.from(Order.class);
-        query.where(criteriaBuilder.equal(orderRoot.get(EntityName.USER).get(EntityName.ID), userId));
-        Path<Object> joinOrderTag = orderRoot.join(EntityName.CERTIFICATE).join(EntityName.TAGS).get(EntityName.NAME);
+        query.where(criteriaBuilder.equal(orderRoot.get(EntityField.USER).get(EntityField.ID), userId));
+        Path<Object> joinOrderTag = orderRoot.join(EntityField.CERTIFICATE).join(EntityField.TAGS).get(EntityField.NAME);
         query.select(joinOrderTag).groupBy(joinOrderTag).orderBy(criteriaBuilder.desc(criteriaBuilder.count(joinOrderTag)));
         Optional<Object> tagName = entityManager.createQuery(query).setMaxResults(1).getResultList().stream().findFirst();
         return (String) tagName.get();

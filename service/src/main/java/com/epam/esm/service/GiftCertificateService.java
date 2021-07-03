@@ -4,7 +4,6 @@ import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Interface extends {@link GiftCertificate} service functionality
@@ -26,13 +25,13 @@ public interface GiftCertificateService extends CommonEntityService<GiftCertific
      * Then sort by date ASC or DESC and by name ASC or DESC.
      * <code><p>ALL VALUES COULD BE OPTIONAL</p></code>
      *
-     * @param tagName          <code>Name</code> of {@link Tag}
+     * @param tags             <code>Set</code> of {@link Tag}
      * @param certificateValue Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
      * @param dateSort         <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by date of creation
      * @param nameSort         <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
      * @return <code>List</code> of {@link GiftCertificate GiftCertificates}
      */
-    List<GiftCertificate> findByParameters(String tagName, String certificateValue, String dateSort, String nameSort,
+    List<GiftCertificate> findByParameters(List<String> tags, String certificateValue, String dateSort, String nameSort,
                                            int amount, int page);
 
 
@@ -60,14 +59,4 @@ public interface GiftCertificateService extends CommonEntityService<GiftCertific
      * @return <code>id</code> if object was successfully deleted
      */
     long delete(long id);
-
-    /**
-     * Find certificates with 'and' condition
-     *
-     * @param tags   <code>Set</code> of {@link Tag}
-     * @param amount amount
-     * @param page   page
-     * @return <code>List</code> of {@link GiftCertificate}
-     */
-    List<GiftCertificate> findBySeveralTags(Set<Tag> tags, int amount, int page);
 }

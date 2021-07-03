@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,5 +51,22 @@ class JpaTagImplTest {
         List<Tag> actual = tagDao.findAll(2, 0);
         List<Tag> expected = allTags;
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @Transactional
+    void create() {
+        Tag tag = new Tag();
+        tag.setName("страшно");
+        Tag createdTag = tagDao.create(tag);
+        boolean condition = createdTag.getId() > 0;
+        Assertions.assertTrue(condition);
+    }
+
+    @Test
+    @Transactional
+    void findByName() {
+        Optional<Tag> tag = tagDao.findByName("snow");
+        Assertions.assertTrue(tag.isPresent());
     }
 }

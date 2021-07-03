@@ -2,7 +2,6 @@ package com.epam.esm.controller;
 
 import com.epam.esm.controller.hateaos.Hateoas;
 import com.epam.esm.model.entity.GiftCertificate;
-import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.epam.esm.controller.hateaos.Hateoas.createCertificateHateoas;
 
@@ -99,14 +97,14 @@ public class GiftCertificateController {
      *
      * <code><p>All parameters are optional</p></code>
      *
-     * @param tagName   <code>Name</code> of {@link com.epam.esm.model.entity.Tag Tag}
+     * @param tagName   <code>Set</code> of {@link com.epam.esm.model.entity.Tag Tag}
      * @param giftValue Part of <code>name</code> or <code>description</code> of {@link GiftCertificate}
      * @param dateOrder <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by date of creation
      * @param nameOrder <code>DESC</code> or <code>ASC</code> sort {@link GiftCertificate} by name
      * @return <code>List</code> of {@link GiftCertificate}
      */
     @GetMapping
-    public ResponseEntity<List<GiftCertificate>> findCertificates(@RequestParam(required = false) String tagName,
+    public ResponseEntity<List<GiftCertificate>> findCertificates(@RequestParam(required = false) List<String> tagName,
                                                                   @RequestParam(required = false) String giftValue,
                                                                   @RequestParam(required = false) String dateOrder,
                                                                   @RequestParam(required = false) String nameOrder,
@@ -116,20 +114,5 @@ public class GiftCertificateController {
                 amount, page);
         list.forEach(Hateoas::createCertificateHateoas);
         return new ResponseEntity<>(list, HttpStatus.OK);
-    }
-
-    /**
-     * Search for gift certificates by several tags with 'and' condition.
-     *
-     * @param tagSet <code>Set</code> of {@link Tag}
-     * @return <code>List</code> of {@link GiftCertificate}
-     */
-    @GetMapping("/tags")
-    public ResponseEntity<List<GiftCertificate>> findBySeveralTags(@RequestBody Set<Tag> tagSet,
-                                                                   @RequestParam(required = false, defaultValue = "1") int page,
-                                                                   @RequestParam(required = false, defaultValue = "10") int amount) {
-        List<GiftCertificate> certificateList = certificateService.findBySeveralTags(tagSet, amount, page);
-        certificateList.forEach(Hateoas::createCertificateHateoas);
-        return new ResponseEntity<>(certificateList, HttpStatus.OK);
     }
 }

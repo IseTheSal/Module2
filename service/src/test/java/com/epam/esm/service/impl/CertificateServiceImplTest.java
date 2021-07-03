@@ -6,7 +6,6 @@ import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.impl.JpaGiftCertificateImpl;
 import com.epam.esm.model.dao.impl.JpaTagImpl;
 import com.epam.esm.model.entity.GiftCertificate;
-import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +14,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 class CertificateServiceImplTest {
 
@@ -81,11 +82,11 @@ class CertificateServiceImplTest {
 
     @Test
     void findByParameters() {
-        Mockito.when(dao.findByAttributes(MockData.TAG_TWO.getName(), "катание", "DESC",
+        Mockito.when(dao.findByAttributes(new String[]{MockData.TAG_TWO.getName()}, "катание", "DESC",
                 "ASC", 100, 0))
                 .thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
-        List<GiftCertificate> actual = service.findByParameters(MockData.TAG_TWO.getName(), "катание",
-                "DESC", "ASC", 100, 1);
+        List<GiftCertificate> actual = service.findByParameters(Collections.singletonList(MockData.TAG_TWO.getName()),
+                "катание", "DESC", "ASC", 100, 1);
         List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
         Assertions.assertEquals(actual, expected);
     }
@@ -96,21 +97,6 @@ class CertificateServiceImplTest {
         Mockito.when(dao.update(MockData.GIFT_CERTIFICATE)).thenReturn(MockData.GIFT_CERTIFICATE);
         long actual = service.removeFromSale(MockData.GIFT_CERTIFICATE.getId());
         long expected = MockData.GIFT_CERTIFICATE.getId();
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    void findBySeveralTags() {
-        Mockito.when(tagDao.findByName(MockData.TAG_ONE.getName())).thenReturn(Optional.of(MockData.TAG_ONE));
-        Mockito.when(tagDao.findByName(MockData.TAG_TWO.getName())).thenReturn(Optional.of(MockData.TAG_TWO));
-        String[] tagNames = new String[]{MockData.TAG_ONE.getName(), MockData.TAG_TWO.getName()};
-        Mockito.when(dao.findBySeveralTags(tagNames, 100, 0))
-                .thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
-        Set<Tag> tagSet = new HashSet<>();
-        tagSet.add(MockData.TAG_TWO);
-        tagSet.add(MockData.TAG_ONE);
-        List<GiftCertificate> actual = service.findBySeveralTags(tagSet, 100, 1);
-        List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
         Assertions.assertEquals(expected, actual);
     }
 }

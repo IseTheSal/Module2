@@ -1,6 +1,6 @@
 package com.epam.esm.model.dao.impl;
 
-public class EntityName {
+public class EntityField {
     static final String TAGS = "tags";
     static final String NAME = "name";
     static final String DESCRIPTION = "description";

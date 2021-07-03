@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @javax.persistence.Entity
 @Table(name = "orders")
 public class Order extends RepresentationModel<Order> implements Entity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

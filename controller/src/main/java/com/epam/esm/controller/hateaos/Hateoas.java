@@ -9,6 +9,8 @@ import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
 
+import java.util.Collections;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -45,10 +47,8 @@ public class Hateoas {
                 .add(linkTo(methodOn(GiftCertificateController.class).update(certificate)).withSelfRel()
                         .withName(UPDATE).withType(PUT))
                 .add(linkTo(methodOn(GiftCertificateController.class)
-                        .findCertificates(TAG_NAME, GIFT_VALUE, ASC, DESC, PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
-                        .withName(FIND_BY_ATTRIBUTES).withType(GET))
-                .add(linkTo(methodOn(GiftCertificateController.class).findBySeveralTags(null, PAGE_VALUE, AMOUNT_VALUE))
-                        .withSelfRel().withName(FIND_BY_SEVERAL_TAGS).withType(GET));
+                        .findCertificates(Collections.singletonList(TAG_NAME), GIFT_VALUE, ASC, DESC, PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
+                        .withName(FIND_BY_ATTRIBUTES).withType(GET));
     }
 
 
