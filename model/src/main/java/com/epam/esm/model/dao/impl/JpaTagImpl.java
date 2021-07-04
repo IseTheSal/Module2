@@ -56,7 +56,6 @@ public class JpaTagImpl implements TagDao {
         return (entityManager.createQuery(criteriaDelete).executeUpdate() == 1);
     }
 
-
     @Override
     public Optional<Tag> findMostWidelyUsedTag() {
         long userId = findUserIdWithMostMoneySpent();
@@ -71,7 +70,8 @@ public class JpaTagImpl implements TagDao {
         Path<Object> orderUser = orderRoot.get(EntityField.USER).get(EntityField.ID);
         query.select(orderUser).groupBy(orderUser).orderBy(criteriaBuilder
                 .desc(criteriaBuilder.sum(orderRoot.get(EntityField.PRICE))));
-        Optional<Object> userOptional = entityManager.createQuery(query).getResultList().stream().findFirst();
+        Optional<Object> userOptional = entityManager.createQuery(query).setMaxResults(1).getResultList().stream()
+                .findFirst();
         return ((Long) userOptional.get());
     }
 

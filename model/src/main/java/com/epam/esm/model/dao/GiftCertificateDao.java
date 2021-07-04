@@ -47,12 +47,4 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * @return <code>True</code> if {@link GiftCertificate} was deleted, otherwise <code>false</code>
      */
     boolean delete(long id);
-
-    /**
-     * Search for gift certificates by several tags with 'and' condition.
-     *
-     * @param tagNames <code>String[]</code> of {@link Tag} names
-     * @return <code>List</code> of {@link GiftCertificate}
-     */
-    List<GiftCertificate> findBySeveralTags(String[] tagNames, int amount, int page);
 }

@@ -46,18 +46,6 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> findBySeveralTags(String[] tagNames, int amount, int page) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<GiftCertificate> query = criteriaBuilder.createQuery(GiftCertificate.class);
-        Root<GiftCertificate> certificateRoot = query.from(GiftCertificate.class);
-        Join<Object, Object> tags = certificateRoot.join(EntityField.TAGS);
-        query.select(certificateRoot).where(tags.get(EntityField.NAME).in(tagNames))
-                .groupBy(certificateRoot.get(EntityField.ID))
-                .having(criteriaBuilder.equal(criteriaBuilder.countDistinct(tags.get(EntityField.NAME)), tagNames.length));
-        return entityManager.createQuery(query).setMaxResults(amount).setFirstResult(page * amount).getResultList();
-    }
-
-    @Override
     public List<GiftCertificate> findByAttributes(String[] tagNames, String giftValue, String dateOrderType,
                                                   String nameOrderType, int amount, int page) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

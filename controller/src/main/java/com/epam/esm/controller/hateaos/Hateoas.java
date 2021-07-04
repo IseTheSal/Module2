@@ -26,7 +26,6 @@ public class Hateoas {
     private static final String TAG_NAME = "snow";
     private static final String GIFT_VALUE = "цикл";
     private static final String FIND_BY_ATTRIBUTES = "Find by attributes";
-    private static final String FIND_BY_SEVERAL_TAGS = "Find by several tags";
     private static final String ASC = "ASC";
     private static final String DESC = "DESC";
     private static final String FIND_BY_USER_ID_ORDERS = "Find by user`s orders";
