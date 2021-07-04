@@ -27,12 +27,12 @@ public class SqlQueryHolder {
     static final String FIND_CERTIFICATES_WITH_TAGS_START = FIND_ALL_CERTIFICATES + INNER_JOIN_CERTIFICATE_TAG + " WHERE t.name IN ";
     static final String FIND_MOST_POPULAR_TAG = "SELECT t.name, t.id" +
             " FROM orders" +
-            " INNER JOIN gift_certificates gc on gc.id = orders.certificate_id" +
-            " INNER JOIN certificate_tag ct on gc.id = ct.certificate_id" +
-            " INNER JOIN tags t on t.id = ct.tag_id" +
-            " GROUP BY orders.user_id, t.id" +
-            " ORDER BY SUM(orders.price) DESC, COUNT(t.name) DESC" +
-            " LIMIT 1";
+            " INNER JOIN gift_certificates gc ON gc.id = orders.certificate_id" +
+            " INNER JOIN certificate_tag ct ON gc.id = ct.certificate_id" +
+            " INNER JOIN tags t ON t.id = ct.tag_id" +
+            " WHERE user_id = (SELECT user_id FROM orders GROUP BY user_id ORDER BY sum(orders.price) DESC limit 1) " +
+            " GROUP BY t.id" +
+            " ORDER BY count(t.id) DESC LIMIT 1";
     static final String FIND_CERTIFICATES_WITH_TAGS_END = " GROUP BY gift_certificates.id" +
             " HAVING COUNT(DISTINCT t.name) = ?";
     static final String AND_DESCRIPTION_NAME_LIKE_CLAUSE = " AND (description LIKE ? OR gift_certificates.name LIKE ?)";
