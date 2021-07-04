@@ -68,8 +68,8 @@ public class JpaTagImpl implements TagDao {
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         Root<Order> orderRoot = query.from(Order.class);
         Path<Object> orderUser = orderRoot.get(EntityField.USER).get(EntityField.ID);
-        query.select(orderUser).groupBy(orderUser).orderBy(criteriaBuilder
-                .desc(criteriaBuilder.sum(orderRoot.get(EntityField.PRICE))));
+        query.select(orderUser).groupBy(orderUser)
+                .orderBy(criteriaBuilder.desc(criteriaBuilder.sum(orderRoot.get(EntityField.PRICE))));
         Optional<Object> userOptional = entityManager.createQuery(query).setMaxResults(1).getResultList().stream()
                 .findFirst();
         return ((Long) userOptional.get());
@@ -79,9 +79,10 @@ public class JpaTagImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = criteriaBuilder.createQuery();
         Root<Order> orderRoot = query.from(Order.class);
-        query.where(criteriaBuilder.equal(orderRoot.get(EntityField.USER).get(EntityField.ID), userId));
         Path<Object> joinOrderTag = orderRoot.join(EntityField.CERTIFICATE).join(EntityField.TAGS).get(EntityField.NAME);
-        query.select(joinOrderTag).groupBy(joinOrderTag).orderBy(criteriaBuilder.desc(criteriaBuilder.count(joinOrderTag)));
+        query.select(joinOrderTag)
+                .where(criteriaBuilder.equal(orderRoot.get(EntityField.USER).get(EntityField.ID), userId))
+                .groupBy(joinOrderTag).orderBy(criteriaBuilder.desc(criteriaBuilder.count(joinOrderTag)));
         Optional<Object> tagName = entityManager.createQuery(query).setMaxResults(1).getResultList().stream().findFirst();
         return (String) tagName.get();
     }

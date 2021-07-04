@@ -36,8 +36,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     private boolean forSale = true;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(name = "certificate_tag", joinColumns = {@JoinColumn(name = "certificate_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id")}
-    )
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags;
 
     public GiftCertificate() {
