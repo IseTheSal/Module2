@@ -82,6 +82,4 @@ class OrderServiceImplTest {
         Mockito.when(giftCertificateDao.create(giftCertificate)).thenReturn(giftCertificate);
         Assertions.assertThrows(GiftCertificateNotFoundException.class, () -> service.create(firstOrder));
     }
-
-
 }

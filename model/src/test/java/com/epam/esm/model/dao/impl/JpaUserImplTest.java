@@ -34,5 +34,4 @@ public class JpaUserImplTest {
         boolean condition = (all.size() >= 2);
         Assertions.assertTrue(condition);
     }
-
 }

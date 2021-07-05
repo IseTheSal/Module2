@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.error.exception.TagExistException;
 import com.epam.esm.error.exception.TagNotFoundException;
+import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.impl.JpaTagImpl;
 import com.epam.esm.model.entity.Tag;
@@ -40,9 +41,14 @@ class TagServiceImplTest {
     }
 
     @Test
-    void createThrowException() {
+    void createThrowTagExistException() {
         Mockito.when(dao.create(MockData.TAG_ONE)).thenThrow(new TagExistException("name"));
         Assertions.assertThrows(TagExistException.class, () -> service.create(MockData.TAG_ONE));
+    }
+
+    @Test
+    void createThrowValidationException() {
+        Assertions.assertThrows(ValidationException.class, () -> service.create(new Tag(0, "incorr$erct")));
     }
 
     @Test
