@@ -1,4 +1,6 @@
-package com.epam.esm.exception;
+package com.epam.esm.error.exception;
+
+import com.epam.esm.error.RestErrorStatusCode;
 
 public class ValidationException extends ApplicationRuntimeException {
 

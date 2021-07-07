@@ -1,16 +1,19 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.GiftCertificateNotFoundException;
+import com.epam.esm.error.exception.GiftCertificateNotFoundException;
+import com.epam.esm.error.exception.TagNotFoundException;
+import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.GiftCertificateDao;
-import com.epam.esm.model.dao.impl.GiftCertificateDaoImpl;
-import com.epam.esm.model.dao.impl.TagDaoImpl;
+import com.epam.esm.model.dao.TagDao;
+import com.epam.esm.model.dao.impl.JpaGiftCertificateImpl;
+import com.epam.esm.model.dao.impl.JpaTagImpl;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
 import java.util.Collections;
@@ -19,29 +22,30 @@ import java.util.Optional;
 
 class CertificateServiceImplTest {
 
-
     GiftCertificateService service;
     GiftCertificateDao dao;
     MessageSource messageSource;
+    TagDao tagDao;
 
     @BeforeEach
     public void setUp() {
-        dao = Mockito.mock(GiftCertificateDaoImpl.class);
+        dao = Mockito.mock(JpaGiftCertificateImpl.class);
         messageSource = Mockito.mock(MessageSource.class);
-        service = new GiftCertificateServiceImpl(dao, messageSource);
+        tagDao = Mockito.mock(JpaTagImpl.class);
+        service = new GiftCertificateServiceImpl(dao, tagDao, messageSource);
     }
 
     @Test
-    public void create() {
-        Mockito.when(dao.create(ArgumentMatchers.any())).thenReturn(MockData.GIFT_CERTIFICATE);
+    void create() {
+        Mockito.when(dao.create(MockData.GIFT_CERTIFICATE)).thenReturn(MockData.GIFT_CERTIFICATE);
         GiftCertificate actual = service.create(MockData.GIFT_CERTIFICATE);
         GiftCertificate expected = MockData.GIFT_CERTIFICATE;
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void update() {
-        Mockito.when(dao.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(MockData.GIFT_CERTIFICATE));
+    void update() {
+        Mockito.when(dao.findById(1)).thenReturn(Optional.of(MockData.GIFT_CERTIFICATE));
         Mockito.when(dao.update(ArgumentMatchers.any())).thenReturn(MockData.UPDATED_GIFT_CERTIFICATE);
         GiftCertificate actual = service.update(MockData.UPDATED_GIFT_CERTIFICATE);
         GiftCertificate expected = MockData.UPDATED_GIFT_CERTIFICATE;
@@ -49,15 +53,15 @@ class CertificateServiceImplTest {
     }
 
     @Test
-    public void findById() {
-        Mockito.when(dao.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.ofNullable(MockData.GIFT_CERTIFICATE));
+    void findById() {
+        Mockito.when(dao.findById(1)).thenReturn(Optional.ofNullable(MockData.GIFT_CERTIFICATE));
         GiftCertificate actual = service.findById(1);
         GiftCertificate expected = MockData.GIFT_CERTIFICATE;
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void delete() {
+    void delete() {
         Mockito.when(dao.delete(1)).thenReturn(true);
         long actual = service.delete(1);
         long expected = 1;
@@ -65,25 +69,59 @@ class CertificateServiceImplTest {
     }
 
     @Test
-    public void deleteThrowException() {
+    void deleteThrowException() {
         Mockito.when(dao.delete(8)).thenReturn(false);
         Assertions.assertThrows(GiftCertificateNotFoundException.class, () -> service.delete(8));
     }
 
-//    @Test
-//    public void findByParameters() {
-//        Mockito.when(dao.findByTag(ArgumentMatchers.anyString())).thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
-//        Mockito.when(dao.findByNameOrDescription(ArgumentMatchers.anyString())).thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
-//        List<GiftCertificate> actual = service.findByParameters(MockData.TAG_ONE.getName(), "ма", "ASC", "DESC");
-//        List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
-//        Assertions.assertEquals(expected, actual);
-//    }
+    @Test
+    void findAll() {
+        Mockito.when(dao.findAll(100, 0)).thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
+        List<GiftCertificate> actual = service.findAll(100, 1);
+        List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
+        Assertions.assertEquals(expected, actual);
+    }
 
     @Test
-    public void findAll() {
-        Mockito.when(dao.findAll()).thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
-        List<GiftCertificate> actual = service.findAll();
+    void findByParameters() {
+        Mockito.when(dao.findByAttributes(new String[]{MockData.TAG_ONE.getName()}, "катание", null, null, 100, 0))
+                .thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
+        Mockito.when(tagDao.findByName(MockData.TAG_ONE.getName())).thenReturn(Optional.of(MockData.TAG_ONE));
+        List<GiftCertificate> actual = service.findByParameters(Collections.singletonList(MockData.TAG_ONE.getName()),
+                "катание", null, null, 100, 1);
         List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void findByParametersTagNotException() {
+        Mockito.when(tagDao.findByName(MockData.TAG_ONE.getName())).thenThrow(new TagNotFoundException());
+        Assertions.assertThrows(TagNotFoundException.class, () -> service
+                .findByParameters(Collections.singletonList(MockData.TAG_ONE.getName()), "катан", null, null, 100, 1));
+    }
+
+    @Test
+    void findByParametersValidationException() {
+        Assertions.assertThrows(ValidationException.class, () -> service
+                .findByParameters(Collections.singletonList(MockData.TAG_ONE.getName()), "катан", "ДЕСК", null, 100, 1));
+    }
+
+    @Test
+    void findByParametersTagNull() {
+        Mockito.when(dao.findByAttributes(new String[0], "катание", null, null, 100, 0))
+                .thenReturn(Collections.singletonList(MockData.GIFT_CERTIFICATE));
+        Mockito.when(tagDao.findByName(MockData.TAG_ONE.getName())).thenReturn(Optional.of(MockData.TAG_ONE));
+        List<GiftCertificate> actual = service.findByParameters(null, "катание", null, null, 100, 1);
+        List<GiftCertificate> expected = Collections.singletonList(MockData.GIFT_CERTIFICATE);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void removeFromSales() {
+        Mockito.when(dao.findById(1)).thenReturn(Optional.of(MockData.GIFT_CERTIFICATE));
+        Mockito.when(dao.update(MockData.GIFT_CERTIFICATE)).thenReturn(MockData.GIFT_CERTIFICATE);
+        long actual = service.removeFromSale(MockData.GIFT_CERTIFICATE.getId());
+        long expected = MockData.GIFT_CERTIFICATE.getId();
         Assertions.assertEquals(expected, actual);
     }
 }

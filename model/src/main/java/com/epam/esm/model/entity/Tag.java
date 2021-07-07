@@ -1,8 +1,19 @@
 package com.epam.esm.model.entity;
 
-public class Tag implements Entity {
+import com.epam.esm.model.entity.audit.AuditListener;
+import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.*;
+
+@EntityListeners(AuditListener.class)
+@javax.persistence.Entity
+@Table(name = "tags")
+public class Tag extends RepresentationModel<Tag> implements Entity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name")
     private String name;
 
     public Tag() {

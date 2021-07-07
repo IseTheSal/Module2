@@ -1,30 +1,49 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditListener;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@EntityListeners(AuditListener.class)
+@javax.persistence.Entity
+@Table(name = "gift_certificates")
+public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Entity {
 
-public class GiftCertificate implements Entity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "description")
     private String description;
+    @Column(name = "price")
     private BigDecimal price;
+    @Column(name = "duration")
     private Integer duration;
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "create_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createDate;
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "last_update_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdateDate;
+    @Column(name = "for_sale")
+    private boolean forSale = true;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @JoinTable(name = "certificate_tag", joinColumns = {@JoinColumn(name = "certificate_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags;
 
     public GiftCertificate() {
     }
 
-    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration,
+                           LocalDateTime createDate, LocalDateTime lastUpdateDate, boolean forSale) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -32,6 +51,7 @@ public class GiftCertificate implements Entity {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
+        this.forSale = forSale;
     }
 
     public long getId() {
@@ -90,6 +110,14 @@ public class GiftCertificate implements Entity {
         this.lastUpdateDate = lastUpdateDate;
     }
 
+    public boolean isForSale() {
+        return forSale;
+    }
+
+    public void setForSale(boolean forSale) {
+        this.forSale = forSale;
+    }
+
     public Set<Tag> getTags() {
         return (tags == null) ? new HashSet<>() : new HashSet<>(tags);
     }
@@ -101,6 +129,10 @@ public class GiftCertificate implements Entity {
         return this.tags.add(tag);
     }
 
+    public boolean removeTag(Tag tag) {
+        return ((tags != null) && (this.tags.remove(tag)));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -109,7 +141,7 @@ public class GiftCertificate implements Entity {
         GiftCertificate that = (GiftCertificate) o;
 
         if (id != that.id) return false;
-        if (duration != that.duration) return false;
+        if (!duration.equals(that.duration)) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;

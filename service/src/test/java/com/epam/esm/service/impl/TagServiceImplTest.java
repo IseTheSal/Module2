@@ -1,9 +1,10 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.TagExistException;
-import com.epam.esm.exception.TagNotFoundException;
+import com.epam.esm.error.exception.TagExistException;
+import com.epam.esm.error.exception.TagNotFoundException;
+import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.TagDao;
-import com.epam.esm.model.dao.impl.TagDaoImpl;
+import com.epam.esm.model.dao.impl.JpaTagImpl;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.TagService;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +25,7 @@ class TagServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        dao = Mockito.mock(TagDaoImpl.class);
+        dao = Mockito.mock(JpaTagImpl.class);
         messageSource = Mockito.mock(MessageSource.class);
         service = new TagServiceImpl(dao, messageSource);
     }
@@ -40,9 +41,14 @@ class TagServiceImplTest {
     }
 
     @Test
-    void createThrowException(){
+    void createThrowTagExistException() {
         Mockito.when(dao.create(MockData.TAG_ONE)).thenThrow(new TagExistException("name"));
-        Assertions.assertThrows(TagExistException.class,() -> service.create(MockData.TAG_ONE));
+        Assertions.assertThrows(TagExistException.class, () -> service.create(MockData.TAG_ONE));
+    }
+
+    @Test
+    void createThrowValidationException() {
+        Assertions.assertThrows(ValidationException.class, () -> service.create(new Tag(0, "incorr$erct")));
     }
 
     @Test
@@ -56,8 +62,8 @@ class TagServiceImplTest {
 
     @Test
     void findAll() {
-        Mockito.when(dao.findAll()).thenReturn(Collections.singletonList(MockData.TAG_ONE));
-        List<Tag> actual = service.findAll();
+        Mockito.when(dao.findAll(100, 0)).thenReturn(Collections.singletonList(MockData.TAG_ONE));
+        List<Tag> actual = service.findAll(100, 1);
         List<Tag> expected = Collections.singletonList(MockData.TAG_ONE);
         Assertions.assertEquals(expected, actual);
     }
@@ -71,8 +77,16 @@ class TagServiceImplTest {
     }
 
     @Test
-    void deleteThrownException(){
+    void deleteThrownException() {
         Mockito.when(dao.delete(ArgumentMatchers.anyLong())).thenReturn(false);
-        Assertions.assertThrows(TagNotFoundException.class,() -> service.delete(8));
+        Assertions.assertThrows(TagNotFoundException.class, () -> service.delete(8));
+    }
+
+    @Test
+    void findMostWidely() {
+        Mockito.when(dao.findMostWidelyUsedTag()).thenReturn(java.util.Optional.ofNullable(MockData.TAG_ONE));
+        Tag actual = service.findMostWidelyUsedTag();
+        Tag expected = MockData.TAG_ONE;
+        Assertions.assertEquals(expected, actual);
     }
 }
