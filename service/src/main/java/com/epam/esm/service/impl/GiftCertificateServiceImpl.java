@@ -146,7 +146,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         for (Tag tag : tagSet) {
             Optional<Tag> tagOptional = tagDao.findByName(tag.getName());
             if (tagOptional.isPresent()) {
-                tag.setId(tagOptional.get().getId());
+                Tag existingTag = tagOptional.get();
+                tag.setId(existingTag.getId());
+                tag.setCreateDate(existingTag.getCreateDate());
+                tag.setLastUpdateDate(existingTag.getLastUpdateDate());
             } else {
                 tagDao.create(tag);
             }

@@ -34,11 +34,14 @@ class OrderServiceImplTest {
 
     @BeforeAll
     public static void setUpData() {
-        giftCertificate = new GiftCertificate(1, "test", "test description", new BigDecimal("20.40"), 12,
-                LocalDateTime.now(), LocalDateTime.now(), true);
-        user = new User(1, "isethesal");
-        firstOrder = new Order(1, user, giftCertificate, new BigDecimal("20.34"), LocalDateTime.now());
-        secondOrder = new Order(2, user, giftCertificate, new BigDecimal("21.34"), LocalDateTime.now());
+        giftCertificate = new GiftCertificate("test", "test description", new BigDecimal("20.40"), 12, true);
+        giftCertificate.setId(1);
+        user = new User("isethesal");
+        user.setId(1);
+        firstOrder = new Order(user, giftCertificate, new BigDecimal("20.34"), LocalDateTime.now());
+        firstOrder.setId(1);
+        secondOrder = new Order(user, giftCertificate, new BigDecimal("21.34"), LocalDateTime.now());
+        secondOrder.setId(2);
         orderList = new ArrayList<>();
         orderList.add(firstOrder);
         orderList.add(secondOrder);

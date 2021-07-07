@@ -1,23 +1,19 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditEntity;
 import com.epam.esm.model.entity.audit.AuditListener;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@EntityListeners(AuditListener.class)
-@javax.persistence.Entity
-@Table(name = "gift_certificates")
-public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Entity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+@Entity
+@EntityListeners(AuditListener.class)
+@Table(name = "gift_certificates")
+public class GiftCertificate extends AuditEntity<GiftCertificate> {
+
     @Column(name = "name")
     private String name;
     @Column(name = "description")
@@ -26,15 +22,9 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     private BigDecimal price;
     @Column(name = "duration")
     private Integer duration;
-    @Column(name = "create_date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createDate;
-    @Column(name = "last_update_date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime lastUpdateDate;
     @Column(name = "for_sale")
     private boolean forSale = true;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "certificate_tag", joinColumns = {@JoinColumn(name = "certificate_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags;
@@ -42,24 +32,12 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     public GiftCertificate() {
     }
 
-    public GiftCertificate(long id, String name, String description, BigDecimal price, Integer duration,
-                           LocalDateTime createDate, LocalDateTime lastUpdateDate, boolean forSale) {
-        this.id = id;
+    public GiftCertificate(String name, String description, BigDecimal price, Integer duration, boolean forSale) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.duration = duration;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
         this.forSale = forSale;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -94,22 +72,6 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
         this.duration = duration;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public LocalDateTime getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
-    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
-        this.lastUpdateDate = lastUpdateDate;
-    }
-
     public boolean isForSale() {
         return forSale;
     }
@@ -140,7 +102,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
 
         GiftCertificate that = (GiftCertificate) o;
 
-        if (id != that.id) return false;
+        if (getId() != that.getId()) return false;
         if (!duration.equals(that.duration)) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
@@ -150,7 +112,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
+        int result = (int) (getId() ^ (getId() >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
@@ -162,13 +124,13 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("GiftCertificate{");
-        sb.append("id=").append(id);
+        sb.append("id=").append(getId());
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", price=").append(price);
         sb.append(", duration=").append(duration);
-        sb.append(", createDate=").append(createDate);
-        sb.append(", lastUpdateDate=").append(lastUpdateDate);
+        sb.append(", createDate=").append(getCreateDate());
+        sb.append(", lastUpdateDate=").append(getLastUpdateDate());
         sb.append(", tags=").append(tags);
         sb.append('}');
         return sb.toString();

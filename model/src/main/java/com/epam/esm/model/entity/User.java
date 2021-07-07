@@ -1,35 +1,26 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditEntity;
 import com.epam.esm.model.entity.audit.AuditListener;
-import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 
+@Entity
 @EntityListeners(AuditListener.class)
-@javax.persistence.Entity
 @Table(name = "users")
-public class User extends RepresentationModel<User> implements Entity {
+public class User extends AuditEntity<User> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
     @Column(name = "login")
     private String login;
 
     protected User() {
     }
 
-    public User(long id, String login) {
-        this.id = id;
+    public User(String login) {
         this.login = login;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getLogin() {
@@ -48,14 +39,14 @@ public class User extends RepresentationModel<User> implements Entity {
 
         User user = (User) o;
 
-        if (id != user.id) return false;
+        if (getId() != user.getId()) return false;
         return login != null ? login.equals(user.login) : user.login == null;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (int) (id ^ (id >>> 32));
+        result = 31 * result + (int) (getId() ^ (getId() >>> 32));
         result = 31 * result + (login != null ? login.hashCode() : 0);
         return result;
     }
@@ -63,7 +54,7 @@ public class User extends RepresentationModel<User> implements Entity {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");
-        sb.append("id=").append(id);
+        sb.append("id=").append(getId());
         sb.append(", login='").append(login).append('\'');
         sb.append('}');
         return sb.toString();

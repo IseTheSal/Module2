@@ -25,8 +25,10 @@ public class MockData {
         LocalDateTime dateTime = LocalDateTime.now();
         GIFT_CERTIFICATE.setCreateDate(dateTime);
         GIFT_CERTIFICATE.setLastUpdateDate(dateTime);
-        TAG_ONE = new Tag(1, "машина");
-        TAG_TWO = new Tag(2, "экстрим");
+        TAG_ONE = new Tag("машина");
+        TAG_ONE.setId(1);
+        TAG_TWO = new Tag("экстрим");
+        TAG_TWO.setId(2);
         Set<Tag> tagSet = new HashSet<>();
         tagSet.add(TAG_ONE);
         tagSet.add(TAG_TWO);

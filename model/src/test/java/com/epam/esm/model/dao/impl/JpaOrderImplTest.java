@@ -34,8 +34,9 @@ public class JpaOrderImplTest {
     void setUp() {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setId(1);
-        order = new Order(0, new User(1, "isethesal"), giftCertificate, new BigDecimal("30.01"),
+        order = new Order(new User("isethesal"), giftCertificate, new BigDecimal("30.01"),
                 LocalDateTime.now());
+        order.setId(0);
     }
 
     @Test

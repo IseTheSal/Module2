@@ -32,8 +32,10 @@ class JpaTagImplTest {
 
     @BeforeEach
     void setUpData() {
-        tagOne = new Tag(1, "snow");
-        tagTwo = new Tag(2, "desert");
+        tagOne = new Tag("snow");
+        tagOne.setId(1);
+        tagTwo = new Tag("desert");
+        tagTwo.setId(2);
         allTags = new ArrayList<>();
         allTags.add(tagOne);
         allTags.add(tagTwo);
