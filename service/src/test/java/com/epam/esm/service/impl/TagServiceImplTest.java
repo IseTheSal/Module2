@@ -48,7 +48,7 @@ class TagServiceImplTest {
 
     @Test
     void createThrowValidationException() {
-        Assertions.assertThrows(ValidationException.class, () -> service.create(new Tag(0, "incorr$erct")));
+        Assertions.assertThrows(ValidationException.class, () -> service.create(new Tag("incorr$erct")));
     }
 
     @Test

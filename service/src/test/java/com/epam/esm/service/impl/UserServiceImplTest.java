@@ -26,8 +26,10 @@ class UserServiceImplTest {
 
     @BeforeAll
     public static void setUpData() {
-        firstUser = new User(1, "isethesal");
-        secondUser = new User(2, "ileathehunter");
+        firstUser = new User("isethesal");
+        firstUser.setId(1);
+        secondUser = new User("ileathehunter");
+        secondUser.setId(2);
         userList = new ArrayList<>();
         userList.add(firstUser);
         userList.add(secondUser);

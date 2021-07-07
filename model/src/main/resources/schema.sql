@@ -7,9 +7,9 @@ create table gift_certificates
     description      varchar(100)         not null,
     price            numeric              not null,
     duration         integer              not null,
+    for_sale         boolean default true not null,
     create_date      timestamp            not null,
-    last_update_date timestamp            not null,
-    for_sale         boolean default true not null
+    last_update_date timestamp            not null
 );
 
 create
@@ -18,10 +18,12 @@ create
 
 create table tags
 (
-    id   bigserial   not null
+    id               bigserial   not null
         constraint tag_pk
             primary key,
-    name varchar(30) not null
+    name             varchar(30) not null,
+    create_date      timestamp   not null,
+    last_update_date timestamp   not null
 );
 
 create table certificate_tag
@@ -38,10 +40,12 @@ create table certificate_tag
 
 create table users
 (
-    id    bigserial   not null
+    id               bigserial   not null
         constraint users_pk
             primary key,
-    login varchar(20) not null
+    login            varchar(20) not null,
+    create_date      timestamp   not null,
+    last_update_date timestamp   not null
 );
 
 create unique index users_id_uindex
@@ -52,19 +56,21 @@ create unique index users_login_uindex
 
 create table orders
 (
-    user_id        bigint    not null
+    user_id          bigint    not null
         constraint user_id_fk
             references users
             on update cascade on delete cascade,
-    certificate_id bigint    not null
+    certificate_id   bigint    not null
         constraint certificate_id_fk
             references gift_certificates
             on update cascade on delete cascade,
-    price          numeric   not null,
-    purchase_date  timestamp not null,
-    id             bigserial not null
+    price            numeric   not null,
+    purchase_date    timestamp not null,
+    id               bigserial not null
         constraint orders_pk
-            primary key
+            primary key,
+    create_date      timestamp not null,
+    last_update_date timestamp not null
 );
 
 

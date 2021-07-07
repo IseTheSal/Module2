@@ -31,8 +31,9 @@ class JpaGiftCertificateImplTest {
 
     @BeforeEach
     void setUpData() {
-        giftCertificate = new GiftCertificate(99, "Квадроцикл", "Увлекательно весело и здорово", new BigDecimal("20.04"),
-                20, LocalDateTime.now(), LocalDateTime.now(), true);
+        giftCertificate = new GiftCertificate("Квадроцикл", "Увлекательно весело и здорово", new BigDecimal("20.04"),
+                20, true);
+        giftCertificate.setId(99);
     }
 
     @Test
@@ -50,7 +51,7 @@ class JpaGiftCertificateImplTest {
 
     @Test
     void findByAttributes() {
-        String actual = giftCertificateDao.findByAttributes(null, "Квадроцикл", "asc", "desc", 1, 0).get(0).getName();
+        String actual = giftCertificateDao.findByAttributes(new String[0], "Квадроцикл", "asc", "desc", 1, 0).get(0).getName();
         String expected = giftCertificate.getName();
         Assertions.assertEquals(expected, actual);
     }

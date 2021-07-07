@@ -2,7 +2,7 @@ package com.epam.esm.service;
 
 
 import com.epam.esm.error.exception.IncorrectPageException;
-import com.epam.esm.model.entity.Entity;
+import com.epam.esm.model.entity.EntityMarker;
 import com.epam.esm.validator.PageValidator;
 
 import java.util.List;
@@ -11,23 +11,23 @@ import java.util.List;
  * <p>Layer service interface between Controller and DAO.</p>
  * <p>Generic interface which providing interaction with your service.</p>
  *
- * @param <T> Any Object that implements {@link Entity}  interface
+ * @param <T> Any Object that implements {@link EntityMarker}  interface
  * @author Illia Aheyeu
  */
-public interface CommonEntityService<T extends Entity> {
+public interface CommonEntityService<T extends EntityMarker> {
 
     /**
-     * Intermediate method used to validate <code>id</code> of {@link Entity Entity} and then call find method from dao layer.
+     * Intermediate method used to validate <code>id</code> of {@link EntityMarker Entity} and then call find method from dao layer.
      *
-     * @param id <code>id</code> of object that implements {{@link Entity Entity}}
-     * @return <code>Optional</code> {{@link Entity Entity}}  from database
+     * @param id <code>id</code> of object that implements {{@link EntityMarker Entity}}
+     * @return <code>Optional</code> {{@link EntityMarker Entity}}  from database
      */
     T findById(long id);
 
     /**
-     * Find all specified generic {{@link Entity Entity}}.
+     * Find all specified generic {{@link EntityMarker Entity}}.
      *
-     * @return <code>List</code> of {{@link Entity Entity}}
+     * @return <code>List</code> of {{@link EntityMarker Entity}}
      */
     List<T> findAll(int amount, int page);
 

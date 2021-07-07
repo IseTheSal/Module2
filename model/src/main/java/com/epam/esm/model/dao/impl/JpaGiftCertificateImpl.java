@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,11 +37,7 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
 
     @Override
     public GiftCertificate update(GiftCertificate giftCertificate) {
-        if (giftCertificate.getLastUpdateDate() == null) {
-            giftCertificate.setLastUpdateDate(LocalDateTime.now());
-        }
-        entityManager.merge(giftCertificate);
-        return giftCertificate;
+        return entityManager.merge(giftCertificate);
     }
 
     @Override
@@ -91,9 +86,6 @@ public class JpaGiftCertificateImpl implements GiftCertificateDao {
 
     @Override
     public GiftCertificate create(GiftCertificate giftCertificate) {
-        LocalDateTime now = LocalDateTime.now();
-        giftCertificate.setCreateDate(now);
-        giftCertificate.setLastUpdateDate(now);
         entityManager.persist(giftCertificate);
         return giftCertificate;
     }
