@@ -19,15 +19,15 @@ public interface CommonEntityService<T extends EntityMarker> {
     /**
      * Intermediate method used to validate <code>id</code> of {@link EntityMarker Entity} and then call find method from dao layer.
      *
-     * @param id <code>id</code> of object that implements {{@link EntityMarker Entity}}
-     * @return <code>Optional</code> {{@link EntityMarker Entity}}  from database
+     * @param id <code>id</code> of object that implements {@link EntityMarker Entity}
+     * @return <code>Optional</code> {@link EntityMarker Entity} from database
      */
     T findById(long id);
 
     /**
-     * Find all specified generic {{@link EntityMarker Entity}}.
+     * Find all specified generic {@link EntityMarker Entity}.
      *
-     * @return <code>List</code> of {{@link EntityMarker Entity}}
+     * @return <code>List</code> of {@link EntityMarker Entity}
      */
     List<T> findAll(int amount, int page);
 

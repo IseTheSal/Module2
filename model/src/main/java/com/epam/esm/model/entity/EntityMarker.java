@@ -6,6 +6,8 @@ package com.epam.esm.model.entity;
  * @author Illia Aheyeu
  * @see GiftCertificate
  * @see Tag
+ * @see User
+ * @see Order
  */
 public interface EntityMarker {
 }

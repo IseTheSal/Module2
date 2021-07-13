@@ -28,8 +28,7 @@ public class AuditListener {
     public void onPreUpdate(Object entity) {
         if (entity instanceof AuditEntity) {
             AuditEntity<?> auditEntity = (AuditEntity<?>) entity;
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            auditEntity.setLastUpdateDate(currentDateTime);
+            auditEntity.setLastUpdateDate(LocalDateTime.now());
         }
         log.log(Level.INFO, "Update - " + entity);
     }
