@@ -1,6 +1,9 @@
 package com.epam.esm.service;
 
+import com.epam.esm.model.dto.UserDTO;
 import com.epam.esm.model.entity.User;
+
+import java.util.Optional;
 
 /**
  * Interface extends {@link User} service functionality
@@ -8,4 +11,12 @@ import com.epam.esm.model.entity.User;
  * @author Illia Aheyeu
  */
 public interface UserService extends CommonEntityService<User> {
+
+    UserDTO create(User user);
+
+    UserDTO findByLoginAndPassword(String login, String password);
+
+    Optional<User> findByLogin(String login);
+
+    User findByLoginOrThrow(String login);
 }

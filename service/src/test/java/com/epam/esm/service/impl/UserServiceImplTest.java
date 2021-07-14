@@ -38,7 +38,8 @@ class UserServiceImplTest {
     @BeforeEach
     public void setUp() {
         dao = Mockito.mock(JpaUserImpl.class);
-        service = new UserServiceImpl(dao);
+        // FIXME: 13-Jul-21 add encryptor into the TEST
+        service = new UserServiceImpl(dao, null);
     }
 
     @Test

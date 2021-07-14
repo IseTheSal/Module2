@@ -16,7 +16,7 @@ public class AuditListener {
     @PrePersist
     public void onPrePersist(Object entity) {
         if (entity instanceof AuditEntity) {
-            AuditEntity<?> auditEntity = (AuditEntity<?>) entity;
+            AuditEntity auditEntity = (AuditEntity) entity;
             LocalDateTime currentDateTime = LocalDateTime.now();
             auditEntity.setCreateDate(currentDateTime);
             auditEntity.setLastUpdateDate(currentDateTime);
@@ -27,7 +27,7 @@ public class AuditListener {
     @PreUpdate
     public void onPreUpdate(Object entity) {
         if (entity instanceof AuditEntity) {
-            AuditEntity<?> auditEntity = (AuditEntity<?>) entity;
+            AuditEntity auditEntity = (AuditEntity) entity;
             auditEntity.setLastUpdateDate(LocalDateTime.now());
         }
         log.log(Level.INFO, "Update - " + entity);
@@ -36,7 +36,7 @@ public class AuditListener {
     @PreRemove
     public void onPreRemove(Object entity) {
         if (entity instanceof AuditEntity) {
-            AuditEntity<?> auditEntity = (AuditEntity<?>) entity;
+            AuditEntity auditEntity = (AuditEntity) entity;
             auditEntity.setLastUpdateDate(LocalDateTime.now());
         }
         log.log(Level.INFO, "Remove - " + entity);

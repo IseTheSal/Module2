@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
     public Order create(Order order) {
         Order newOrder = new Order();
         long userId = order.getUser().getId();
-        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("id=" + userId));
         newOrder.setUser(user);
         long certificateId = order.getCertificate().getId();
         Optional<GiftCertificate> giftCertificate = giftCertificateDao.findById(certificateId);

@@ -9,4 +9,6 @@ public class EntityField {
     static final String USER = "user";
     static final String PRICE = "price";
     static final String CERTIFICATE = "certificate";
+    static final String LOGIN = "login";
+    static final String PASSWORD = "password";
 }

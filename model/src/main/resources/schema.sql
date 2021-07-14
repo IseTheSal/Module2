@@ -38,14 +38,38 @@ create table certificate_tag
             on update cascade on delete cascade
 );
 
+create table roles
+(
+    id               bigserial   not null
+        constraint roles_pk
+            primary key,
+    name             varchar(15) not null,
+    create_date      timestamp   not null,
+    last_update_date timestamp   not null
+);
+
+create unique index roles_id_uindex
+    on roles (id);
+
+create unique index roles_name_uindex
+    on roles (name);
+
+
 create table users
 (
     id               bigserial   not null
         constraint users_pk
             primary key,
     login            varchar(20) not null,
+    password         varchar(60) not null,
+    first_name       varchar(30),
+    last_name        varchar(30),
     create_date      timestamp   not null,
-    last_update_date timestamp   not null
+    last_update_date timestamp   not null,
+    role_id          bigint      not null
+        constraint role_id_fk
+            references roles
+            on update cascade on delete cascade
 );
 
 create unique index users_id_uindex
@@ -53,6 +77,7 @@ create unique index users_id_uindex
 
 create unique index users_login_uindex
     on users (login);
+
 
 create table orders
 (
@@ -73,7 +98,5 @@ create table orders
     last_update_date timestamp not null
 );
 
-
 create unique index orders_order_id_uindex
     on orders (id);
-

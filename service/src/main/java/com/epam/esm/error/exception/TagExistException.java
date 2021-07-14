@@ -5,6 +5,6 @@ import com.epam.esm.error.RestErrorStatusCode;
 public class TagExistException extends ApplicationRuntimeException {
 
     public TagExistException(String tagName) {
-        super(tagName, RestErrorStatusCode.TAG_EXIST);
+        super(tagName, RestErrorStatusCode.ALREADY_EXIST);
     }
 }
