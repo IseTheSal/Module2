@@ -12,7 +12,7 @@ import java.util.Set;
 @Entity
 @EntityListeners(AuditListener.class)
 @Table(name = "gift_certificates")
-public class GiftCertificate extends AuditEntity<GiftCertificate> {
+public class GiftCertificate extends AuditEntity {
 
     @Column(name = "name")
     private String name;

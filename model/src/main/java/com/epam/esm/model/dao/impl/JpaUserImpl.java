@@ -1,8 +1,8 @@
 package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.UserDao;
-import com.epam.esm.model.entity.UserRole;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.model.entity.UserRole;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

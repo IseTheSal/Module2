@@ -19,6 +19,7 @@
         <mockito.version>3.3.3</mockito.version>
         <lombok.version>1.18.12</lombok.version>
         <persistence.vertion>2.2</persistence.vertion>
+        <jwt.vertion>0.9.1</jwt.vertion>
     </properties>
 
     <parent>
@@ -80,6 +81,11 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.vertion}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

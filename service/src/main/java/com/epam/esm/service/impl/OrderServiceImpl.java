@@ -6,6 +6,8 @@ import com.epam.esm.error.exception.UserNotFoundException;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.OrderDao;
 import com.epam.esm.model.dao.UserDao;
+import com.epam.esm.model.dto.OrderDTO;
+import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.entity.User;
@@ -17,6 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.epam.esm.model.dto.converter.ConverterDTO.fromDTO;
+import static com.epam.esm.model.dto.converter.ConverterDTO.toDTO;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -33,19 +39,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order findById(long id) {
-        return orderDao.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+    public OrderDTO findById(long id) {
+        return toDTO(orderDao.findById(id).orElseThrow(() -> new OrderNotFoundException(id)));
     }
 
     @Override
-    public List<Order> findAll(int amount, int page) {
+    public List<OrderDTO> findAll(int amount, int page) {
         checkPagination(amount, page);
-        return orderDao.findAll(amount, page - 1);
+        return orderDao.findAll(amount, page - 1).stream().map(ConverterDTO::toDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public Order create(Order order) {
+    public OrderDTO create(OrderDTO dto) {
+        Order order = fromDTO(dto);
         Order newOrder = new Order();
         long userId = order.getUser().getId();
         User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("id=" + userId));
@@ -59,12 +66,13 @@ public class OrderServiceImpl implements OrderService {
         GiftCertificate certificate = giftCertificate.get();
         newOrder.setCertificate(certificate);
         newOrder.setPrice(certificate.getPrice());
-        return orderDao.create(newOrder);
+        return toDTO(orderDao.create(newOrder));
     }
 
     @Override
-    public List<Order> findUserOrders(long id, int amount, int page) {
+    public List<OrderDTO> findUserOrders(long id, int amount, int page) {
         checkPagination(amount, page);
-        return orderDao.findUserOrders(id, amount, page - 1);
+        return orderDao.findUserOrders(id, amount, page - 1).stream().map(ConverterDTO::toDTO)
+                .collect(Collectors.toList());
     }
 }

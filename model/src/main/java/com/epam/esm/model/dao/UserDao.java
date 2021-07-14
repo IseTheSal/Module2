@@ -1,8 +1,8 @@
 package com.epam.esm.model.dao;
 
-import com.epam.esm.model.entity.UserRole;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.model.entity.UserRole;
 
 import java.util.Optional;
 

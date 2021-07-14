@@ -1,20 +1,12 @@
-package com.epam.esm.model.entity.audit;
+package com.epam.esm.model.dto;
 
-import com.epam.esm.model.entity.BasicEntity;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
-@MappedSuperclass
-public abstract class AuditEntity extends BasicEntity {
+public abstract class AuditBasicDTO<T extends RepresentationModel<? extends T>> extends BasicDTO<T> {
 
-    @Column(name = "create_date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createDate;
-    @Column(name = "last_update_date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdateDate;
 
     public LocalDateTime getCreateDate() {

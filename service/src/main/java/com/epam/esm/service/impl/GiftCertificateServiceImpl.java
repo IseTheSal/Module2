@@ -5,6 +5,8 @@ import com.epam.esm.error.exception.TagNotFoundException;
 import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.TagDao;
+import com.epam.esm.model.dto.GiftCertificateDTO;
+import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
@@ -18,10 +20,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.epam.esm.model.dto.converter.ConverterDTO.fromDTO;
+import static com.epam.esm.model.dto.converter.ConverterDTO.toDTO;
+
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
@@ -44,13 +48,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public GiftCertificate create(GiftCertificate giftCertificate) {
+    public GiftCertificateDTO create(GiftCertificateDTO dto) {
+        GiftCertificate giftCertificate = fromDTO(dto);
         checkCertificateValid(giftCertificate, CREATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
         Set<Tag> oldTags = detachExistingTags(giftCertificate);
         GiftCertificate createdGift = giftCertificateDao.create(giftCertificate);
         attachExistingTags(createdGift, oldTags);
-        return createdGift;
+        return toDTO(createdGift);
     }
 
     private Set<Tag> detachExistingTags(GiftCertificate giftCertificate) {
@@ -130,7 +135,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public GiftCertificate update(GiftCertificate giftCertificate) {
+    public GiftCertificateDTO update(GiftCertificateDTO dto) {
+        GiftCertificate giftCertificate = fromDTO(dto);
         long id = giftCertificate.getId();
         GiftCertificate oldCertificate = giftCertificateDao.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
@@ -139,7 +145,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         findUpdatedValues(oldCertificate, giftCertificate);
         oldCertificate.getTags().forEach(giftCertificate::addTag);
         createNewTags(giftCertificate.getTags());
-        return giftCertificateDao.update(giftCertificate);
+        return toDTO(giftCertificateDao.update(giftCertificate));
     }
 
     private void createNewTags(Set<Tag> tagSet) {
@@ -173,15 +179,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificate findById(long id) {
-        Optional<GiftCertificate> optionalGiftCertificate = giftCertificateDao.findById(id);
-        return optionalGiftCertificate.orElseThrow(() -> new GiftCertificateNotFoundException(id));
+    public GiftCertificateDTO findById(long id) {
+        Optional<GiftCertificate> certificate = giftCertificateDao.findById(id);
+        return toDTO(certificate.orElseThrow(() -> new GiftCertificateNotFoundException(id)));
     }
 
     @Override
-    public List<GiftCertificate> findAll(int amount, int page) {
+    public List<GiftCertificateDTO> findAll(int amount, int page) {
         checkPagination(amount, page);
-        return giftCertificateDao.findAll(amount, page - 1);
+        List<GiftCertificate> all = giftCertificateDao.findAll(amount, page - 1);
+        List<GiftCertificateDTO> dtoList = new ArrayList<>();
+        for (GiftCertificate giftCertificate : all) {
+            dtoList.add(toDTO(giftCertificate));
+        }
+        return dtoList;
     }
 
     @Override
@@ -205,13 +216,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findByParameters(List<String> tagNames, String giftValue, String dateSort, String nameSort,
-                                                  int amount, int page) {
+    public List<GiftCertificateDTO> findByParameters(List<String> tagNames, String giftValue, String dateSort, String nameSort,
+                                                     int amount, int page) {
         checkPagination(amount, page);
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
         String[] tags = convertTags(tagNames);
-        return giftCertificateDao.findByAttributes(tags, giftValue, dateSort, nameSort, amount, page - 1);
+        return giftCertificateDao.findByAttributes(tags, giftValue, dateSort, nameSort, amount, page - 1).stream()
+                .map(ConverterDTO::toDTO)
+                .collect(Collectors.toList());
     }
 
     private void checkSortTypeValid(String sortType) {

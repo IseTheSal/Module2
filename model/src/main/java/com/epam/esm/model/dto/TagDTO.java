@@ -1,19 +1,10 @@
 package com.epam.esm.model.dto;
 
-import com.epam.esm.model.entity.Tag;
-
-public class TagDTO extends BasicDTO {
+public class TagDTO extends AuditBasicDTO<TagDTO> {
 
     private String name;
 
-    private TagDTO() {
-    }
-
-    public TagDTO toDTO(Tag tag) {
-        TagDTO dto = new TagDTO();
-        dto.setId(tag.getId());
-        dto.setName(tag.getName());
-        return dto;
+    public TagDTO() {
     }
 
     public String getName() {

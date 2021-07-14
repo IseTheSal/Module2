@@ -1,44 +1,31 @@
 package com.epam.esm.model.dto;
 
-import com.epam.esm.model.entity.GiftCertificate;
-import com.epam.esm.model.entity.Order;
-import com.epam.esm.model.entity.User;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class OrderDTO extends BasicDTO {
+public class OrderDTO extends AuditBasicDTO<OrderDTO> {
 
-    private User user;
-    private GiftCertificate certificate;
+    private UserDTO user;
+    private GiftCertificateDTO certificate;
     private BigDecimal price;
     private LocalDateTime purchaseDate;
 
-    private OrderDTO() {
+    public OrderDTO() {
     }
 
-    public OrderDTO toDTO(Order order){
-        OrderDTO dto = new OrderDTO();
-        dto.setId(order.getId());
-        dto.setUser(order.getUser());
-        dto.setCertificate(certificate);
-        dto.setPrice(order.getPrice());
-        return dto;
-    }
-
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         this.user = user;
     }
 
-    public GiftCertificate getCertificate() {
+    public GiftCertificateDTO getCertificate() {
         return certificate;
     }
 
-    public void setCertificate(GiftCertificate certificate) {
+    public void setCertificate(GiftCertificateDTO certificate) {
         this.certificate = certificate;
     }
 

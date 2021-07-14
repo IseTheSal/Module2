@@ -5,8 +5,9 @@ import com.epam.esm.error.exception.UserLoginExistException;
 import com.epam.esm.error.exception.UserNotFoundException;
 import com.epam.esm.model.dao.UserDao;
 import com.epam.esm.model.dto.UserDTO;
-import com.epam.esm.model.entity.UserRole;
+import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.model.entity.UserRole;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.epam.esm.model.dto.converter.ConverterDTO.fromDTO;
+import static com.epam.esm.model.dto.converter.ConverterDTO.toDTO;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,19 +35,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(long id) {
-        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException("id=" + id));
+    public UserDTO findById(long id) {
+        return toDTO(userDao.findById(id).orElseThrow(() -> new UserNotFoundException("id=" + id)));
     }
 
     @Override
-    public List<User> findAll(int amount, int page) {
-        return userDao.findAll(amount, page - 1);
+    public List<UserDTO> findAll(int amount, int page) {
+        return userDao.findAll(amount, page - 1).stream().map(ConverterDTO::toDTO).collect(Collectors.toList());
     }
-
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserDTO create(User user) {
+    public UserDTO create(UserDTO dto, String password) {
+        User user = fromDTO(dto);
+        user.setPassword(password);
         String login = user.getLogin();
         findByLogin(login).ifPresent(u -> {
             throw new UserLoginExistException(login);
@@ -52,25 +58,28 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User created = userDao.create(user);
-        return UserDTO.toDTO(created);
+        return toDTO(created);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Optional<User> findByLogin(String login) {
         return userDao.findByLogin(login);
     }
 
     @Override
-    public User findByLoginOrThrow(String login) {
-        return findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
-    }
-
-    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public UserDTO findByLoginAndPassword(String login, String password) {
-        User user = findByLoginOrThrow(login);
+        User user = findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UserNotFoundException();
         }
-        return UserDTO.toDTO(user);
+        return toDTO(user);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public User findByLoginOrThrow(String login) {
+        return findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
     }
 }

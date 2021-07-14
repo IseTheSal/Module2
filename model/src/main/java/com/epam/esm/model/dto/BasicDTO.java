@@ -2,7 +2,7 @@ package com.epam.esm.model.dto;
 
 import org.springframework.hateoas.RepresentationModel;
 
-public abstract class BasicDTO extends RepresentationModel<BasicDTO> {
+public abstract class BasicDTO<T extends RepresentationModel<? extends T>> extends RepresentationModel<T> {
 
     private long id;
 

@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Entity
 @EntityListeners(AuditListener.class)
 @Table(name = "tags")
-public class Tag extends AuditEntity<Tag> {
+public class Tag extends AuditEntity {
 
     @Column(name = "name")
     private String name;

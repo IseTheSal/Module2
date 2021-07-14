@@ -1,8 +1,12 @@
 INSERT INTO public.tags (id, name, create_date, last_update_date)
 VALUES (1, 'snow', now(), now());
 
-INSERT INTO roles(id, name, create_date, last_update_date)
-VALUES (1, 'ROLE_ADMIN', now(), now());
+INSERT INTO roles(id, name)
+VALUES (1, 'ROLE_USER');
+
+INSERT INTO users(id, login, password, first_name, last_name, create_date, last_update_date, role_id)
+VALUES (1, 'isethesal', '$2a$10$B/3xb2RnjGygalEsXSJKZe2XllG8kZat9IedpAML/amLgYa9NGXfK', 'Illia', 'Aheyeu', now(), now(),
+        1)
 
 -- INSERT INTO users(id, login, password, first_name, last_name, create_date, last_update_date, role_id)
 -- VALUES (1, 'isethesal', 'qwerty123', 'Illia', 'Aheyeu', now(), now(), 1);

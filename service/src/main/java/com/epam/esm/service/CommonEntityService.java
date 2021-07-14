@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 
 import com.epam.esm.error.exception.IncorrectPageException;
+import com.epam.esm.model.dto.BasicDTO;
 import com.epam.esm.model.entity.EntityMarker;
 import com.epam.esm.validator.PageValidator;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * @param <T> Any Object that implements {@link EntityMarker}  interface
  * @author Illia Aheyeu
  */
-public interface CommonEntityService<T extends EntityMarker> {
+public interface CommonEntityService<T extends BasicDTO<T>> {
 
     /**
      * Intermediate method used to validate <code>id</code> of {@link EntityMarker Entity} and then call find method from dao layer.

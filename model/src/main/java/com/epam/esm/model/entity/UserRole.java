@@ -1,6 +1,5 @@
 package com.epam.esm.model.entity;
 
-import com.epam.esm.model.entity.audit.AuditEntity;
 import com.epam.esm.model.entity.audit.AuditListener;
 
 import javax.persistence.Column;
@@ -11,7 +10,7 @@ import javax.persistence.Table;
 @Entity
 @EntityListeners(AuditListener.class)
 @Table(name = "roles")
-public class UserRole extends AuditEntity<UserRole> {
+public class UserRole extends BasicEntity {
 
     @Column(name = "name")
     private String name;

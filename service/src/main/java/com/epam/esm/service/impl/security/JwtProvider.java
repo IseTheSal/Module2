@@ -1,4 +1,4 @@
-package com.epam.esm.controller.security;
+package com.epam.esm.service.impl.security;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;

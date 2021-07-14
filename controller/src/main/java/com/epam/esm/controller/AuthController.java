@@ -1,11 +1,13 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.controller.security.AuthenticationBody;
-import com.epam.esm.controller.security.JwtProvider;
+import com.epam.esm.controller.security.RegistrationBody;
 import com.epam.esm.model.dto.UserDTO;
-import com.epam.esm.model.entity.User;
 import com.epam.esm.service.UserService;
+import com.epam.esm.service.impl.security.JwtProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,10 +23,8 @@ public class AuthController {
     }
 
     @PutMapping("/registration")
-    public String registerUser(@RequestBody User user) {
-        //fixme
-        userService.create(user);
-        return "OK";
+    public ResponseEntity<UserDTO> registerUser(@RequestBody RegistrationBody user) {
+        return new ResponseEntity<>(userService.create(user.getUserDTO(), user.getPassword()), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

@@ -10,9 +10,9 @@ import java.util.Optional;
  *
  * @author Illia Aheyeu
  */
-public interface UserService extends CommonEntityService<User> {
+public interface UserService extends CommonEntityService<UserDTO> {
 
-    UserDTO create(User user);
+    UserDTO create(UserDTO user, String password);
 
     UserDTO findByLoginAndPassword(String login, String password);
 

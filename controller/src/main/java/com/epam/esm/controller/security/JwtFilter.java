@@ -1,5 +1,7 @@
 package com.epam.esm.controller.security;
 
+import com.epam.esm.service.impl.security.JwtProvider;
+import com.epam.esm.service.impl.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,7 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends GenericFilterBean {
     public static final String AUTHORIZATION = "Authorization";
+    public static final String BEARER = "Bearer";
 
     private JwtProvider jwtProvider;
     private UserDetailsServiceImpl userDetailsService;
@@ -47,9 +50,8 @@ public class JwtFilter extends GenericFilterBean {
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
-        //fixme
         String bearer = request.getHeader(AUTHORIZATION);
-        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer")) {
+        if (StringUtils.hasText(bearer) && bearer.startsWith(BEARER)) {
             return bearer.substring(7);
         }
         return null;

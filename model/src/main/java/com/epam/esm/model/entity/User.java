@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @EntityListeners(AuditListener.class)
 @Table(name = "users")
-public class User extends AuditEntity<User> {
+public class User extends AuditEntity {
 
     @Column(name = "login")
     private String login;
@@ -22,7 +22,7 @@ public class User extends AuditEntity<User> {
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private UserRole role;
 
-    protected User() {
+    public User() {
     }
 
     public User(String login) {

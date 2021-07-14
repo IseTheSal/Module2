@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditListener.class)
 @Table(name = "orders")
-public class Order extends AuditEntity<Order> {
+public class Order extends AuditEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

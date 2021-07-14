@@ -40,12 +40,10 @@ create table certificate_tag
 
 create table roles
 (
-    id               bigserial   not null
+    id   bigserial   not null
         constraint roles_pk
             primary key,
-    name             varchar(15) not null,
-    create_date      timestamp   not null,
-    last_update_date timestamp   not null
+    name varchar(15) not null
 );
 
 create unique index roles_id_uindex

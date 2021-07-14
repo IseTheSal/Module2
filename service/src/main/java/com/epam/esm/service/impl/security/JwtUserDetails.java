@@ -1,4 +1,4 @@
-package com.epam.esm.controller.security;
+package com.epam.esm.service.impl.security;
 
 import com.epam.esm.model.entity.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class JwtUserDetails implements UserDetails {
-
 
     private String login;
     private String password;

@@ -1,26 +1,15 @@
 package com.epam.esm.model.dto;
 
 import com.epam.esm.model.entity.UserRole;
-import com.epam.esm.model.entity.User;
 
-public class UserDTO extends BasicDTO {
+public class UserDTO extends AuditBasicDTO<UserDTO> {
 
     private String login;
     private String firstName;
     private String lastName;
     private UserRole role;
 
-    private UserDTO() {
-    }
-
-    public static UserDTO toDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setLogin(user.getLogin());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setRole(user.getRole());
-        return dto;
+    public UserDTO() {
     }
 
     public String getLogin() {

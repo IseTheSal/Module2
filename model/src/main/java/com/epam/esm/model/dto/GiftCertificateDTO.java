@@ -1,13 +1,11 @@
 package com.epam.esm.model.dto;
 
-import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
-import com.epam.esm.model.entity.User;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
-public class GiftCertificateDTO extends BasicDTO {
+public class GiftCertificateDTO extends AuditBasicDTO<GiftCertificateDTO> {
 
     private String name;
     private String description;
@@ -16,18 +14,7 @@ public class GiftCertificateDTO extends BasicDTO {
     private boolean forSale = true;
     private Set<Tag> tags;
 
-    private GiftCertificateDTO(){}
-
-    public GiftCertificateDTO toDTO(GiftCertificate certificate){
-        GiftCertificateDTO dto = new GiftCertificateDTO();
-        dto.setId(certificate.getId());
-        dto.setName(certificate.getName());
-        dto.setDescription(certificate.getDescription());
-        dto.setPrice(certificate.getPrice());
-        dto.setDuration(certificate.getDuration());
-        dto.setForSale(certificate.isForSale());
-        dto.setTags(certificate.getTags());
-        return dto;
+    public GiftCertificateDTO() {
     }
 
     public String getName() {
