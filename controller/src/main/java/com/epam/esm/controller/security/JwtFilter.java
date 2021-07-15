@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,8 @@ import java.io.IOException;
 public class JwtFilter extends GenericFilterBean {
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer";
+    public static final String SEMICOLON = ";";
+    public static final String CHARSET_UTF8 = "charset=UTF-8";
 
     private JwtProvider jwtProvider;
     private UserDetailsServiceImpl userDetailsService;
@@ -67,6 +70,7 @@ public class JwtFilter extends GenericFilterBean {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
             RestApplicationError error = new RestApplicationError(messageSource.getMessage(ex.getMessage(), null,
                     LocaleContextHolder.getLocale()), 40401);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE + SEMICOLON + CHARSET_UTF8);
             response.getWriter().write(objectMapper.writeValueAsString(error));
         }
     }
