@@ -11,6 +11,8 @@ import com.epam.esm.model.entity.User;
 
 public class ConverterDTO {
 
+    private ConverterDTO(){}
+
     public static GiftCertificateDTO toDTO(GiftCertificate certificate) {
         GiftCertificateDTO dto = new GiftCertificateDTO();
         dto.setId(certificate.getId());

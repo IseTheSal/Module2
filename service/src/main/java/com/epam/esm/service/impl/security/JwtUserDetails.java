@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl.security;
 
+import com.epam.esm.model.dto.UserDTO;
 import com.epam.esm.model.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,10 +15,10 @@ public class JwtUserDetails implements UserDetails {
     private String password;
     private Collection<? extends GrantedAuthority> grantedAuthorities;
 
-    public static JwtUserDetails fromUserEntityToCustomUserDetails(User user) {
+    public static JwtUserDetails fromUserEntityToCustomUserDetails(UserDTO user, String password) {
         JwtUserDetails userDetails = new JwtUserDetails();
         userDetails.login = user.getLogin();
-        userDetails.password = user.getPassword();
+        userDetails.password = password;
         userDetails.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
         return userDetails;
     }

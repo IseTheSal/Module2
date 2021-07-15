@@ -9,6 +9,7 @@ import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.model.entity.UserRole;
 import com.epam.esm.service.UserService;
+import com.epam.esm.service.impl.security.JwtUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
         User user = fromDTO(dto);
         user.setPassword(password);
         String login = user.getLogin();
-        findByLogin(login).ifPresent(u -> {
+        userDao.findByLogin(login).ifPresent(u -> {
             throw new UserLoginExistException(login);
         });
         String roleName = user.getRole().getName();
@@ -63,23 +64,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public Optional<User> findByLogin(String login) {
-        return userDao.findByLogin(login);
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public UserDTO findByLoginAndPassword(String login, String password) {
-        User user = findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
+        User user = userDao.findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UserNotFoundException();
         }
         return toDTO(user);
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public User findByLoginOrThrow(String login) {
-        return findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
     }
 }

@@ -132,7 +132,7 @@ public class RestExceptionHandler {
     public ResponseEntity<RestApplicationError> defaultErrorHandler(Exception ex) {
         log.error(ex.getMessage());
         RestApplicationError error = new RestApplicationError(messageSource.getMessage(
-                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40403);
+                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40400);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);

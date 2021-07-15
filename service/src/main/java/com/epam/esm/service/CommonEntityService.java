@@ -3,32 +3,31 @@ package com.epam.esm.service;
 
 import com.epam.esm.error.exception.IncorrectPageException;
 import com.epam.esm.model.dto.BasicDTO;
-import com.epam.esm.model.entity.EntityMarker;
 import com.epam.esm.validator.PageValidator;
 
 import java.util.List;
 
 /**
- * <p>Layer service interface between Controller and DAO.</p>
+ * <p>Service layer interface between Controller and DAO.</p>
  * <p>Generic interface which providing interaction with your service.</p>
  *
- * @param <T> Any Object that implements {@link EntityMarker}  interface
+ * @param <T> Any Object that extends {@link BasicDTO}  interface
  * @author Illia Aheyeu
  */
 public interface CommonEntityService<T extends BasicDTO<T>> {
 
     /**
-     * Intermediate method used to validate <code>id</code> of {@link EntityMarker Entity} and then call find method from dao layer.
+     * Intermediate method used to validate <code>id</code> of {@link BasicDTO } and then call find method from dao layer.
      *
-     * @param id <code>id</code> of object that implements {@link EntityMarker Entity}
-     * @return <code>Optional</code> {@link EntityMarker Entity} from database
+     * @param id <code>id</code> of object that implements {@link BasicDTO }
+     * @return <code>Optional</code> {@link BasicDTO } from database
      */
     T findById(long id);
 
     /**
-     * Find all specified generic {@link EntityMarker Entity}.
+     * Find all specified generic {@link BasicDTO}.
      *
-     * @return <code>List</code> of {@link EntityMarker Entity}
+     * @return <code>List</code> of {@link BasicDTO}
      */
     List<T> findAll(int amount, int page);
 

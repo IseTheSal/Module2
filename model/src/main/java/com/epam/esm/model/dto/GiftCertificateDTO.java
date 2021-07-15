@@ -3,6 +3,7 @@ package com.epam.esm.model.dto;
 import com.epam.esm.model.entity.Tag;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 public class GiftCertificateDTO extends AuditBasicDTO<GiftCertificateDTO> {
@@ -58,7 +59,7 @@ public class GiftCertificateDTO extends AuditBasicDTO<GiftCertificateDTO> {
     }
 
     public Set<Tag> getTags() {
-        return tags;
+        return (tags == null) ? new HashSet<>() : new HashSet<>(tags);
     }
 
     public void setTags(Set<Tag> tags) {

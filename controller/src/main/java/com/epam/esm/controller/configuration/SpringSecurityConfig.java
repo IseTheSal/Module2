@@ -28,26 +28,21 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //fixme check if admin has permission to login
         http.httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-//                .antMatchers(HttpMethod.POST, "/api/v1/login").hasRole("ADMIN")
-//                .antMatchers(HttpMethod.POST, "/api/v1/login").not().hasAnyRole()
-//                .antMatchers(HttpMethod.PUT, "/api/v1/registration").not().hasAnyRole()
-                .antMatchers(HttpMethod.GET, "/api/v1/orders").hasRole("USER")
-//                .antMatchers(HttpMethod.POST, "/api/v1/orders/*").hasRole(USER_ROLE)
-//                .antMatchers(HttpMethod.GET, "/api/v1/certificates/*", "/api/v1/tags/*").permitAll()
-                //fixme h2 console
-//                .antMatchers( "/console/**").permitAll()
-//                .antMatchers("/**").hasRole(ADMIN_ROLE)
-                .anyRequest()
-                .authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/login", "/api/v1/registration").anonymous()
+                .antMatchers(HttpMethod.GET, "/api/v1/orders").hasRole(USER_ROLE)
+                .antMatchers(HttpMethod.GET, "/api/v1/certificates/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        http.headers().frameOptions().disable();
+
+//        fixme h2 console
+//        http.headers().frameOptions().disable();
+//                .antMatchers( "/console/**").permitAll()
     }
 
     @Bean

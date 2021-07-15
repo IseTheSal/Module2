@@ -22,14 +22,14 @@ public class AuthController {
         this.jwtProvider = jwtProvider;
     }
 
-    @PutMapping("/registration")
+    @PostMapping("/registration")
     public ResponseEntity<UserDTO> registerUser(@RequestBody RegistrationBody user) {
         return new ResponseEntity<>(userService.create(user.getUserDTO(), user.getPassword()), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public String auth(@RequestBody AuthenticationBody body) {
+    public ResponseEntity<String> auth(@RequestBody AuthenticationBody body) {
         UserDTO user = userService.findByLoginAndPassword(body.getLogin(), body.getPassword());
-        return jwtProvider.generateToken(user.getLogin());
+        return new ResponseEntity<>(jwtProvider.generateToken(user.getLogin()), HttpStatus.OK);
     }
 }
