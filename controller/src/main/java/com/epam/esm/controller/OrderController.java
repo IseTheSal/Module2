@@ -33,19 +33,6 @@ public class OrderController {
     }
 
     /**
-     * Find user`s {@link OrderDTO Orders}
-     *
-     * @param id {@link com.epam.esm.model.dto.UserDTO User`s} id
-     * @return <code>List</code> of {@link OrderDTO Orders}
-     */
-    @GetMapping("/users/{id:^[1-9]\\d{0,18}$}")
-    public ResponseEntity<List<OrderDTO>> findUserOrders(@PathVariable long id,
-                                                         @RequestParam(required = false, defaultValue = "1") int page,
-                                                         @RequestParam(required = false, defaultValue = "10") int amount) {
-        return new ResponseEntity<>(orderService.findUserOrders(id, amount, page), HttpStatus.OK);
-    }
-
-    /**
      * Create new {@link OrderDTO}
      *
      * @param order {@link OrderDTO}

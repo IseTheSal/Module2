@@ -5,6 +5,7 @@ import com.epam.esm.error.exception.TagNotFoundException;
 import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.impl.JpaTagImpl;
+import com.epam.esm.model.dto.TagDTO;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.TagService;
 import org.junit.jupiter.api.Assertions;
@@ -35,36 +36,38 @@ class TagServiceImplTest {
         Mockito.when(dao.findByName(ArgumentMatchers.anyString()))
                 .thenReturn(java.util.Optional.empty());
         Mockito.when(dao.create(MockData.TAG_ONE)).thenReturn(MockData.TAG_ONE);
-        Tag actual = service.create(MockData.TAG_ONE);
-        Tag expected = MockData.TAG_ONE;
+        TagDTO actual = service.create(MockData.TAG_ONE_DTO);
+        TagDTO expected = MockData.TAG_ONE_DTO;
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void createThrowTagExistException() {
         Mockito.when(dao.create(MockData.TAG_ONE)).thenThrow(new TagExistException("name"));
-        Assertions.assertThrows(TagExistException.class, () -> service.create(MockData.TAG_ONE));
+        Assertions.assertThrows(TagExistException.class, () -> service.create(MockData.TAG_ONE_DTO));
     }
 
     @Test
     void createThrowValidationException() {
-        Assertions.assertThrows(ValidationException.class, () -> service.create(new Tag("incorr$erct")));
+        TagDTO tagDTO = new TagDTO();
+        tagDTO.setName("inco$$e^t");
+        Assertions.assertThrows(ValidationException.class, () -> service.create(tagDTO));
     }
 
     @Test
     void findById() {
         Mockito.when(dao.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(java.util.Optional.ofNullable(MockData.TAG_ONE));
-        Tag actual = service.findById(1);
-        Tag expected = MockData.TAG_ONE;
+        TagDTO actual = service.findById(1);
+        TagDTO expected = MockData.TAG_ONE_DTO;
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void findAll() {
         Mockito.when(dao.findAll(100, 0)).thenReturn(Collections.singletonList(MockData.TAG_ONE));
-        List<Tag> actual = service.findAll(100, 1);
-        List<Tag> expected = Collections.singletonList(MockData.TAG_ONE);
+        List<TagDTO> actual = service.findAll(100, 1);
+        List<TagDTO> expected = Collections.singletonList(MockData.TAG_ONE_DTO);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -85,8 +88,8 @@ class TagServiceImplTest {
     @Test
     void findMostWidely() {
         Mockito.when(dao.findMostWidelyUsedTag()).thenReturn(java.util.Optional.ofNullable(MockData.TAG_ONE));
-        Tag actual = service.findMostWidelyUsedTag();
-        Tag expected = MockData.TAG_ONE;
+        TagDTO actual = service.findMostWidelyUsedTag();
+        TagDTO expected = MockData.TAG_ONE_DTO;
         Assertions.assertEquals(expected, actual);
     }
 }

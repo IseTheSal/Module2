@@ -43,6 +43,17 @@ public class RestExceptionHandler {
         RestApplicationError error = new RestApplicationError(exception.getMessage(), exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserLoginExistException.class)
+    public ResponseEntity<RestApplicationError> userLoginExistException(UserLoginExistException exception) {
+        String login = exception.getMessage();
+        String exceptionMessage = messageSource.getMessage("error.user.exist.login", new Object[]{login},
+                LocaleContextHolder.getLocale());
+        RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, httpHeaders, HttpStatus.CONFLICT);
     }
 
@@ -54,7 +65,7 @@ public class RestExceptionHandler {
         RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, httpHeaders, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(TagNotFoundException.class)

@@ -13,7 +13,7 @@ public class GiftCertificateDTO extends AuditBasicDTO<GiftCertificateDTO> {
     private BigDecimal price;
     private Integer duration;
     private boolean forSale = true;
-    private Set<Tag> tags;
+    private Set<TagDTO> tags;
 
     public GiftCertificateDTO() {
     }
@@ -58,12 +58,15 @@ public class GiftCertificateDTO extends AuditBasicDTO<GiftCertificateDTO> {
         this.forSale = forSale;
     }
 
-    public Set<Tag> getTags() {
+    public Set<TagDTO> getTags() {
         return (tags == null) ? new HashSet<>() : new HashSet<>(tags);
     }
 
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
+    public void addTag(TagDTO tagDTO) {
+        if (tags == null) {
+            tags = new HashSet<>();
+        }
+        tags.add(tagDTO);
     }
 
     @Override

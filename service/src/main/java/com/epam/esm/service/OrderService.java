@@ -23,4 +23,13 @@ public interface OrderService extends CommonEntityService<OrderDTO> {
      * @return <code>List</code> of {@link OrderDTO orders}
      */
     List<OrderDTO> findUserOrders(long id, int amount, int page);
+
+    /**
+     * Find user`s {@link OrderDTO order}
+     *
+     * @param userId  {@link com.epam.esm.model.dto.UserDTO User`s} id
+     * @param orderId {@link OrderDTO Order`s} id
+     * @return {@link OrderDTO}
+     */
+    OrderDTO findUserOrder(long userId, long orderId);
 }

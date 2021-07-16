@@ -87,7 +87,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             String name = tag.getName();
             if (!TagValidator.isNameValid(name)) {
                 exceptionValidMessage.append(messageSource.getMessage("error.tag.validation.name",
-                        new Object[]{name}, LocaleContextHolder.getLocale()));
+                        new Object[]{name}, LocaleContextHolder.getLocale())).append("\n");
             }
         }
         String message = exceptionValidMessage.toString();

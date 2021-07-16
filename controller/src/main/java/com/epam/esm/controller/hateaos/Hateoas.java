@@ -30,6 +30,7 @@ public class Hateoas {
     private static final String DESC = "DESC";
     private static final String FIND_BY_USER_ID_ORDERS = "Find by user`s orders";
     private static final String FIND_MOST_WIDELY_USED_TAG = "Find most widely used";
+    private static final String FIND_ORDER_BY_USER_ID = "Find order by user id and order id";
     private static final String GET = "GET";
     private static final String POST = "POST";
     private static final String PUT = "PUT";
@@ -50,12 +51,8 @@ public class Hateoas {
                         .withName(FIND_BY_ATTRIBUTES).withType(GET));
     }
 
-
     public static OrderDTO createOrderHateoas(OrderDTO order) {
         return order
-                .add(linkTo(methodOn(OrderController.class)
-                        .findUserOrders(order.getUser().getId(), PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
-                        .withName(FIND_BY_USER_ID_ORDERS).withType(GET))
                 .add(linkTo(methodOn(OrderController.class).findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
                         .withName(FIND_ALL).withType(GET))
                 .add(linkTo(methodOn(OrderController.class).findById(order.getId())).withSelfRel()
@@ -81,9 +78,15 @@ public class Hateoas {
 
     public static UserDTO createUserHateoas(UserDTO user) {
         return user
-                .add(linkTo(methodOn(UserController.class).findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
+                .add(linkTo(methodOn(UserController.class)
+                        .findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
                         .withName(FIND_ALL).withType(GET))
                 .add(linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel()
-                        .withName(FIND_BY_ID).withType(GET));
+                        .withName(FIND_BY_ID).withType(GET))
+                .add(linkTo(methodOn(UserController.class)
+                        .findUserOrders(user.getId(), PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
+                        .withName(FIND_BY_USER_ID_ORDERS).withType(GET))
+                .add(linkTo(methodOn(UserController.class).findOrderByUserId(user.getId(), 1)).withSelfRel()
+                        .withName(FIND_ORDER_BY_USER_ID).withType(GET));
     }
 }

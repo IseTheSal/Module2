@@ -75,4 +75,9 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findUserOrders(id, amount, page - 1).stream().map(ConverterDTO::toDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public OrderDTO findUserOrder(long userId, long orderId) {
+        return toDTO(orderDao.findUserOrder(userId, orderId).orElseThrow(() -> new OrderNotFoundException(orderId)));
+    }
 }

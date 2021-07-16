@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,5 +49,17 @@ public class JpaOrderImpl implements OrderDao {
         Root<Order> orderRoot = query.from(Order.class);
         query.where(criteriaBuilder.equal(orderRoot.get(EntityField.USER), userId));
         return entityManager.createQuery(query).setMaxResults(amount).setFirstResult(amount * page).getResultList();
+    }
+
+    @Override
+    public Optional<Order> findUserOrder(long userId, long orderId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> query = criteriaBuilder.createQuery(Order.class);
+        Root<Order> orderRoot = query.from(Order.class);
+        Predicate[] predicates = new Predicate[2];
+        predicates[0] = criteriaBuilder.equal(orderRoot.get(EntityField.USER), userId);
+        predicates[1] = criteriaBuilder.equal(orderRoot.get(EntityField.ID), orderId);
+        query.select(orderRoot).where(predicates);
+        return entityManager.createQuery(query).getResultStream().findFirst();
     }
 }

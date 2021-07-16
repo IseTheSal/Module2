@@ -33,16 +33,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/api/v1/certificates/**", "/api/v1/tags/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/login", "/api/v1/registration").anonymous()
-                .antMatchers(HttpMethod.GET, "/api/v1/orders").hasRole(USER_ROLE)
-                .antMatchers(HttpMethod.GET, "/api/v1/certificates/**").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers(HttpMethod.GET, "/api/v1/users/**").hasAnyRole(USER_ROLE, ADMIN_ROLE)
+                .antMatchers(HttpMethod.POST, "/api/v1/orders/*").hasAnyRole(USER_ROLE, ADMIN_ROLE)
+                .antMatchers("/api/v1/orders/**", "/api/v1/certificates/**", "/api/v1/users/**", "/api/v1/tags/**").hasRole(ADMIN_ROLE)
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-//        fixme h2 console
-//        http.headers().frameOptions().disable();
-//                .antMatchers( "/console/**").permitAll()
     }
 
     @Bean

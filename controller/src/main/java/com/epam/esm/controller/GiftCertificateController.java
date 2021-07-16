@@ -79,14 +79,13 @@ public class GiftCertificateController {
         return new ResponseEntity<>(createCertificateHateoas(certificate), HttpStatus.OK);
     }
 
-
     /**
      * Remove giftCertificate from sale
      *
      * @param id {@link GiftCertificateDTO} <code>id</code>
      * @return ResponseEntity with {@link GiftCertificateDTO} id
      */
-    @PutMapping("/{id:^[1-9]\\d{0,18}$}")
+    @PatchMapping("/{id:^[1-9]\\d{0,18}$}")
     public ResponseEntity<Long> removeFromSales(@PathVariable long id) {
         return new ResponseEntity<>(certificateService.removeFromSale(id), HttpStatus.OK);
     }

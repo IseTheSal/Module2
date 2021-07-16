@@ -3,6 +3,7 @@ package com.epam.esm.model.dao;
 import com.epam.esm.model.entity.Order;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Interface extends {@link Order} database functionality
@@ -28,4 +29,6 @@ public interface OrderDao extends CommonDao<Order> {
      * @return <code>List</code> of {@link Order Orders}
      */
     List<Order> findUserOrders(long userId, int amount, int page);
+
+    Optional<Order> findUserOrder(long userId, long orderId);
 }

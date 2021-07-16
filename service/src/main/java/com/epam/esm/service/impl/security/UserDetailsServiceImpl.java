@@ -3,7 +3,6 @@ package com.epam.esm.service.impl.security;
 import com.epam.esm.error.exception.UserNotFoundException;
 import com.epam.esm.model.dao.UserDao;
 import com.epam.esm.model.entity.User;
-import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;

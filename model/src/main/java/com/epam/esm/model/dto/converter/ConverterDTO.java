@@ -11,7 +11,8 @@ import com.epam.esm.model.entity.User;
 
 public class ConverterDTO {
 
-    private ConverterDTO(){}
+    private ConverterDTO() {
+    }
 
     public static GiftCertificateDTO toDTO(GiftCertificate certificate) {
         GiftCertificateDTO dto = new GiftCertificateDTO();
@@ -21,7 +22,9 @@ public class ConverterDTO {
         dto.setPrice(certificate.getPrice());
         dto.setDuration(certificate.getDuration());
         dto.setForSale(certificate.isForSale());
-        dto.setTags(certificate.getTags());
+        certificate.getTags().forEach(tag -> {
+            dto.addTag(toDTO(tag));
+        });
         dto.setCreateDate(certificate.getCreateDate());
         dto.setLastUpdateDate(certificate.getLastUpdateDate());
         return dto;
@@ -35,7 +38,9 @@ public class ConverterDTO {
         certificate.setPrice(dto.getPrice());
         certificate.setDuration(dto.getDuration());
         certificate.setForSale(dto.isForSale());
-        dto.getTags().forEach(certificate::addTag);
+        dto.getTags().forEach(tagDTO -> {
+            certificate.addTag(fromDTO(tagDTO));
+        });
         certificate.setCreateDate(dto.getCreateDate());
         certificate.setLastUpdateDate(dto.getLastUpdateDate());
         return certificate;
