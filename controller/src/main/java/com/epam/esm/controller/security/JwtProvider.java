@@ -76,7 +76,7 @@ public class JwtProvider {
             checkExpDate(keycloakToken.getExp());
             return true;
         } catch (VerificationException e) {
-            throw new RuntimeException(e.getMessage());
+            return false;
         }
     }
 

@@ -57,22 +57,22 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         try {
-            String token = getTokenFromRequest((HttpServletRequest) servletRequest).orElseThrow(RuntimeException::new);
-            if (jwtProvider.validateToken(token)) {
-                String userLogin = jwtProvider.getLoginFromToken(token);
+            Optional<String> token = getTokenFromRequest((HttpServletRequest) servletRequest);
+            if (token.isPresent() && jwtProvider.validateToken(token.get())) {
+                String userLogin = jwtProvider.getLoginFromToken(token.get());
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
                         userDetails.getAuthorities());
                 auth.setDetails(userDetails);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } else if (jwtProvider.validateKeycloak(token)) {
-                UserDetails keycloakUser = jwtProvider.findOrRegisterUser(token);
+            } else if (token.isPresent() && jwtProvider.validateKeycloak(token.get())) {
+                UserDetails keycloakUser = jwtProvider.findOrRegisterUser(token.get());
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(keycloakUser, null,
                         keycloakUser.getAuthorities());
                 auth.setDetails(keycloakUser);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } else {
-                jwtProvider.recogniseException(token);
+            } else if(token.isPresent()) {
+                jwtProvider.recogniseException(token.get());
             }
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (RuntimeException ex) {
@@ -82,8 +82,8 @@ public class JwtFilter extends GenericFilterBean {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE + SEMICOLON + CHARSET_UTF8);
             response.getWriter().write(objectMapper.writeValueAsString(error));
         }
-        filterChain.doFilter(servletRequest, servletResponse);
     }
+
     private Optional<String> getTokenFromRequest(HttpServletRequest request) {
         String bearer = request.getHeader(AUTHORIZATION);
         if (StringUtils.hasText(bearer) && bearer.startsWith(BEARER)) {
