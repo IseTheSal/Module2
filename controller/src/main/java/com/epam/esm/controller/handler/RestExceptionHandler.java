@@ -119,7 +119,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<RestApplicationError> invalidRequestBody(InvalidFormatException ex) {
-        log.error(ex.getMessage());
         RestApplicationError error = new RestApplicationError(messageSource.getMessage(
                 "error.handler.incorrect.body", null, LocaleContextHolder.getLocale()),
                 RestErrorStatusCode.VALIDATION_ERROR);
@@ -130,7 +129,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<RestApplicationError> invalidRequestParam(MethodArgumentTypeMismatchException ex) {
-        log.error(ex.getMessage());
         RestApplicationError error = new RestApplicationError(messageSource.getMessage(
                 "error.handler.incorrect.parameters", null, LocaleContextHolder.getLocale()),
                 RestErrorStatusCode.VALIDATION_ERROR);

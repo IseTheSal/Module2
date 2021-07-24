@@ -1,7 +1,6 @@
 package com.epam.esm.controller.security;
 
 import com.epam.esm.error.RestApplicationError;
-import com.epam.esm.service.impl.security.JwtProvider;
 import com.epam.esm.service.impl.security.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +22,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @Log4j2
@@ -57,14 +57,22 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         try {
-            String token = getTokenFromRequest((HttpServletRequest) servletRequest);
-            if (token != null && jwtProvider.validateToken(token)) {
+            String token = getTokenFromRequest((HttpServletRequest) servletRequest).orElseThrow(RuntimeException::new);
+            if (jwtProvider.validateToken(token)) {
                 String userLogin = jwtProvider.getLoginFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
                         userDetails.getAuthorities());
                 auth.setDetails(userDetails);
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } else if (jwtProvider.validateKeycloak(token)) {
+                UserDetails keycloakUser = jwtProvider.findOrRegisterUser(token);
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(keycloakUser, null,
+                        keycloakUser.getAuthorities());
+                auth.setDetails(keycloakUser);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } else {
+                jwtProvider.recogniseException(token);
             }
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (RuntimeException ex) {
@@ -74,13 +82,13 @@ public class JwtFilter extends GenericFilterBean {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE + SEMICOLON + CHARSET_UTF8);
             response.getWriter().write(objectMapper.writeValueAsString(error));
         }
+        filterChain.doFilter(servletRequest, servletResponse);
     }
-
-    private String getTokenFromRequest(HttpServletRequest request) {
+    private Optional<String> getTokenFromRequest(HttpServletRequest request) {
         String bearer = request.getHeader(AUTHORIZATION);
         if (StringUtils.hasText(bearer) && bearer.startsWith(BEARER)) {
-            return bearer.substring(7);
+            return Optional.of(bearer.substring(7));
         }
-        return null;
+        return Optional.empty();
     }
 }

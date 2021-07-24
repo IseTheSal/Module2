@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
     public UserDTO create(UserDTO dto, String password) {
         checkUserValid(dto, password);
         User user = fromDTO(dto);
-        user.setPassword(password);
         String login = user.getLogin();
         userDao.findByLogin(login).ifPresent(u -> {
             throw new UserLoginExistException(login);
