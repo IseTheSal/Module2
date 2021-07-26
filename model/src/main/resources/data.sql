@@ -50,9 +50,11 @@ INSERT INTO certificate_tag (certificate_id, tag_id)
 VALUES (3, 4);
 INSERT INTO certificate_tag (certificate_id, tag_id)
 VALUES (3, 5);
+INSERT INTO certificate_tag (certificate_id, tag_id)
+VALUES (3, 3);
 
 INSERT INTO orders (user_id, certificate_id, price, purchase_date, id, create_date, last_update_date)
-VALUES (1, 1, 20.05, '2021-05-24 20:48:10.000000', 1, now(), now());
+VALUES (1, 3, 20.05, '2021-05-24 20:48:10.000000', 1, now(), now());
 INSERT INTO orders (user_id, certificate_id, price, purchase_date, id, create_date, last_update_date)
 VALUES (2, 1, 15.15, '2021-05-24 20:48:27.000000', 2, now(), now());
 INSERT INTO orders (user_id, certificate_id, price, purchase_date, id, create_date, last_update_date)

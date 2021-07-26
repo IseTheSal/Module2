@@ -4,16 +4,19 @@ import com.epam.esm.error.exception.RoleNotFoundException;
 import com.epam.esm.error.exception.UserLoginExistException;
 import com.epam.esm.error.exception.UserNotFoundException;
 import com.epam.esm.error.exception.ValidationException;
-import com.epam.esm.model.dao.UserDao;
 import com.epam.esm.model.dto.UserDTO;
 import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.model.entity.UserRole;
+import com.epam.esm.model.repository.RoleRepository;
+import com.epam.esm.model.repository.UserRepository;
 import com.epam.esm.service.UserService;
 import com.epam.esm.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -30,25 +33,29 @@ public class UserServiceImpl implements UserService {
 
     private static final String USER_ROLE = "ROLE_USER";
 
-    private final UserDao userDao;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final MessageSource messageSource;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, MessageSource messageSource, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, MessageSource messageSource, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.messageSource = messageSource;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDTO findById(long id) {
-        return toDTO(userDao.findById(id).orElseThrow(() -> new UserNotFoundException("id=" + id)));
+        return toDTO(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("id=" + id)));
     }
 
     @Override
     public List<UserDTO> findAll(int amount, int page) {
-        return userDao.findAll(amount, page - 1).stream().map(ConverterDTO::toDTO).collect(Collectors.toList());
+        checkPagination(amount, page);
+        Pageable pageable = PageRequest.of(page - 1, amount);
+        return userRepository.findAll(pageable).stream().map(ConverterDTO::toDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -57,13 +64,13 @@ public class UserServiceImpl implements UserService {
         checkUserValid(dto, password);
         User user = fromDTO(dto);
         String login = user.getLogin();
-        userDao.findByLogin(login).ifPresent(u -> {
+        userRepository.findByLogin(login).ifPresent(u -> {
             throw new UserLoginExistException(login);
         });
-        UserRole role = userDao.findRoleByName(USER_ROLE).orElseThrow(() -> new RoleNotFoundException(USER_ROLE));
+        UserRole role = roleRepository.findByName(USER_ROLE).orElseThrow(() -> new RoleNotFoundException(USER_ROLE));
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User created = userDao.create(user);
+        User created = userRepository.save(user);
         return toDTO(created);
     }
 
@@ -97,7 +104,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public UserDTO findByLoginAndPassword(String login, String password) {
-        User user = userDao.findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
+        User user = userRepository.findByLogin(login).orElseThrow(() -> new UserNotFoundException("login=" + login));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UserNotFoundException();
         }
