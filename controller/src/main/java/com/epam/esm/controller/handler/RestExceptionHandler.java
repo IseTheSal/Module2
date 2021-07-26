@@ -139,7 +139,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler({Exception.class, NoHandlerFoundException.class})
     public ResponseEntity<RestApplicationError> defaultErrorHandler(Exception ex) {
-        ex.printStackTrace();
         log.error(ex.getMessage());
         RestApplicationError error = new RestApplicationError(messageSource.getMessage(
                 "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40400);

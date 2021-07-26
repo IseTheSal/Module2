@@ -37,6 +37,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private static final String CREATE_OPTION = "CREATE";
     private static final String ASC_SORT = "ASC";
     private static final String DESC_SORT = "DESC";
+    private static final String PERCENT_SYMBOL = "%";
+    private static final String CREATE_DATE_FIELD = "createDate";
+    private static final String NAME_FIELD = "name";
 
     private final GiftRepository certificateRepository;
     private final TagRepository tagRepository;
@@ -226,7 +229,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         checkPagination(amount, page);
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
-        giftValue = "%" + giftValue + "%";
+        if (giftValue != null) {
+            giftValue = PERCENT_SYMBOL + giftValue + PERCENT_SYMBOL;
+        }
         Set<String> tags = convertTags(tagNames);
         Pageable pageable = PageRequest.of(page - 1, amount, Sort.by(defineSortDirections(dateSort, nameSort)));
         return certificateRepository.findAllWithParameters(tags, tags.size(), giftValue, pageable).stream()
@@ -236,9 +241,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private List<Sort.Order> defineSortDirections(String dateSort, String nameSort) {
         List<Sort.Order> orders = new ArrayList<>();
         Sort.Direction dateDirection = (dateSort == null || (!dateSort.equalsIgnoreCase(DESC_SORT))) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        orders.add(new Sort.Order(dateDirection, "createDate"));
+        orders.add(new Sort.Order(dateDirection, CREATE_DATE_FIELD));
         Sort.Direction nameDirection = (nameSort == null || (!nameSort.equalsIgnoreCase(DESC_SORT))) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        orders.add(new Sort.Order(nameDirection, "name"));
+        orders.add(new Sort.Order(nameDirection, NAME_FIELD));
         return orders;
     }
 

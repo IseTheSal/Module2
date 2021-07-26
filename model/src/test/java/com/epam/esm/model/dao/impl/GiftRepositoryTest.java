@@ -1,13 +1,14 @@
 //package com.epam.esm.model.dao.impl;
 //
-//import com.epam.esm.model.dao.GiftCertificateDao;
 //import com.epam.esm.model.dao.config.SpringBootTestConfiguration;
 //import com.epam.esm.model.entity.GiftCertificate;
+//import com.epam.esm.model.repository.GiftRepository;
 //import org.junit.jupiter.api.Assertions;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+//import org.springframework.data.domain.PageRequest;
 //import org.springframework.test.annotation.DirtiesContext;
 //import org.springframework.test.context.ContextConfiguration;
 //import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -15,17 +16,18 @@
 //
 //import java.math.BigDecimal;
 //import java.time.LocalDateTime;
+//import java.util.HashSet;
 //import java.util.Optional;
 //
 //
-//@ContextConfiguration(classes = {JpaGiftCertificateImpl.class, SpringBootTestConfiguration.class},
+//@ContextConfiguration(classes = {GiftRepository.class, SpringBootTestConfiguration.class},
 //        loader = AnnotationConfigContextLoader.class)
 //@DirtiesContext
-//@SpringBootTest
-//class JpaGiftCertificateImplTest {
+//@DataJpaTest
+//class GiftRepositoryTest {
 //
 //    @Autowired
-//    GiftCertificateDao giftCertificateDao;
+//    GiftRepository giftRepository;
 //
 //    static GiftCertificate giftCertificate;
 //
@@ -38,29 +40,22 @@
 //
 //    @Test
 //    void findById() {
-//        Optional<GiftCertificate> actual = giftCertificateDao.findById(1);
+//        Optional<GiftCertificate> actual = giftRepository.findById(1L);
 //        Assertions.assertTrue(actual.isPresent() && actual.get().getName().equals(giftCertificate.getName()));
 //    }
 //
 //    @Test
 //    void findAll() {
-//        int actual = giftCertificateDao.findAll(3, 0).size();
+//        int actual = giftRepository.findAll(PageRequest.of(0, 3)).toList().size();
 //        int expected = 3;
 //        Assertions.assertEquals(expected, actual);
 //    }
 //
 //    @Test
 //    void findByAttributes() {
-//        String actual = giftCertificateDao.findByAttributes(new String[0], "Квадроцикл", "asc", "desc", 1, 0).get(0).getName();
+//        String actual = giftRepository.findAllWithParameters(new HashSet<>(), 0, "Квадроцикл", PageRequest.of(0,1)).get(0).getName();
 //        String expected = giftCertificate.getName();
 //        Assertions.assertEquals(expected, actual);
-//    }
-//
-//    @Test
-//    @Transactional
-//    void delete() {
-//        boolean delete = giftCertificateDao.delete(1);
-//        Assertions.assertTrue(delete);
 //    }
 //
 //    @Test
@@ -73,7 +68,7 @@
 //        giftCertificate.setDuration(1);
 //        giftCertificate.setLastUpdateDate(LocalDateTime.now());
 //        giftCertificate.setCreateDate(LocalDateTime.now());
-//        GiftCertificate created = giftCertificateDao.create(giftCertificate);
+//        GiftCertificate created = giftRepository.save(giftCertificate);
 //        boolean condition = created.getId() > 0;
 //        Assertions.assertTrue(condition);
 //    }
@@ -81,10 +76,10 @@
 //    @Test
 //    @Transactional
 //    void update() {
-//        GiftCertificate giftCertificate = giftCertificateDao.findById(1).get();
+//        GiftCertificate giftCertificate = giftRepository.findById(1L).get();
 //        giftCertificate.setForSale(false);
-//        giftCertificateDao.update(giftCertificate);
-//        boolean condition = giftCertificateDao.findById(1).get().isForSale();
+//        giftRepository.save(giftCertificate);
+//        boolean condition = giftRepository.findById(1L).get().isForSale();
 //        Assertions.assertFalse(condition);
 //    }
 //}

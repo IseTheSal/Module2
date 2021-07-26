@@ -13,8 +13,7 @@ import java.util.Set;
 @Repository
 public interface GiftRepository extends JpaRepository<GiftCertificate, Long> {
 
-    @Query("SELECT DISTINCT gc from GiftCertificate gc inner join Tag t where t.name in (:tagIn)" +
-            " and (:giftValue is null or gc.description like :giftValue) or (:giftValue is null or gc.name like :giftValue) GROUP BY gc.id HAVING count(t.name) = :tagsSize")
-    List<GiftCertificate> findAllWithParameters(@Param("tagIn") Set<String> tagList, @Param("tagsSize") long tagsLength, @Param("giftValue") String gift, Pageable pageable);
-
+    @Query("SELECT gc from GiftCertificate gc inner join gc.tags t where t.name in (:tagIn)" +
+            " and ((:giftValue is null or gc.description like :giftValue) or (:giftValue is null or gc.name like :giftValue)) GROUP BY gc.id HAVING count(t.name) = :tagsSize")
+    List<GiftCertificate> findAllWithParameters(@Param("tagIn") Set<String> tagSet, @Param("tagsSize") long tagsLength, @Param("giftValue") String gift, Pageable pageable);
 }
