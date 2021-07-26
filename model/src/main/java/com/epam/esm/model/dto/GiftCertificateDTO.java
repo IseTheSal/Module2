@@ -1,7 +1,5 @@
 package com.epam.esm.model.dto;
 
-import com.epam.esm.model.entity.Tag;
-
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,13 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
     private static final String ADMIN_ROLE = "ADMIN";
-    private static final String REALM_ACCESS= "realm_access";
-    private static final String ROLES= "roles";
-    private static final String ROLE_PREFIX= "ROLE_";
+    private static final String REALM_ACCESS = "realm_access";
+    private static final String ROLES = "roles";
+    private static final String ROLE_PREFIX = "ROLE_";
 
     private final JwtFilter jwtFilter;
 
@@ -44,9 +42,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/orders/**", "/api/v1/certificates/**", "/api/v1/users/**", "/api/v1/tags/**").hasRole(ADMIN_ROLE)
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2ResourceServer().jwt();
-//                .jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                .oauth2ResourceServer().jwt();
+//                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
 
     }
 

@@ -12,20 +12,29 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Set;
 
 @Component
 public class JwtProvider {
+    private static final String ADMIN_KEYCLOAK = "ADMIN";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
     private static final String USER_ROLE = "ROLE_USER";
-
-    private final UserDetailsServiceImpl userDetailsService;
+    private static final String ENCODING_ALGORITHM = "RSA";
 
     @Value("${jwt.secret}")
     private String jwtSecret;
+    @Value("${keycloak.public.key}")
+    private String keycloakPublicKey;
+
+
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     public JwtProvider(UserDetailsServiceImpl userDetailsService) {
@@ -45,6 +54,14 @@ public class JwtProvider {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException ex) {
+            throw new RuntimeException("error.jwt.expired");
+        } catch (UnsupportedJwtException ex) {
+            throw new RuntimeException("error.jwt.unsupported");
+        } catch (MalformedJwtException ex) {
+            throw new RuntimeException("error.jwt.malformed");
+        } catch (SignatureException ex) {
+            throw new RuntimeException("error.jwt.invalid.signature");
         } catch (Exception ex) {
             return false;
         }
@@ -66,17 +83,29 @@ public class JwtProvider {
 
     private UserRole findRoleByToken(AccessToken token) {
         Set<String> roles = token.getRealmAccess().getRoles();
-        return roles.contains(ADMIN_ROLE) ? userDetailsService.findKeycloakRoleByName(ADMIN_ROLE)
+        return roles.contains(ADMIN_KEYCLOAK) ? userDetailsService.findKeycloakRoleByName(ADMIN_ROLE)
                 : userDetailsService.findKeycloakRoleByName(USER_ROLE);
     }
 
     public boolean validateKeycloak(String token) {
         try {
-            AccessToken keycloakToken = TokenVerifier.create(token, AccessToken.class).getToken();
+            PublicKey key = getKey(keycloakPublicKey);
+            AccessToken keycloakToken = TokenVerifier.create(token, AccessToken.class).publicKey(key).verify().getToken();
             checkExpDate(keycloakToken.getExp());
             return true;
         } catch (VerificationException e) {
             return false;
+        }
+    }
+
+    private PublicKey getKey(String key) {
+        try {
+            byte[] byteKey = Base64.getDecoder().decode(key.getBytes());
+            X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
+            KeyFactory kf = KeyFactory.getInstance(ENCODING_ALGORITHM);
+            return kf.generatePublic(X509publicKey);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -90,18 +119,11 @@ public class JwtProvider {
     public void recogniseException(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-        } catch (ExpiredJwtException ex) {
-            throw new RuntimeException("error.jwt.expired");
-        } catch (UnsupportedJwtException ex) {
-            throw new RuntimeException("error.jwt.unsupported");
-        } catch (MalformedJwtException ex) {
-            throw new RuntimeException("error.jwt.malformed");
-        } catch (SignatureException ex) {
-            throw new RuntimeException("error.jwt.invalid.signature");
         } catch (Exception ex) {
             throw new RuntimeException("error.jwt.invalid.token");
         }
     }
+
     public String getLoginFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         return claims.getSubject();

@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -71,7 +72,7 @@ public class JwtFilter extends GenericFilterBean {
                         keycloakUser.getAuthorities());
                 auth.setDetails(keycloakUser);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } else if(token.isPresent()) {
+            } else if (token.isPresent()) {
                 jwtProvider.recogniseException(token.get());
             }
             filterChain.doFilter(servletRequest, servletResponse);
@@ -79,6 +80,7 @@ public class JwtFilter extends GenericFilterBean {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
             RestApplicationError error = new RestApplicationError(messageSource.getMessage(ex.getMessage(), null,
                     LocaleContextHolder.getLocale()), 40401);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE + SEMICOLON + CHARSET_UTF8);
             response.getWriter().write(objectMapper.writeValueAsString(error));
         }

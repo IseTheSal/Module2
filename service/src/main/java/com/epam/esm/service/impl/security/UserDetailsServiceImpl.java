@@ -47,7 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = fromDTO(dto);
         String login = user.getLogin();
         Optional<User> optionalUser = userDao.findByLogin(login);
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             userDetail = optionalUser.get();
         } else {
             String password = RandomStringUtils.random(PASSWORD_LENGTH, true, true);
@@ -58,7 +58,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserRole findKeycloakRoleByName(String roleName){
+    public UserRole findKeycloakRoleByName(String roleName) {
         return userDao.findRoleByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName));
     }
 }
