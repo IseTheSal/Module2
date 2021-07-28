@@ -74,7 +74,7 @@ public class JwtProvider {
             AccessToken accessToken = TokenVerifier.create(token, AccessToken.class).getToken();
             UserDTO userDTO = new UserDTO();
             userDTO.setLogin(accessToken.getEmail());
-            userDTO.setFirstName(accessToken.getName());
+            userDTO.setFirstName(accessToken.getGivenName());
             userDTO.setLastName(accessToken.getFamilyName());
             userDTO.setRole(findRoleByToken(accessToken));
             return userDetailsService.loadOrRegisterUser(userDTO);
