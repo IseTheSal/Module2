@@ -43,40 +43,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//                .oauth2ResourceServer().jwt();
-//                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
-
     }
-
-//    @Bean
-//    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
-//        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-//        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter());
-//        return jwtAuthenticationConverter;
-//    }
-//
-//    @Bean
-//    public Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter() {
-//        JwtGrantedAuthoritiesConverter delegate = new JwtGrantedAuthoritiesConverter();
-//
-//        return new Converter<Jwt, Collection<GrantedAuthority>>() {
-//            @Override
-//            public Collection<GrantedAuthority> convert(Jwt jwt) {
-//                Collection<GrantedAuthority> grantedAuthorities = delegate.convert(jwt);
-//                if (jwt.getClaim(REALM_ACCESS) == null) {
-//                    return grantedAuthorities;
-//                }
-//                JSONObject realmAccess = jwt.getClaim(REALM_ACCESS);
-//                if (realmAccess.get(ROLES) == null) {
-//                    return grantedAuthorities;
-//                }
-//                JSONArray roles = (JSONArray) realmAccess.get(ROLES);
-//                final List<SimpleGrantedAuthority> keycloakAuthorities = roles.stream().map(role -> new SimpleGrantedAuthority(ROLE_PREFIX + role)).collect(Collectors.toList());
-//                grantedAuthorities.addAll(keycloakAuthorities);
-//                return grantedAuthorities;
-//            }
-//        };
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
