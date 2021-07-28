@@ -20,16 +20,16 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Set;
 
 @Component
 @PropertySource("classpath:security.properties")
 public class JwtProvider {
-    private static final String ADMIN_KEYCLOAK = "ADMIN";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
     private static final String USER_ROLE = "ROLE_USER";
     private static final String ENCODING_ALGORITHM = "RSA";
     private static final int EXPIRE_HOURS = 10;
+    private static final String ADMIN_SCOPE = "admin-user-scope";
+    private static final String SCOPE_SPLITTER = " ";
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -84,8 +84,15 @@ public class JwtProvider {
     }
 
     private UserRole findRoleByToken(AccessToken token) {
-        Set<String> roles = token.getRealmAccess().getRoles();
-        return roles.contains(ADMIN_KEYCLOAK) ? userDetailsService.findKeycloakRoleByName(ADMIN_ROLE)
+        String[] scopes = token.getScope().split(SCOPE_SPLITTER);
+        boolean isAdmin = false;
+        for (String scope : scopes) {
+            isAdmin = scope.equalsIgnoreCase(ADMIN_SCOPE);
+            if (isAdmin) {
+                break;
+            }
+        }
+        return isAdmin ? userDetailsService.findKeycloakRoleByName(ADMIN_ROLE)
                 : userDetailsService.findKeycloakRoleByName(USER_ROLE);
     }
 

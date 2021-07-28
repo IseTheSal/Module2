@@ -59,21 +59,23 @@ public class JwtFilter extends GenericFilterBean {
             throws IOException, ServletException {
         try {
             Optional<String> token = getTokenFromRequest((HttpServletRequest) servletRequest);
-            if (token.isPresent() && jwtProvider.validateToken(token.get())) {
-                String userLogin = jwtProvider.getLoginFromToken(token.get());
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
-                        userDetails.getAuthorities());
-                auth.setDetails(userDetails);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } else if (token.isPresent() && jwtProvider.validateKeycloak(token.get())) {
-                UserDetails keycloakUser = jwtProvider.findOrRegisterUser(token.get());
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(keycloakUser, null,
-                        keycloakUser.getAuthorities());
-                auth.setDetails(keycloakUser);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } else if (token.isPresent()) {
-                jwtProvider.recogniseException(token.get());
+            if (token.isPresent()) {
+                if (jwtProvider.validateToken(token.get())) {
+                    String userLogin = jwtProvider.getLoginFromToken(token.get());
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin);
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
+                            userDetails.getAuthorities());
+                    auth.setDetails(userDetails);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else if (jwtProvider.validateKeycloak(token.get())) {
+                    UserDetails keycloakUser = jwtProvider.findOrRegisterUser(token.get());
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(keycloakUser, null,
+                            keycloakUser.getAuthorities());
+                    auth.setDetails(keycloakUser);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
+                    jwtProvider.recogniseException(token.get());
+                }
             }
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (RuntimeException ex) {
