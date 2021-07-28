@@ -24,14 +24,14 @@ VALUES (4, 'sky', now(), now());
 INSERT INTO tags (id, name, create_date, last_update_date)
 VALUES (5, 'flight', now(), now());
 
-INSERT INTO gift_certificates (id, name, description, price, duration, create_date, last_update_date)
-VALUES (1, 'Квадроцикл', 'Увлекательно весело и здорово', 20.04, 3, '2021-06-14 00:05:01.717000',
+INSERT INTO gift_certificates (id, name, description, price, duration, for_sale, create_date, last_update_date)
+VALUES (1, 'Квадроцикл', 'Увлекательно весело и здорово', 20.04, 3, true, '2021-06-14 00:05:01.717000',
         '2021-06-14 00:05:01.717000');
-INSERT INTO gift_certificates (id, name, description, price, duration, create_date, last_update_date)
-VALUES (2, 'Мотоцикл', 'Скучно невесело и вредно', 20.99, 6, '2021-06-14 00:05:38.389000',
+INSERT INTO gift_certificates (id, name, description, price, duration, for_sale, create_date, last_update_date)
+VALUES (2, 'Мотоцикл', 'Скучно невесело и вредно', 20.99, 6, true, '2021-06-14 00:05:38.389000',
         '2021-06-14 00:05:38.389000');
-INSERT INTO gift_certificates (id, name, description, price, duration, create_date, last_update_date)
-VALUES (3, 'Вертолет', 'Экстримально и страшно', 120.99, 30, '2021-06-14 00:06:20.111000',
+INSERT INTO gift_certificates (id, name, description, price, duration, for_sale, create_date, last_update_date)
+VALUES (3, 'Вертолет', 'Экстримально и страшно', 120.99, 30, true, '2021-06-14 00:06:20.111000',
         '2021-06-14 00:06:20.111000');
 
 

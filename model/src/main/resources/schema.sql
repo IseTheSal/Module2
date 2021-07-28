@@ -58,7 +58,7 @@ create table users
     id               bigserial   not null
         constraint users_pk
             primary key,
-    login            varchar(20) not null,
+    login            varchar(40) not null,
     password         varchar(60) not null,
     first_name       varchar(30),
     last_name        varchar(30),

@@ -9,6 +9,7 @@ import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -22,17 +23,18 @@ import java.util.Date;
 import java.util.Set;
 
 @Component
+@PropertySource("classpath:security.properties")
 public class JwtProvider {
     private static final String ADMIN_KEYCLOAK = "ADMIN";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
     private static final String USER_ROLE = "ROLE_USER";
     private static final String ENCODING_ALGORITHM = "RSA";
+    private static final int EXPIRE_HOURS = 10;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
     @Value("${keycloak.public.key}")
     private String keycloakPublicKey;
-
 
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -42,7 +44,7 @@ public class JwtProvider {
     }
 
     public String generateToken(String login) {
-        Date date = Date.from(LocalDateTime.now().plusHours(10).atZone(ZoneId.systemDefault()).toInstant());
+        Date date = Date.from(LocalDateTime.now().plusHours(EXPIRE_HOURS).atZone(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
                 .setSubject(login)
                 .setExpiration(date)

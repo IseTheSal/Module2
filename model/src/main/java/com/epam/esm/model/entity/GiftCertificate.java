@@ -23,7 +23,7 @@ public class GiftCertificate extends AuditEntity {
     @Column(name = "duration")
     private Integer duration;
     @Column(name = "for_sale")
-    private boolean forSale = true;
+    private Boolean forSale = true;
     @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "certificate_tag", joinColumns = {@JoinColumn(name = "certificate_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
