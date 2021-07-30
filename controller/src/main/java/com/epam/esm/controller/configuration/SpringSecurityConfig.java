@@ -17,9 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
     private static final String ADMIN_ROLE = "ADMIN";
-    private static final String REALM_ACCESS = "realm_access";
-    private static final String ROLES = "roles";
-    private static final String ROLE_PREFIX = "ROLE_";
 
     private final JwtFilter jwtFilter;
 

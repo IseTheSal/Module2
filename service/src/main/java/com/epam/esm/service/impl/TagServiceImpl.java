@@ -6,7 +6,6 @@ import com.epam.esm.error.exception.ValidationException;
 import com.epam.esm.model.dto.TagDTO;
 import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.Tag;
-import com.epam.esm.model.entity.User;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.model.repository.UserRepository;
 import com.epam.esm.service.TagService;
@@ -82,8 +81,8 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDTO findMostWidelyUsedTag() {
         PageRequest page = PageRequest.of(0, 1);
-        User user = userRepository.findUserIdWithMostMoneySpent(page).stream().findFirst().orElseThrow(TagNotFoundException::new);
-        return toDTO(tagRepository.findMostWidelyUsedTag(user.getId(), page).stream().findFirst()
+        Long userId = userRepository.findUserIdWithMostMoneySpent(page).stream().findFirst().orElseThrow(TagNotFoundException::new);
+        return toDTO(tagRepository.findMostWidelyUsedTag(userId, page).stream().findFirst()
                 .orElseThrow(TagNotFoundException::new));
     }
 }

@@ -59,7 +59,7 @@ class GiftRepositoryTest {
     void findByAttributes() {
         HashSet<String> tags = new HashSet<>();
         tags.add("beach");
-        String actual = giftRepository.findAllWithParameters(tags, 1, "Квадроцикл", PageRequest.of(0, 1)).get(0).getName();
+        String actual = giftRepository.findAllWithParameters(tags, 1L, "Квадроцикл", PageRequest.of(0, 1)).get(0).getName();
         String expected = giftCertificate.getName();
         Assertions.assertEquals(expected, actual);
     }

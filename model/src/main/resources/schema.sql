@@ -52,7 +52,6 @@ create unique index roles_id_uindex
 create unique index roles_name_uindex
     on roles (name);
 
-
 create table users
 (
     id               bigserial   not null

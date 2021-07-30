@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>controller</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>controller</name>
 
@@ -53,12 +53,10 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
 </project>

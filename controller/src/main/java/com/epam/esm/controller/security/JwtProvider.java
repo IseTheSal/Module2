@@ -69,33 +69,6 @@ public class JwtProvider {
         }
     }
 
-    UserDetails findOrRegisterUser(String token) {
-        try {
-            AccessToken accessToken = TokenVerifier.create(token, AccessToken.class).getToken();
-            UserDTO userDTO = new UserDTO();
-            userDTO.setLogin(accessToken.getEmail());
-            userDTO.setFirstName(accessToken.getGivenName());
-            userDTO.setLastName(accessToken.getFamilyName());
-            userDTO.setRole(findRoleByToken(accessToken));
-            return userDetailsService.loadOrRegisterUser(userDTO);
-        } catch (VerificationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private UserRole findRoleByToken(AccessToken token) {
-        String[] scopes = token.getScope().split(SCOPE_SPLITTER);
-        boolean isAdmin = false;
-        for (String scope : scopes) {
-            isAdmin = scope.equalsIgnoreCase(ADMIN_SCOPE);
-            if (isAdmin) {
-                break;
-            }
-        }
-        return isAdmin ? userDetailsService.findKeycloakRoleByName(ADMIN_ROLE)
-                : userDetailsService.findKeycloakRoleByName(USER_ROLE);
-    }
-
     public boolean validateKeycloak(String token) {
         try {
             PublicKey key = getKey(keycloakPublicKey);
@@ -123,6 +96,33 @@ public class JwtProvider {
         if (after) {
             throw new VerificationException("error.jwt.expired");
         }
+    }
+
+    UserDetails findOrRegisterUser(String token) {
+        try {
+            AccessToken accessToken = TokenVerifier.create(token, AccessToken.class).getToken();
+            UserDTO userDTO = new UserDTO();
+            userDTO.setLogin(accessToken.getEmail());
+            userDTO.setFirstName(accessToken.getGivenName());
+            userDTO.setLastName(accessToken.getFamilyName());
+            userDTO.setRole(findRoleByToken(accessToken));
+            return userDetailsService.loadOrRegisterUser(userDTO);
+        } catch (VerificationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private UserRole findRoleByToken(AccessToken token) {
+        String[] scopes = token.getScope().split(SCOPE_SPLITTER);
+        boolean isAdmin = false;
+        for (String scope : scopes) {
+            isAdmin = scope.equalsIgnoreCase(ADMIN_SCOPE);
+            if (isAdmin) {
+                break;
+            }
+        }
+        return isAdmin ? userDetailsService.findKeycloakRoleByName(ADMIN_ROLE)
+                : userDetailsService.findKeycloakRoleByName(USER_ROLE);
     }
 
     public void recogniseException(String token) {

@@ -151,7 +151,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         findUpdatedValues(oldCertificate, giftCertificate);
         oldCertificate.getTags().forEach(giftCertificate::addTag);
         createNewTags(giftCertificate.getTags());
-        return toDTO(certificateRepository.save(giftCertificate));
+        return toDTO(certificateRepository.saveAndFlush(giftCertificate));
     }
 
     private void createNewTags(Set<Tag> tagSet) {
@@ -224,8 +224,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDTO> findByParameters(List<String> tagNames, String giftValue, String dateSort, String nameSort,
-                                                     int amount, int page) {
+    public List<GiftCertificateDTO> findByParameters(List<String> tagNames, String giftValue, String dateSort,
+                                                     String nameSort, int amount, int page) {
         checkPagination(amount, page);
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
@@ -234,16 +234,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         Set<String> tags = convertTags(tagNames);
         Pageable pageable = PageRequest.of(page - 1, amount, Sort.by(defineSortDirections(dateSort, nameSort)));
-        return certificateRepository.findAllWithParameters(tags, tags.size(), giftValue, pageable).stream()
+        return certificateRepository.findAllWithParameters(tags, (long) tags.size(), giftValue, pageable).stream()
                 .map(ConverterDTO::toDTO).collect(Collectors.toList());
     }
 
     private List<Sort.Order> defineSortDirections(String dateSort, String nameSort) {
         List<Sort.Order> orders = new ArrayList<>();
-        Sort.Direction dateDirection = (dateSort == null || (!dateSort.equalsIgnoreCase(DESC_SORT))) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        orders.add(new Sort.Order(dateDirection, CREATE_DATE_FIELD));
-        Sort.Direction nameDirection = (nameSort == null || (!nameSort.equalsIgnoreCase(DESC_SORT))) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        orders.add(new Sort.Order(nameDirection, NAME_FIELD));
+        if (dateSort != null) {
+            Sort.Direction dateDirection = (!dateSort.equalsIgnoreCase(DESC_SORT)) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            orders.add(new Sort.Order(dateDirection, CREATE_DATE_FIELD));
+        }
+        if (nameSort != null) {
+            Sort.Direction nameDirection = (!nameSort.equalsIgnoreCase(DESC_SORT)) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            orders.add(new Sort.Order(nameDirection, NAME_FIELD));
+        }
         return orders;
     }
 

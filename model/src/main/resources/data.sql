@@ -94,3 +94,4 @@ INSERT INTO orders (user_id, certificate_id, price, purchase_date, id, create_da
 VALUES (1, 5, 500.05, '2021-05-24 20:49:10.000000', 12, now(), now());
 INSERT INTO orders (user_id, certificate_id, price, purchase_date, id, create_date, last_update_date)
 VALUES (1, 5, 5400.05, '2021-05-24 20:49:10.000000', 13, now(), now());
+
