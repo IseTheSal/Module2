@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
 
 
 @ContextConfiguration(classes = {GiftRepository.class, SpringBootTestConfiguration.class},
@@ -42,25 +40,9 @@ class GiftRepositoryTest {
     }
 
     @Test
-    void findById() {
-        Optional<GiftCertificate> actual = giftRepository.findById(1L);
-        System.out.println(actual);
-        Assertions.assertTrue(actual.isPresent() && actual.get().getName().equals(giftCertificate.getName()));
-    }
-
-    @Test
     void findAll() {
         int actual = giftRepository.findAll(PageRequest.of(0, 3)).toList().size();
         int expected = 3;
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    void findByAttributes() {
-        HashSet<String> tags = new HashSet<>();
-        tags.add("beach");
-        String actual = giftRepository.findAllWithParameters(tags, 1L, "Квадроцикл", PageRequest.of(0, 1)).get(0).getName();
-        String expected = giftCertificate.getName();
         Assertions.assertEquals(expected, actual);
     }
 
@@ -73,7 +55,7 @@ class GiftRepositoryTest {
         giftCertificate.setDuration(1);
         giftCertificate.setLastUpdateDate(LocalDateTime.now());
         giftCertificate.setCreateDate(LocalDateTime.now());
-        GiftCertificate created = giftRepository.save(giftCertificate);
+        GiftCertificate created = giftRepository.saveAndFlush(giftCertificate);
         boolean condition = created.getId() > 0;
         Assertions.assertTrue(condition);
     }

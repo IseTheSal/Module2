@@ -24,12 +24,9 @@ import java.util.Date;
 @Component
 @PropertySource("classpath:security.properties")
 public class JwtProvider {
-    private static final String ADMIN_ROLE = "ROLE_ADMIN";
     private static final String USER_ROLE = "ROLE_USER";
     private static final String ENCODING_ALGORITHM = "RSA";
     private static final int EXPIRE_HOURS = 10;
-    private static final String ADMIN_SCOPE = "admin-user-scope";
-    private static final String SCOPE_SPLITTER = " ";
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -105,24 +102,12 @@ public class JwtProvider {
             userDTO.setLogin(accessToken.getEmail());
             userDTO.setFirstName(accessToken.getGivenName());
             userDTO.setLastName(accessToken.getFamilyName());
-            userDTO.setRole(findRoleByToken(accessToken));
+            UserRole role = userDetailsService.findKeycloakRoleByName(USER_ROLE);
+            userDTO.setRole(role);
             return userDetailsService.loadOrRegisterUser(userDTO);
         } catch (VerificationException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private UserRole findRoleByToken(AccessToken token) {
-        String[] scopes = token.getScope().split(SCOPE_SPLITTER);
-        boolean isAdmin = false;
-        for (String scope : scopes) {
-            isAdmin = scope.equalsIgnoreCase(ADMIN_SCOPE);
-            if (isAdmin) {
-                break;
-            }
-        }
-        return isAdmin ? userDetailsService.findKeycloakRoleByName(ADMIN_ROLE)
-                : userDetailsService.findKeycloakRoleByName(USER_ROLE);
     }
 
     public void recogniseException(String token) {

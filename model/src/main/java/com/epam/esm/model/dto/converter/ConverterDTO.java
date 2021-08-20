@@ -54,6 +54,7 @@ public class ConverterDTO {
         dto.setPrice(order.getPrice());
         dto.setCreateDate(order.getCreateDate());
         dto.setLastUpdateDate(order.getLastUpdateDate());
+        dto.setPurchaseDate(order.getPurchaseDate());
         return dto;
     }
 
@@ -65,6 +66,7 @@ public class ConverterDTO {
         order.setPrice(dto.getPrice());
         order.setCreateDate(dto.getCreateDate());
         order.setLastUpdateDate(dto.getLastUpdateDate());
+        order.setPurchaseDate(dto.getPurchaseDate());
         return order;
     }
 

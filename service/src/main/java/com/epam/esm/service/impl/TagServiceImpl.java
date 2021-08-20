@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.error.exception.ForbiddenException;
 import com.epam.esm.error.exception.TagExistException;
 import com.epam.esm.error.exception.TagNotFoundException;
 import com.epam.esm.error.exception.ValidationException;
@@ -9,6 +10,7 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.model.repository.UserRepository;
 import com.epam.esm.service.TagService;
+import com.epam.esm.service.impl.security.PermissionChecker;
 import com.epam.esm.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -32,17 +34,22 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
     private final MessageSource messageSource;
+    private final PermissionChecker permissionChecker;
 
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository, UserRepository userRepository, MessageSource messageSource) {
+    public TagServiceImpl(TagRepository tagRepository, UserRepository userRepository, MessageSource messageSource, PermissionChecker permissionChecker) {
         this.tagRepository = tagRepository;
         this.userRepository = userRepository;
         this.messageSource = messageSource;
+        this.permissionChecker = permissionChecker;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public TagDTO create(TagDTO dto) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         Tag tag = fromDTO(dto);
         String name = tag.getName();
         if (!TagValidator.isNameValid(name)) {
@@ -69,6 +76,9 @@ public class TagServiceImpl implements TagService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public long delete(long id) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         Optional<Tag> tag = tagRepository.findById(id);
         if (tag.isPresent()) {
             tagRepository.delete(tag.get());

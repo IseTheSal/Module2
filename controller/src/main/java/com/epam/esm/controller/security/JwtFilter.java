@@ -63,16 +63,10 @@ public class JwtFilter extends GenericFilterBean {
                 if (jwtProvider.validateToken(token.get())) {
                     String userLogin = jwtProvider.getLoginFromToken(token.get());
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin);
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
-                            userDetails.getAuthorities());
-                    auth.setDetails(userDetails);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    specifyAuthentication(userDetails);
                 } else if (jwtProvider.validateKeycloak(token.get())) {
                     UserDetails keycloakUser = jwtProvider.findOrRegisterUser(token.get());
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(keycloakUser, null,
-                            keycloakUser.getAuthorities());
-                    auth.setDetails(keycloakUser);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    specifyAuthentication(keycloakUser);
                 } else {
                     jwtProvider.recogniseException(token.get());
                 }
@@ -86,6 +80,13 @@ public class JwtFilter extends GenericFilterBean {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE + SEMICOLON + CHARSET_UTF8);
             response.getWriter().write(objectMapper.writeValueAsString(error));
         }
+    }
+
+    private void specifyAuthentication(UserDetails userDetails) {
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
+                userDetails.getAuthorities());
+        auth.setDetails(userDetails);
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     private Optional<String> getTokenFromRequest(HttpServletRequest request) {

@@ -2,6 +2,7 @@ package com.epam.esm.model.entity;
 
 import com.epam.esm.model.entity.audit.AuditEntity;
 import com.epam.esm.model.entity.audit.AuditListener;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ public class Order extends AuditEntity {
     @Column(name = "price")
     private BigDecimal price;
     @Column(name = "purchase_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime purchaseDate;
 
     public Order() {

@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.error.exception.ForbiddenException;
 import com.epam.esm.error.exception.GiftCertificateNotFoundException;
 import com.epam.esm.error.exception.OrderNotFoundException;
 import com.epam.esm.error.exception.UserNotFoundException;
@@ -12,6 +13,7 @@ import com.epam.esm.model.repository.GiftRepository;
 import com.epam.esm.model.repository.OrderRepository;
 import com.epam.esm.model.repository.UserRepository;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.service.impl.security.PermissionChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,21 +35,29 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final GiftRepository giftRepository;
     private final UserRepository userRepository;
+    private final PermissionChecker permissionChecker;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, GiftRepository giftRepository, UserRepository userRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, GiftRepository giftRepository, UserRepository userRepository, PermissionChecker permissionChecker) {
         this.orderRepository = orderRepository;
         this.giftRepository = giftRepository;
         this.userRepository = userRepository;
+        this.permissionChecker = permissionChecker;
     }
 
     @Override
     public OrderDTO findById(long id) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         return toDTO(orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id)));
     }
 
     @Override
     public List<OrderDTO> findAll(int amount, int page) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         checkPagination(amount, page);
         Pageable pageable = PageRequest.of(page - 1, amount);
         return orderRepository.findAll(pageable).stream().map(ConverterDTO::toDTO).collect(Collectors.toList());
@@ -56,6 +66,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public OrderDTO create(OrderDTO dto) {
+        if (!permissionChecker.checkUserIdPermission(dto.getUser().getId())) {
+            throw new ForbiddenException();
+        }
         Order order = fromDTO(dto);
         Order newOrder = new Order();
         long userId = order.getUser().getId();
@@ -75,15 +88,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> findUserOrders(long id, int amount, int page) {
+    public List<OrderDTO> findUserOrders(long userId, int amount, int page) {
+        if (!permissionChecker.checkUserIdPermission(userId)) {
+            throw new ForbiddenException();
+        }
         checkPagination(amount, page);
         Pageable pageable = PageRequest.of(page - 1, amount);
-        return orderRepository.findOrdersByUserId(id, pageable).stream().map(ConverterDTO::toDTO)
+        return orderRepository.findOrdersByUserId(userId, pageable).stream().map(ConverterDTO::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public OrderDTO findUserOrder(long userId, long orderId) {
+        if (!permissionChecker.checkUserIdPermission(userId)) {
+            throw new ForbiddenException();
+        }
         return toDTO(orderRepository.findByIdAndUserId(orderId, userId).orElseThrow(() -> new OrderNotFoundException(orderId)));
     }
 }

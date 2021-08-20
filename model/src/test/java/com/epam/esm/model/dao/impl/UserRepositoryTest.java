@@ -27,6 +27,7 @@ public class UserRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
+
     @Test
     void findById() {
         boolean condition = userRepository.findById(1L).isPresent();

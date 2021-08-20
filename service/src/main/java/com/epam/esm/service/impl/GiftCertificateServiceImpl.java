@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.error.exception.ForbiddenException;
 import com.epam.esm.error.exception.GiftCertificateNotFoundException;
 import com.epam.esm.error.exception.TagNotFoundException;
 import com.epam.esm.error.exception.ValidationException;
@@ -10,6 +11,7 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.repository.GiftRepository;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.impl.security.PermissionChecker;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,17 +46,22 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftRepository certificateRepository;
     private final TagRepository tagRepository;
     private final MessageSource messageSource;
+    private final PermissionChecker permissionChecker;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftRepository certificateRepository, TagRepository tagRepository, MessageSource messageSource) {
+    public GiftCertificateServiceImpl(GiftRepository certificateRepository, TagRepository tagRepository, MessageSource messageSource, PermissionChecker permissionChecker) {
         this.certificateRepository = certificateRepository;
         this.tagRepository = tagRepository;
         this.messageSource = messageSource;
+        this.permissionChecker = permissionChecker;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public GiftCertificateDTO create(GiftCertificateDTO dto) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         GiftCertificate giftCertificate = fromDTO(dto);
         checkCertificateValid(giftCertificate, CREATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
@@ -142,6 +149,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public GiftCertificateDTO update(GiftCertificateDTO dto) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         GiftCertificate giftCertificate = fromDTO(dto);
         long id = giftCertificate.getId();
         GiftCertificate oldCertificate = certificateRepository.findById(id)
@@ -205,6 +215,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public long delete(long id) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         if (certificateRepository.findById(id).isPresent()) {
             certificateRepository.deleteById(id);
             return id;
@@ -216,6 +229,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public long removeFromSale(long id) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         GiftCertificate giftCertificate = certificateRepository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
         giftCertificate.setForSale(false);

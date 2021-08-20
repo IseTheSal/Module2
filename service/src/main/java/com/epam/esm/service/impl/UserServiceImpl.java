@@ -1,9 +1,6 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.error.exception.RoleNotFoundException;
-import com.epam.esm.error.exception.UserLoginExistException;
-import com.epam.esm.error.exception.UserNotFoundException;
-import com.epam.esm.error.exception.ValidationException;
+import com.epam.esm.error.exception.*;
 import com.epam.esm.model.dto.UserDTO;
 import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.User;
@@ -11,6 +8,7 @@ import com.epam.esm.model.entity.UserRole;
 import com.epam.esm.model.repository.RoleRepository;
 import com.epam.esm.model.repository.UserRepository;
 import com.epam.esm.service.UserService;
+import com.epam.esm.service.impl.security.PermissionChecker;
 import com.epam.esm.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -37,22 +35,30 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final MessageSource messageSource;
     private final PasswordEncoder passwordEncoder;
+    private final PermissionChecker permissionChecker;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, MessageSource messageSource, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, MessageSource messageSource, PasswordEncoder passwordEncoder, PermissionChecker permissionChecker) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.messageSource = messageSource;
         this.passwordEncoder = passwordEncoder;
+        this.permissionChecker = permissionChecker;
     }
 
     @Override
     public UserDTO findById(long id) {
+        if (!permissionChecker.checkUserIdPermission(id)) {
+            throw new ForbiddenException();
+        }
         return toDTO(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("id=" + id)));
     }
 
     @Override
     public List<UserDTO> findAll(int amount, int page) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
         checkPagination(amount, page);
         Pageable pageable = PageRequest.of(page - 1, amount);
         return userRepository.findAll(pageable).stream().map(ConverterDTO::toDTO).collect(Collectors.toList());

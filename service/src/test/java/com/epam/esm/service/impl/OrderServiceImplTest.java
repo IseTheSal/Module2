@@ -11,6 +11,7 @@ import com.epam.esm.model.repository.GiftRepository;
 import com.epam.esm.model.repository.OrderRepository;
 import com.epam.esm.model.repository.UserRepository;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.service.impl.security.PermissionChecker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.epam.esm.model.dto.converter.ConverterDTO.toDTO;
+import static org.mockito.Mockito.when;
 
 class OrderServiceImplTest {
 
@@ -43,6 +45,7 @@ class OrderServiceImplTest {
     GiftRepository giftRepository;
     OrderRepository orderRepository;
     UserRepository userRepository;
+    PermissionChecker permissionChecker;
 
     @BeforeAll
     public static void setUpData() {
@@ -71,12 +74,14 @@ class OrderServiceImplTest {
         orderRepository = Mockito.mock(OrderRepository.class);
         giftRepository = Mockito.mock(GiftRepository.class);
         userRepository = Mockito.mock(UserRepository.class);
-        service = new OrderServiceImpl(orderRepository, giftRepository, userRepository);
+        permissionChecker = Mockito.mock(PermissionChecker.class);
+        service = new OrderServiceImpl(orderRepository, giftRepository, userRepository, permissionChecker);
     }
 
     @Test
     void findById() {
-        Mockito.when(orderRepository.findById(1L)).thenReturn(java.util.Optional.of(firstOrder));
+        when(permissionChecker.checkAdminPermission()).thenReturn(true);
+        when(orderRepository.findById(1L)).thenReturn(java.util.Optional.of(firstOrder));
         OrderDTO actual = service.findById(1);
         OrderDTO expected = firstOrderDto;
         Assertions.assertEquals(expected, actual);
@@ -84,8 +89,9 @@ class OrderServiceImplTest {
 
     @Test
     void findAll() {
+        when(permissionChecker.checkAdminPermission()).thenReturn(true);
         PageImpl<Order> orders = new PageImpl<>(orderList);
-        Mockito.when(orderRepository.findAll(PageRequest.of(0, 100))).thenReturn(orders);
+        when(orderRepository.findAll(PageRequest.of(0, 100))).thenReturn(orders);
         List<OrderDTO> actual = service.findAll(100, 1);
         List<OrderDTO> expected = orderListDto;
         Assertions.assertEquals(actual, expected);
@@ -93,7 +99,8 @@ class OrderServiceImplTest {
 
     @Test
     void findUserOrders() {
-        Mockito.when(orderRepository.findOrdersByUserId(1L, PageRequest.of(0, 100))).thenReturn(orderList);
+        when(permissionChecker.checkUserIdPermission(1L)).thenReturn(true);
+        when(orderRepository.findOrdersByUserId(1L, PageRequest.of(0, 100))).thenReturn(orderList);
         List<OrderDTO> actual = service.findUserOrders(1, 100, 1);
         List<OrderDTO> expected = orderListDto;
         Assertions.assertEquals(expected, actual);
@@ -101,8 +108,9 @@ class OrderServiceImplTest {
 
     @Test
     void createThrowException() {
-        Mockito.when(userRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(user));
-        Mockito.when(giftRepository.save(giftCertificate)).thenReturn(giftCertificate);
+        when(permissionChecker.checkUserIdPermission(1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(user));
+        when(giftRepository.save(giftCertificate)).thenReturn(giftCertificate);
         Assertions.assertThrows(GiftCertificateNotFoundException.class, () -> service.create(firstOrderDto));
     }
 }
