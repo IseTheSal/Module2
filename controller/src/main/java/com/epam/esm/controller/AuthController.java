@@ -67,7 +67,6 @@ public class AuthController {
 
     /**
      * Method used to logout.
-     *
      */
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
