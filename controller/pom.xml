@@ -10,6 +10,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../controller/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
+
     <artifactId>controller</artifactId>
     <packaging>jar</packaging>
 
@@ -55,6 +60,20 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+                <executions>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

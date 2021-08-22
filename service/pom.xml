@@ -10,6 +10,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../service/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
+
     <artifactId>service</artifactId>
 
     <name>service</name>
@@ -44,4 +49,23 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+                <executions>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

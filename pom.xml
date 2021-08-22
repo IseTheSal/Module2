@@ -5,6 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <spring.version>5.3.7</spring.version>
         <spring.boot.version>2.5.1</spring.boot.version>
         <module.version>1.0</module.version>
@@ -20,6 +22,11 @@
         <jwt.vertion>0.9.1</jwt.vertion>
         <keycloak.version>14.0.0</keycloak.version>
         <commons.lang.version>2.6</commons.lang.version>
+        <!--Sonar properties -->
+        <jacoco.version>0.8.3</jacoco.version>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.language>java</sonar.language>
     </properties>
 
     <parent>
@@ -103,7 +110,6 @@
                 <version>${spring.boot.version}</version>
                 <scope>test</scope>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 

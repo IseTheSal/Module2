@@ -10,6 +10,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../controller/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
+
     <artifactId>model</artifactId>
 
     <dependencies>
