@@ -19,6 +19,16 @@
         <mockito.version>3.3.3</mockito.version>
         <lombok.version>1.18.12</lombok.version>
         <persistence.vertion>2.2</persistence.vertion>
+        <jwt.vertion>0.9.1</jwt.vertion>
+        <keycloak.version>14.0.0</keycloak.version>
+        <commons.lang.version>2.6</commons.lang.version>
+        <!--Sonar properties -->
+        <jacoco.version>0.8.3</jacoco.version>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.language>java</sonar.language>
+        <sonar.exclusions>**/controller/**,**/model/**,**/validator/**,**/esm/error/**,**/service/impl/security/**
+        </sonar.exclusions>
     </properties>
 
     <parent>
@@ -31,7 +41,7 @@
     <groupId>com.epam</groupId>
     <artifactId>esm</artifactId>
     <packaging>pom</packaging>
-    <version>${module.version}</version>
+    <version>1.0</version>
     <modules>
         <module>model</module>
         <module>service</module>
@@ -44,17 +54,17 @@
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>model</artifactId>
-                <version>${module.version}</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>service</artifactId>
-                <version>${module.version}</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>validator</artifactId>
-                <version>${module.version}</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -65,11 +75,20 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-                <version>${spring.boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>tomcat-embed-el</artifactId>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>tomcat-embed-core</artifactId>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>tomcat-embed-websocket</artifactId>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -87,6 +106,21 @@
                 <version>${lombok.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.vertion}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-core</artifactId>
+                <version>${keycloak.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons.lang.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring.boot.version}</version>
@@ -96,12 +130,25 @@
     </dependencyManagement>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <server>maven-tomcat-war-deployment-server</server>
+                    <url>http://localhost:8080/manager/text</url>
+                    <path>/app</path>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

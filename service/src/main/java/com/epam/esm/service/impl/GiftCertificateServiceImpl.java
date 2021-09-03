@@ -1,27 +1,36 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.error.exception.ForbiddenException;
 import com.epam.esm.error.exception.GiftCertificateNotFoundException;
 import com.epam.esm.error.exception.TagNotFoundException;
 import com.epam.esm.error.exception.ValidationException;
-import com.epam.esm.model.dao.GiftCertificateDao;
-import com.epam.esm.model.dao.TagDao;
+import com.epam.esm.model.dto.GiftCertificateDTO;
+import com.epam.esm.model.dto.converter.ConverterDTO;
 import com.epam.esm.model.entity.GiftCertificate;
 import com.epam.esm.model.entity.Tag;
+import com.epam.esm.model.repository.GiftRepository;
+import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.impl.security.PermissionChecker;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.epam.esm.model.dto.converter.ConverterDTO.fromDTO;
+import static com.epam.esm.model.dto.converter.ConverterDTO.toDTO;
+
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
@@ -30,33 +39,42 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private static final String CREATE_OPTION = "CREATE";
     private static final String ASC_SORT = "ASC";
     private static final String DESC_SORT = "DESC";
+    private static final String PERCENT_SYMBOL = "%";
+    private static final String CREATE_DATE_FIELD = "createDate";
+    private static final String NAME_FIELD = "name";
 
-    private final GiftCertificateDao giftCertificateDao;
+    private final GiftRepository certificateRepository;
+    private final TagRepository tagRepository;
     private final MessageSource messageSource;
-    private final TagDao tagDao;
+    private final PermissionChecker permissionChecker;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagDao tagDao, MessageSource messageSource) {
-        this.giftCertificateDao = giftCertificateDao;
-        this.tagDao = tagDao;
+    public GiftCertificateServiceImpl(GiftRepository certificateRepository, TagRepository tagRepository, MessageSource messageSource, PermissionChecker permissionChecker) {
+        this.certificateRepository = certificateRepository;
+        this.tagRepository = tagRepository;
         this.messageSource = messageSource;
+        this.permissionChecker = permissionChecker;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public GiftCertificate create(GiftCertificate giftCertificate) {
+    public GiftCertificateDTO create(GiftCertificateDTO dto) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
+        GiftCertificate giftCertificate = fromDTO(dto);
         checkCertificateValid(giftCertificate, CREATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
         Set<Tag> oldTags = detachExistingTags(giftCertificate);
-        GiftCertificate createdGift = giftCertificateDao.create(giftCertificate);
+        GiftCertificate createdGift = certificateRepository.save(giftCertificate);
         attachExistingTags(createdGift, oldTags);
-        return createdGift;
+        return toDTO(createdGift);
     }
 
     private Set<Tag> detachExistingTags(GiftCertificate giftCertificate) {
         Set<Tag> tags = giftCertificate.getTags();
         HashSet<Tag> oldTags = new HashSet<>();
-        List<Tag> existingTags = tagDao.findAll(Integer.MAX_VALUE, 0);
+        List<Tag> existingTags = tagRepository.findAll();
         for (Tag existingTag : existingTags) {
             for (Tag tag : tags) {
                 if (existingTag.getName().equals(tag.getName())) {
@@ -70,10 +88,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private void attachExistingTags(GiftCertificate giftCertificate, Set<Tag> tagSet) {
         for (Tag oldTag : tagSet) {
-            Optional<Tag> optionalTag = tagDao.findByName(oldTag.getName());
+            Optional<Tag> optionalTag = tagRepository.findByName(oldTag.getName());
             optionalTag.ifPresent(giftCertificate::addTag);
         }
-        giftCertificateDao.update(giftCertificate);
+        certificateRepository.save(giftCertificate);
     }
 
     private void checkTagsValid(Set<Tag> tagSet) {
@@ -82,7 +100,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             String name = tag.getName();
             if (!TagValidator.isNameValid(name)) {
                 exceptionValidMessage.append(messageSource.getMessage("error.tag.validation.name",
-                        new Object[]{name}, LocaleContextHolder.getLocale()));
+                        new Object[]{name}, LocaleContextHolder.getLocale())).append("\n");
             }
         }
         String message = exceptionValidMessage.toString();
@@ -130,25 +148,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public GiftCertificate update(GiftCertificate giftCertificate) {
+    public GiftCertificateDTO update(GiftCertificateDTO dto) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
+        GiftCertificate giftCertificate = fromDTO(dto);
         long id = giftCertificate.getId();
-        GiftCertificate oldCertificate = giftCertificateDao.findById(id)
+        GiftCertificate oldCertificate = certificateRepository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
         checkCertificateValid(giftCertificate, UPDATE_OPTION);
         checkTagsValid(giftCertificate.getTags());
         findUpdatedValues(oldCertificate, giftCertificate);
         oldCertificate.getTags().forEach(giftCertificate::addTag);
         createNewTags(giftCertificate.getTags());
-        return giftCertificateDao.update(giftCertificate);
+        return toDTO(certificateRepository.saveAndFlush(giftCertificate));
     }
 
     private void createNewTags(Set<Tag> tagSet) {
         for (Tag tag : tagSet) {
-            Optional<Tag> tagOptional = tagDao.findByName(tag.getName());
+            Optional<Tag> tagOptional = tagRepository.findByName(tag.getName());
             if (tagOptional.isPresent()) {
-                tag.setId(tagOptional.get().getId());
+                Tag existingTag = tagOptional.get();
+                tag.setId(existingTag.getId());
+                tag.setCreateDate(existingTag.getCreateDate());
+                tag.setLastUpdateDate(existingTag.getLastUpdateDate());
             } else {
-                tagDao.create(tag);
+                tagRepository.save(tag);
             }
         }
     }
@@ -170,21 +195,31 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificate findById(long id) {
-        Optional<GiftCertificate> optionalGiftCertificate = giftCertificateDao.findById(id);
-        return optionalGiftCertificate.orElseThrow(() -> new GiftCertificateNotFoundException(id));
+    public GiftCertificateDTO findById(long id) {
+        Optional<GiftCertificate> certificate = certificateRepository.findById(id);
+        return toDTO(certificate.orElseThrow(() -> new GiftCertificateNotFoundException(id)));
     }
 
     @Override
-    public List<GiftCertificate> findAll(int amount, int page) {
+    public List<GiftCertificateDTO> findAll(int amount, int page) {
         checkPagination(amount, page);
-        return giftCertificateDao.findAll(amount, page - 1);
+        Pageable pageable = PageRequest.of(page - 1, amount);
+        List<GiftCertificate> all = certificateRepository.findAll(pageable).toList();
+        List<GiftCertificateDTO> dtoList = new ArrayList<>();
+        for (GiftCertificate giftCertificate : all) {
+            dtoList.add(toDTO(giftCertificate));
+        }
+        return dtoList;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public long delete(long id) {
-        if (giftCertificateDao.delete(id)) {
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
+        if (certificateRepository.findById(id).isPresent()) {
+            certificateRepository.deleteById(id);
             return id;
         } else {
             throw new GiftCertificateNotFoundException(id);
@@ -194,21 +229,42 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public long removeFromSale(long id) {
-        GiftCertificate giftCertificate = giftCertificateDao.findById(id)
+        if (!permissionChecker.checkAdminPermission()) {
+            throw new ForbiddenException();
+        }
+        GiftCertificate giftCertificate = certificateRepository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
         giftCertificate.setForSale(false);
-        GiftCertificate updatedCertificate = giftCertificateDao.update(giftCertificate);
+        GiftCertificate updatedCertificate = certificateRepository.save(giftCertificate);
         return updatedCertificate.getId();
     }
 
     @Override
-    public List<GiftCertificate> findByParameters(List<String> tagNames, String giftValue, String dateSort, String nameSort,
-                                                  int amount, int page) {
+    public List<GiftCertificateDTO> findByParameters(List<String> tagNames, String giftValue, String dateSort,
+                                                     String nameSort, int amount, int page) {
         checkPagination(amount, page);
         checkSortTypeValid(dateSort);
         checkSortTypeValid(nameSort);
-        String[] tags = convertTags(tagNames);
-        return giftCertificateDao.findByAttributes(tags, giftValue, dateSort, nameSort, amount, page - 1);
+        if (giftValue != null) {
+            giftValue = PERCENT_SYMBOL + giftValue + PERCENT_SYMBOL;
+        }
+        Set<String> tags = convertTags(tagNames);
+        Pageable pageable = PageRequest.of(page - 1, amount, Sort.by(defineSortDirections(dateSort, nameSort)));
+        return certificateRepository.findAllWithParameters(tags, (long) tags.size(), giftValue, pageable).stream()
+                .map(ConverterDTO::toDTO).collect(Collectors.toList());
+    }
+
+    private List<Sort.Order> defineSortDirections(String dateSort, String nameSort) {
+        List<Sort.Order> orders = new ArrayList<>();
+        if (dateSort != null) {
+            Sort.Direction dateDirection = (!dateSort.equalsIgnoreCase(DESC_SORT)) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            orders.add(new Sort.Order(dateDirection, CREATE_DATE_FIELD));
+        }
+        if (nameSort != null) {
+            Sort.Direction nameDirection = (!nameSort.equalsIgnoreCase(DESC_SORT)) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            orders.add(new Sort.Order(nameDirection, NAME_FIELD));
+        }
+        return orders;
     }
 
     private void checkSortTypeValid(String sortType) {
@@ -218,17 +274,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    private String[] convertTags(List<String> tagNames) {
-        String[] tags;
-        if (tagNames == null) {
-            tags = new String[0];
-        } else {
-            tags = new String[tagNames.size()];
-            int i = 0;
-            for (String name : tagNames) {
-                tagDao.findByName(name).orElseThrow(() -> new TagNotFoundException("name=" + name));
-                tags[i++] = name;
-            }
+    private Set<String> convertTags(List<String> tagNames) {
+        if (tagNames == null || tagNames.isEmpty()) {
+            return new HashSet<>();
+        }
+        Set<String> tags = new HashSet<>();
+        for (String name : tagNames) {
+            Tag tag = tagRepository.findByName(name).orElseThrow(() -> new TagNotFoundException("name=" + name));
+            tags.add(tag.getName());
         }
         return tags;
     }

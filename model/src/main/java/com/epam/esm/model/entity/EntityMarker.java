@@ -1,14 +1,13 @@
 package com.epam.esm.model.entity;
 
-import javax.persistence.MappedSuperclass;
-
 /**
  * Marker interface for Entity
  *
  * @author Illia Aheyeu
  * @see GiftCertificate
  * @see Tag
+ * @see User
+ * @see Order
  */
-@MappedSuperclass
-public interface Entity {
+public interface EntityMarker {
 }

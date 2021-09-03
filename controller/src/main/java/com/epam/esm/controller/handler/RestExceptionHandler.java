@@ -43,6 +43,17 @@ public class RestExceptionHandler {
         RestApplicationError error = new RestApplicationError(exception.getMessage(), exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserLoginExistException.class)
+    public ResponseEntity<RestApplicationError> userLoginExistException(UserLoginExistException exception) {
+        String login = exception.getMessage();
+        String exceptionMessage = messageSource.getMessage("error.user.exist.login", new Object[]{login},
+                LocaleContextHolder.getLocale());
+        RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, httpHeaders, HttpStatus.CONFLICT);
     }
 
@@ -54,7 +65,7 @@ public class RestExceptionHandler {
         RestApplicationError error = new RestApplicationError(exceptionMessage, exception.getErrorCode());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, httpHeaders, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, httpHeaders, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(TagNotFoundException.class)
@@ -108,7 +119,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<RestApplicationError> invalidRequestBody(InvalidFormatException ex) {
-        log.error(ex.getMessage());
         RestApplicationError error = new RestApplicationError(messageSource.getMessage(
                 "error.handler.incorrect.body", null, LocaleContextHolder.getLocale()),
                 RestErrorStatusCode.VALIDATION_ERROR);
@@ -119,7 +129,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<RestApplicationError> invalidRequestParam(MethodArgumentTypeMismatchException ex) {
-        log.error(ex.getMessage());
         RestApplicationError error = new RestApplicationError(messageSource.getMessage(
                 "error.handler.incorrect.parameters", null, LocaleContextHolder.getLocale()),
                 RestErrorStatusCode.VALIDATION_ERROR);
@@ -132,7 +141,7 @@ public class RestExceptionHandler {
     public ResponseEntity<RestApplicationError> defaultErrorHandler(Exception ex) {
         log.error(ex.getMessage());
         RestApplicationError error = new RestApplicationError(messageSource.getMessage(
-                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40403);
+                "error.handler.incorrect.request", null, LocaleContextHolder.getLocale()), 40400);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, httpHeaders, HttpStatus.BAD_REQUEST);

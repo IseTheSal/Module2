@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.controller.hateaos.Hateoas;
-import com.epam.esm.model.entity.Tag;
+import com.epam.esm.model.dto.TagDTO;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,7 @@ import static com.epam.esm.controller.hateaos.Hateoas.createTagHateoas;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
- * Used to interact with {@link Tag}.
+ * Used to interact with {@link TagDTO}.
  * <p>URI: <code>/api/v1/tags/</code></p>
  *
  * @author Illia Aheyeu
@@ -24,7 +23,7 @@ import static com.epam.esm.controller.hateaos.Hateoas.createTagHateoas;
 @RequestMapping(value = "/api/v1/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
     /**
-     * {@link Tag} service layer
+     * {@link TagDTO} service layer
      */
     private final TagService tagService;
 
@@ -34,35 +33,33 @@ public class TagController {
     }
 
     /**
-     * Method used to find {@link Tag} by its id.
+     * Method used to find {@link TagDTO} by its id.
      *
-     * @param id {@link Tag} <code>id</code>
-     * @return ResponseEntity with {@link Tag}
+     * @param id {@link TagDTO} <code>id</code>
+     * @return ResponseEntity with {@link TagDTO}
      */
     @GetMapping(value = "/{id:^[1-9]\\d{0,18}$}")
-    public ResponseEntity<Tag> findTagById(@PathVariable long id) {
-        Tag tag = tagService.findById(id);
+    public ResponseEntity<TagDTO> findTagById(@PathVariable long id) {
+        TagDTO tag = tagService.findById(id);
         return new ResponseEntity<>(createTagHateoas(tag), HttpStatus.OK);
     }
 
     /**
-     * Method used to find all {@link Tag}.
+     * Method used to find all {@link TagDTO}.
      *
-     * @return ResponseEntity with <code>List</code> of {@link Tag}
+     * @return ResponseEntity with <code>List</code> of {@link TagDTO}
      */
     @GetMapping
-    public ResponseEntity<List<Tag>> findAllTags(@RequestParam(required = false, defaultValue = "1") int page,
-                                                 @RequestParam(required = false, defaultValue = "10") int amount) {
-        List<Tag> tagList = tagService.findAll(amount, page);
-        tagList.forEach(Hateoas::createTagHateoas);
-        return new ResponseEntity<>(tagList, HttpStatus.OK);
+    public ResponseEntity<List<TagDTO>> findAllTags(@RequestParam(required = false, defaultValue = "1") int page,
+                                                    @RequestParam(required = false, defaultValue = "10") int amount) {
+        return new ResponseEntity<>(tagService.findAll(amount, page), HttpStatus.OK);
     }
 
     /**
-     * Method used to delete {@link Tag} by its id.
+     * Method used to delete {@link TagDTO} by its id.
      *
-     * @param id {@link Tag} <code>id</code>
-     * @return ResponseEntity with {@link Tag} id
+     * @param id {@link TagDTO} <code>id</code>
+     * @return ResponseEntity with {@link TagDTO} id
      */
     @DeleteMapping(value = "/{id:^[1-9]\\d{0,18}$}")
     public ResponseEntity<Long> deleteTagById(@PathVariable long id) {
@@ -70,25 +67,25 @@ public class TagController {
     }
 
     /**
-     * Method used to create {@link Tag}.
+     * Method used to create {@link TagDTO}.
      *
-     * @param tag {@link Tag}
-     * @return ResponseEntity with {@link Tag} object
+     * @param tag {@link TagDTO}
+     * @return ResponseEntity with {@link TagDTO} object
      */
     @PostMapping
-    public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
-        Tag createdTag = tagService.create(tag);
+    public ResponseEntity<TagDTO> createTag(@RequestBody TagDTO tag) {
+        TagDTO createdTag = tagService.create(tag);
         return new ResponseEntity<>(createTagHateoas(createdTag), HttpStatus.OK);
     }
 
     /**
-     * Method used to find most popular {@link Tag}.
+     * Method used to find most popular {@link TagDTO}.
      *
-     * @return The most widely used {@link Tag} of a user with the highest cost of all orders.
+     * @return The most widely used {@link TagDTO} of a user with the highest cost of all orders.
      */
     @GetMapping("/popular")
-    public ResponseEntity<Tag> findMostWidelyUsedTagByMaxUserPrice() {
-        Tag tag = tagService.findMostWidelyUsedTag();
+    public ResponseEntity<TagDTO> findMostWidelyUsedTagByMaxUserPrice() {
+        TagDTO tag = tagService.findMostWidelyUsedTag();
         return new ResponseEntity<>(createTagHateoas(tag), HttpStatus.OK);
     }
 }

@@ -1,20 +1,19 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditEntity;
 import com.epam.esm.model.entity.audit.AuditListener;
-import org.springframework.hateoas.RepresentationModel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@EntityListeners(AuditListener.class)
-@javax.persistence.Entity
-@Table(name = "orders")
-public class Order extends RepresentationModel<Order> implements Entity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+@Entity
+@EntityListeners(AuditListener.class)
+@Table(name = "orders")
+public class Order extends AuditEntity {
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
@@ -24,25 +23,17 @@ public class Order extends RepresentationModel<Order> implements Entity {
     @Column(name = "price")
     private BigDecimal price;
     @Column(name = "purchase_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime purchaseDate;
 
     public Order() {
     }
 
-    public Order(long orderId, User user, GiftCertificate certificate, BigDecimal price, LocalDateTime purchaseDate) {
-        this.id = orderId;
+    public Order(User user, GiftCertificate certificate, BigDecimal price, LocalDateTime purchaseDate) {
         this.user = user;
         this.certificate = certificate;
         this.price = price;
         this.purchaseDate = purchaseDate;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public User getUser() {
@@ -85,7 +76,7 @@ public class Order extends RepresentationModel<Order> implements Entity {
 
         Order order = (Order) o;
 
-        if (id != order.id) return false;
+        if (getId() != order.getId()) return false;
         if (user != null ? !user.equals(order.user) : order.user != null) return false;
         if (certificate != null ? !certificate.equals(order.certificate) : order.certificate != null) return false;
         if (price != null ? !price.equals(order.price) : order.price != null) return false;
@@ -95,7 +86,7 @@ public class Order extends RepresentationModel<Order> implements Entity {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (int) (id ^ (id >>> 32));
+        result = 31 * result + (int) (getId() ^ (getId() >>> 32));
         result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (certificate != null ? certificate.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
@@ -106,7 +97,7 @@ public class Order extends RepresentationModel<Order> implements Entity {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Order{");
-        sb.append("id=").append(id);
+        sb.append("id=").append(getId());
         sb.append(", user=").append(user);
         sb.append(", certificate=").append(certificate);
         sb.append(", price=").append(price);

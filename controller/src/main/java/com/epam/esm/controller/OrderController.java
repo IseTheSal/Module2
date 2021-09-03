@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.controller.hateaos.Hateoas;
-import com.epam.esm.model.entity.Order;
+import com.epam.esm.model.dto.OrderDTO;
 import com.epam.esm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,7 @@ import static com.epam.esm.controller.hateaos.Hateoas.createOrderHateoas;
 
 /**
  * Rest Controller which connected with service layer and provide data in JSON.
- * Used to interact with {@link Order}.
+ * Used to interact with {@link OrderDTO}.
  * <p>URI: <code>/api/v1/orders</code></p>
  *
  * @author Illia Aheyeu
@@ -24,7 +23,7 @@ import static com.epam.esm.controller.hateaos.Hateoas.createOrderHateoas;
 @RequestMapping(value = "/api/v1/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
     /**
-     * {@link Order} service layer
+     * {@link OrderDTO} service layer
      */
     private final OrderService orderService;
 
@@ -34,54 +33,37 @@ public class OrderController {
     }
 
     /**
-     * Find user`s {@link Order Orders}
+     * Create new {@link OrderDTO}
      *
-     * @param id {@link com.epam.esm.model.entity.User User`s} id
-     * @return <code>List</code> of {@link Order Orders}
-     */
-    @GetMapping("/users/{id:^[1-9]\\d{0,18}$}")
-    public ResponseEntity<List<Order>> findUserOrders(@PathVariable long id,
-                                                      @RequestParam(required = false, defaultValue = "1") int page,
-                                                      @RequestParam(required = false, defaultValue = "10") int amount) {
-        List<Order> orderList = orderService.findUserOrders(id, amount, page);
-        orderList.forEach(Hateoas::createOrderHateoas);
-        return new ResponseEntity<>(orderList, HttpStatus.OK);
-    }
-
-    /**
-     * Create new {@link Order}
-     *
-     * @param order {@link Order}
-     * @return Created {@link Order}
+     * @param order {@link OrderDTO}
+     * @return Created {@link OrderDTO}
      */
     @PostMapping
-    public ResponseEntity<Order> create(@RequestBody Order order) {
-        Order createdOrder = orderService.create(order);
+    public ResponseEntity<OrderDTO> create(@RequestBody OrderDTO order) {
+        OrderDTO createdOrder = orderService.create(order);
         return new ResponseEntity<>(createOrderHateoas(createdOrder), HttpStatus.CREATED);
     }
 
     /**
-     * Find {@link Order} by its id
+     * Find {@link OrderDTO} by its id
      *
-     * @param id {@link Order Order`s} id
-     * @return {@link Order}
+     * @param id {@link OrderDTO Order`s} id
+     * @return {@link OrderDTO}
      */
     @GetMapping("/{id:^[1-9]\\d{0,18}$}")
-    public ResponseEntity<Order> findById(@PathVariable long id) {
-        Order order = orderService.findById(id);
+    public ResponseEntity<OrderDTO> findById(@PathVariable long id) {
+        OrderDTO order = orderService.findById(id);
         return new ResponseEntity<>(createOrderHateoas(order), HttpStatus.OK);
     }
 
     /**
-     * Find all {@link Order Orders}
+     * Find all {@link OrderDTO Orders}
      *
-     * @return <code>List</code> of {@link Order orders}
+     * @return <code>List</code> of {@link OrderDTO orders}
      */
     @GetMapping
-    public ResponseEntity<List<Order>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
-                                               @RequestParam(required = false, defaultValue = "10") int amount) {
-        List<Order> orderList = orderService.findAll(amount, page);
-        orderList.forEach(Hateoas::createOrderHateoas);
-        return new ResponseEntity<>(orderList, HttpStatus.OK);
+    public ResponseEntity<List<OrderDTO>> findAll(@RequestParam(required = false, defaultValue = "1") int page,
+                                                  @RequestParam(required = false, defaultValue = "10") int amount) {
+        return new ResponseEntity<>(orderService.findAll(amount, page), HttpStatus.OK);
     }
 }

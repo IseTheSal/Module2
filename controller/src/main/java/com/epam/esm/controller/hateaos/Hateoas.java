@@ -4,10 +4,10 @@ import com.epam.esm.controller.GiftCertificateController;
 import com.epam.esm.controller.OrderController;
 import com.epam.esm.controller.TagController;
 import com.epam.esm.controller.UserController;
-import com.epam.esm.model.entity.GiftCertificate;
-import com.epam.esm.model.entity.Order;
-import com.epam.esm.model.entity.Tag;
-import com.epam.esm.model.entity.User;
+import com.epam.esm.model.dto.GiftCertificateDTO;
+import com.epam.esm.model.dto.OrderDTO;
+import com.epam.esm.model.dto.TagDTO;
+import com.epam.esm.model.dto.UserDTO;
 
 import java.util.Collections;
 
@@ -30,12 +30,13 @@ public class Hateoas {
     private static final String DESC = "DESC";
     private static final String FIND_BY_USER_ID_ORDERS = "Find by user`s orders";
     private static final String FIND_MOST_WIDELY_USED_TAG = "Find most widely used";
+    private static final String FIND_ORDER_BY_USER_ID = "Find order by user id and order id";
     private static final String GET = "GET";
     private static final String POST = "POST";
     private static final String PUT = "PUT";
     private static final String DELETE = "DELETE";
 
-    public static GiftCertificate createCertificateHateoas(GiftCertificate certificate) {
+    public static GiftCertificateDTO createCertificateHateoas(GiftCertificateDTO certificate) {
         return certificate
                 .add(linkTo(methodOn(GiftCertificateController.class).findById(certificate.getId())).withSelfRel()
                         .withName(FIND_BY_ID).withType(GET))
@@ -50,12 +51,8 @@ public class Hateoas {
                         .withName(FIND_BY_ATTRIBUTES).withType(GET));
     }
 
-
-    public static Order createOrderHateoas(Order order) {
+    public static OrderDTO createOrderHateoas(OrderDTO order) {
         return order
-                .add(linkTo(methodOn(OrderController.class)
-                        .findUserOrders(order.getUser().getId(), PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
-                        .withName(FIND_BY_USER_ID_ORDERS).withType(GET))
                 .add(linkTo(methodOn(OrderController.class).findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
                         .withName(FIND_ALL).withType(GET))
                 .add(linkTo(methodOn(OrderController.class).findById(order.getId())).withSelfRel()
@@ -65,7 +62,7 @@ public class Hateoas {
     }
 
 
-    public static Tag createTagHateoas(Tag tag) {
+    public static TagDTO createTagHateoas(TagDTO tag) {
         return tag
                 .add(linkTo(methodOn(TagController.class).findTagById(tag.getId())).withSelfRel()
                         .withName(FIND_BY_ID).withType(GET))
@@ -79,11 +76,17 @@ public class Hateoas {
                         .withName(FIND_MOST_WIDELY_USED_TAG).withType(GET));
     }
 
-    public static User createUserHateoas(User user) {
+    public static UserDTO createUserHateoas(UserDTO user) {
         return user
-                .add(linkTo(methodOn(UserController.class).findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
+                .add(linkTo(methodOn(UserController.class)
+                        .findAll(PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
                         .withName(FIND_ALL).withType(GET))
                 .add(linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel()
-                        .withName(FIND_BY_ID).withType(GET));
+                        .withName(FIND_BY_ID).withType(GET))
+                .add(linkTo(methodOn(UserController.class)
+                        .findUserOrders(user.getId(), PAGE_VALUE, AMOUNT_VALUE)).withSelfRel()
+                        .withName(FIND_BY_USER_ID_ORDERS).withType(GET))
+                .add(linkTo(methodOn(UserController.class).findOrderByUserId(user.getId(), 1)).withSelfRel()
+                        .withName(FIND_ORDER_BY_USER_ID).withType(GET));
     }
 }

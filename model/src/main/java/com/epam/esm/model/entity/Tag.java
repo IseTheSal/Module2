@@ -1,35 +1,26 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.entity.audit.AuditEntity;
 import com.epam.esm.model.entity.audit.AuditListener;
-import org.springframework.hateoas.RepresentationModel;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 
+@Entity
 @EntityListeners(AuditListener.class)
-@javax.persistence.Entity
 @Table(name = "tags")
-public class Tag extends RepresentationModel<Tag> implements Entity {
+public class Tag extends AuditEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
     @Column(name = "name")
     private String name;
 
     public Tag() {
     }
 
-    public Tag(long id, String name) {
-        this.id = id;
+    public Tag(String name) {
         this.name = name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -47,13 +38,13 @@ public class Tag extends RepresentationModel<Tag> implements Entity {
 
         Tag tag = (Tag) o;
 
-        if (id != tag.id) return false;
+        if (getId() != tag.getId()) return false;
         return name != null ? name.equals(tag.name) : tag.name == null;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
+        int result = (int) (getId() ^ (getId() >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
@@ -61,7 +52,7 @@ public class Tag extends RepresentationModel<Tag> implements Entity {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Tag{");
-        sb.append("id=").append(id);
+        sb.append("id=").append(getId());
         sb.append(", name='").append(name).append('\'');
         sb.append('}');
         return sb.toString();

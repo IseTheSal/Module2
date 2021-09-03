@@ -1,26 +1,35 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.entity.Order;
+import com.epam.esm.model.dto.OrderDTO;
 
 import java.util.List;
 
-public interface OrderService extends CommonEntityService<Order> {
+public interface OrderService extends CommonEntityService<OrderDTO> {
 
     /**
      * Create order
      *
-     * @param order {@link Order}
-     * @return {@link Order}
+     * @param order {@link OrderDTO}
+     * @return {@link OrderDTO}
      */
-    Order create(Order order);
+    OrderDTO create(OrderDTO order);
 
     /**
-     * Find user`s {@link Order orders}
+     * Find user`s {@link OrderDTO orders}
      *
      * @param id     <code>id</code> of {@link com.epam.esm.model.entity.User User}
      * @param amount amount
      * @param page   page
-     * @return <code>List</code> of {@link Order orders}
+     * @return <code>List</code> of {@link OrderDTO orders}
      */
-    List<Order> findUserOrders(long id, int amount, int page);
+    List<OrderDTO> findUserOrders(long id, int amount, int page);
+
+    /**
+     * Find user`s {@link OrderDTO order}
+     *
+     * @param userId  {@link com.epam.esm.model.dto.UserDTO User`s} id
+     * @param orderId {@link OrderDTO Order`s} id
+     * @return {@link OrderDTO}
+     */
+    OrderDTO findUserOrder(long userId, long orderId);
 }

@@ -1,69 +1,52 @@
 package com.epam.esm.model.dao.impl;
 
-import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.config.SpringBootTestConfiguration;
 import com.epam.esm.model.entity.GiftCertificate;
+import com.epam.esm.model.repository.GiftRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 
-@ContextConfiguration(classes = {JpaGiftCertificateImpl.class, SpringBootTestConfiguration.class},
+@ContextConfiguration(classes = {GiftRepository.class, SpringBootTestConfiguration.class},
         loader = AnnotationConfigContextLoader.class)
 @DirtiesContext
 @SpringBootTest
-class JpaGiftCertificateImplTest {
+@Sql("/data.sql")
+@Transactional
+class GiftRepositoryTest {
 
     @Autowired
-    GiftCertificateDao giftCertificateDao;
+    GiftRepository giftRepository;
 
     static GiftCertificate giftCertificate;
 
     @BeforeEach
     void setUpData() {
-        giftCertificate = new GiftCertificate(99, "Квадроцикл", "Увлекательно весело и здорово", new BigDecimal("20.04"),
-                20, LocalDateTime.now(), LocalDateTime.now(), true);
-    }
-
-    @Test
-    void findById() {
-        Optional<GiftCertificate> actual = giftCertificateDao.findById(1);
-        Assertions.assertTrue(actual.isPresent() && actual.get().getName().equals(giftCertificate.getName()));
+        giftCertificate = new GiftCertificate("Квадроцикл", "Увлекательно весело и здорово", new BigDecimal("20.04"),
+                20, true);
+        giftCertificate.setId(99);
     }
 
     @Test
     void findAll() {
-        int actual = giftCertificateDao.findAll(3, 0).size();
+        int actual = giftRepository.findAll(PageRequest.of(0, 3)).toList().size();
         int expected = 3;
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void findByAttributes() {
-        String actual = giftCertificateDao.findByAttributes(null, "Квадроцикл", "asc", "desc", 1, 0).get(0).getName();
-        String expected = giftCertificate.getName();
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @Transactional
-    void delete() {
-        boolean delete = giftCertificateDao.delete(1);
-        Assertions.assertTrue(delete);
-    }
-
-    @Test
-    @Transactional
     void create() {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setName("Самолёт");
@@ -72,18 +55,17 @@ class JpaGiftCertificateImplTest {
         giftCertificate.setDuration(1);
         giftCertificate.setLastUpdateDate(LocalDateTime.now());
         giftCertificate.setCreateDate(LocalDateTime.now());
-        GiftCertificate created = giftCertificateDao.create(giftCertificate);
+        GiftCertificate created = giftRepository.saveAndFlush(giftCertificate);
         boolean condition = created.getId() > 0;
         Assertions.assertTrue(condition);
     }
 
     @Test
-    @Transactional
     void update() {
-        GiftCertificate giftCertificate = giftCertificateDao.findById(1).get();
+        GiftCertificate giftCertificate = giftRepository.findById(1L).get();
         giftCertificate.setForSale(false);
-        giftCertificateDao.update(giftCertificate);
-        boolean condition = giftCertificateDao.findById(1).get().isForSale();
+        giftRepository.save(giftCertificate);
+        boolean condition = giftRepository.findById(1L).get().isForSale();
         Assertions.assertFalse(condition);
     }
 }
